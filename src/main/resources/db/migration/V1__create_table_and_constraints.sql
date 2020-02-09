@@ -1,17 +1,14 @@
-DROP TABLE IF EXISTS `member`;
-
 CREATE TABLE `member` (
 	`id`			BIGINT			NOT NULL	AUTO_INCREMENT	COMMENT '시퀀스',
 	`email`			VARCHAR(255)	NOT NULL					COMMENT '사용자 아이디',
 	`password`		VARCHAR(255)	NOT NULL					COMMENT '비밀번호 해쉬화',
 	`salt`			VARCHAR(255)	NOT NULL					COMMENT '패스워드에 사용될 랜덤 변수.',
 	`register_date`	TIMESTAMP		NOT NULL					COMMENT '가입일자',
+	`update_date`	TIMESTAMP		NULL						COMMENT '수정일자',
 	`login_date`	TIMESTAMP		NULL						COMMENT '최근 로그인 일자',
 	`role`			VARCHAR(32)		NOT NULL	DEFAULT 'USER'	COMMENT 'enum{1 : USER, 2 : ADMIN}',
 	PRIMARY KEY(`id`)
 );
-
-DROP TABLE IF EXISTS `category`;
 
 CREATE TABLE `category` (
 	`id`				BIGINT			NOT NULL	AUTO_INCREMENT	COMMENT '시퀀스',
@@ -20,12 +17,10 @@ CREATE TABLE `category` (
 	PRIMARY KEY(`id`)
 );
 
-DROP TABLE IF EXISTS `article`;
-
 CREATE TABLE `article` (
 	`id`			BIGINT			NOT NULL	AUTO_INCREMENT		COMMENT '시퀀스',
 	`member_id`		BIGINT			NOT NULL						COMMENT '유저 시퀀스 (FK)',
-	`category_id`	BIGINT			NOT NULL	DEFAULT -1			COMMENT '카테고리 시퀀스 (FK) ex)맛집, 숙소',
+	`category_id`	BIGINT			NULL							COMMENT '카테고리 시퀀스 (FK) ex)맛집, 숙소',
 	`title`			VARCHAR(50)		NOT NULL						COMMENT '글 제목',
 	`content`		TEXT			NULL							COMMENT '글 내용',
 	`good`			INT				NOT NULL	DEFAULT 0			COMMENT '좋아요 수',
@@ -37,12 +32,10 @@ CREATE TABLE `article` (
 	PRIMARY KEY(`id`)
 );
 
-DROP TABLE IF EXISTS `comment`;
-
 CREATE TABLE `comment` (
 	`id`				BIGINT			NOT NULL	AUTO_INCREMENT	COMMENT '시퀀스',
 	`article_id`		BIGINT			NOT NULL					COMMENT '글 시퀀스 (FK)',
-	`member_id`			BIGINT			NOT NULL					COMMENT '유저 시퀀스 (FK)',
+	`member_id`			BIGINT			NULL						COMMENT '유저 시퀀스 (FK)',
 	`content`			TEXT			NOT NULL					COMMENT '댓글 내용',
 	`register_date`		TIMESTAMP		NULL						COMMENT '댓글 등록 일자',
 	`update_date`		TIMESTAMP		NULL						COMMENT '댓글 수정 일자',
@@ -51,8 +44,6 @@ CREATE TABLE `comment` (
 	PRIMARY KEY(id)
 );
 
-
-DROP TABLE IF EXISTS `resource`;
 
 CREATE TABLE `resource` (
 	`id`				BIGINT			NOT NULL	AUTO_INCREMENT	COMMENT '시퀀스',
@@ -65,11 +56,9 @@ CREATE TABLE `resource` (
 	PRIMARY KEY(id)
 );
 
-DROP TABLE IF EXISTS `report`;
-
 CREATE TABLE `report` (
 	`id`				BIGINT			NOT NULL	AUTO_INCREMENT	COMMENT '시퀀스',
-	`member_id`			BIGINT			NOT NULL					COMMENT '신고자 시퀀스(FK)',
+	`member_id`			BIGINT			NULL						COMMENT '신고자 시퀀스(FK)',
 	`target`			VARCHAR(32)		NULL						COMMENT 'enum : Article, Comment',
 	`target_id`			BIGINT			NOT NULL					COMMENT '피신고자',
 	`register_date`		TIMESTAMP		NOT NULL					COMMENT '신고 일자',
@@ -78,8 +67,6 @@ CREATE TABLE `report` (
 	`process`			BOOLEAN			NULL						COMMENT '처리 결과',
 	PRIMARY KEY(id)
 );
-
-DROP TABLE IF EXISTS `bookmark`;
 
 CREATE TABLE `bookmark` (
 	`id`				BIGINT			NOT NULL	AUTO_INCREMENT	COMMENT '시퀀스',
@@ -92,22 +79,22 @@ CREATE TABLE `bookmark` (
 
 
 ALTER TABLE `article` ADD CONSTRAINT `FK_member_TO_article`
-FOREIGN KEY (`member_id`) REFERENCES `member` (`id`);
+FOREIGN KEY (`member_id`) REFERENCES `member` (`id`) ON DELETE CASCADE ;
 
 ALTER TABLE `article` ADD CONSTRAINT `FK_category_TO_article`
-FOREIGN KEY (`category_id`) REFERENCES `category` (`id`);
+FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE SET NULL ;
 
 ALTER TABLE `comment` ADD CONSTRAINT `FK_article_TO_comment` 
-FOREIGN KEY (`article_id`) REFERENCES `article` (`id`);
+FOREIGN KEY (`article_id`) REFERENCES `article` (`id`) ON DELETE CASCADE ;
 
 ALTER TABLE `comment` ADD CONSTRAINT `FK_member_TO_comment`
-FOREIGN KEY (`member_id`) REFERENCES `member` (`id`);
+FOREIGN KEY (`member_id`) REFERENCES `member` (`id`) ON DELETE SET NULL ;
 
 ALTER TABLE `report` ADD CONSTRAINT `FK_member_TO_report`
-FOREIGN KEY (`member_id`) REFERENCES `member` (`id`);
+FOREIGN KEY (`member_id`) REFERENCES `member` (`id`) ON DELETE SET NULL ;
 
 ALTER TABLE `bookmark` ADD CONSTRAINT `FK_member_TO_bookmark`
-FOREIGN KEY (`member_id`) REFERENCES `member` (`id`);
+FOREIGN KEY (`member_id`) REFERENCES `member` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `bookmark` ADD CONSTRAINT `FK_article_TO_bookmark`
-FOREIGN KEY (	`article_id`) REFERENCES `article` (`id`);
+FOREIGN KEY (`article_id`) REFERENCES `article` (`id`) ON DELETE CASCADE;
