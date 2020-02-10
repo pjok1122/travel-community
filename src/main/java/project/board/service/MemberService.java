@@ -1,6 +1,9 @@
 package project.board.service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,34 @@ public class MemberService {
 		}
 		
 		return false;
+	}
+
+	public Member save(MemberDto memberDto) {
+		Member member = Member.builder().email(memberDto.getEmail())
+						.password(memberDto.getPassword())
+						.salt(UUID.randomUUID().toString()).build();
+		
+		Long memberId = memberRepository.insert(member);
+//		memberRepository.findById(memberId);
+		
+		return member;
+	}
+
+	public boolean existMember(MemberDto memberDto) {
+		Member member = memberRepository.findByEmail(memberDto.getEmail());
+		if (member==null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public boolean equalPassword(MemberDto memberDto) {
+		if (memberDto.getPassword().equals(memberDto.getRePassword())) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

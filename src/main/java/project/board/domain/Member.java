@@ -8,9 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Builder.Default;
 
 @Data
 @Alias("member")
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Member {
 	private Long id;
@@ -20,5 +23,7 @@ public class Member {
 	private LocalDateTime registerDate;
 	private LocalDateTime updateDate;
 	private LocalDateTime loginDate;
-	private String role;
+	
+	@Default
+	private String role = "USER";
 }
