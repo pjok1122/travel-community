@@ -89,10 +89,12 @@
 ### POST /mypage/auth : 회원정보 변경 전에 회원 인증을 처리한다.
 
 - method        : `isOwner()`
+- parameter		: `MemberDto memberDto`
 
 **success**
 
 - view          : `member/mypage/update`
+- model			: `Boolean isOwner`
 
 **fail**
 
@@ -117,7 +119,8 @@
 
 **success**
 
-- view      		: `member/mypage/member`
+- redirect      	: `GET /mypage?info=member`
+
 
 **fail**
 
