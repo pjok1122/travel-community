@@ -5,11 +5,13 @@
 <title>Insert title here</title>
 </head>
 <body>
-
-	<form method="POST" action="/login">
+	
+	<h1> 회원 정보 변경 및 수정</h1>
+	<form method="POST" action="/mypage/auth">
 		<div>
-			<label for="email">이메일 : </label> <input type="email" name="email"
-				id="email" placeholder="email">
+			<label for="email">이메일 : </label>
+			<input type="email" name="email"
+				id="email" th:value="${session.email}">
 			<!-- <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</p> -->
 		</div>
 		<div>
@@ -20,6 +22,8 @@
 		<div th:text="${error}"></div>
 		<input type="submit">
 	</form>
+
+
 
 </body>
 </html>

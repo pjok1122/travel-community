@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project.board.repository.BookmarkRepository">
+	
+	<select id="findArticleByMemberId" parameterType="Long" resultType="article">
+		SELECT ba.*, count(c.id) as commentCnt
+		FROM
+			(SELECT a.*
+			FROM article a INNER JOIN 
+				(SELECT b.member_id, b.article_id
+				FROM `bookmark` b
+				WHERE member_id = #{id}) t
+			ON a.id = t.article_id) ba LEFT JOIN comment c
+		ON ba.id = c.article_id
+		GROUP BY ba.id;
+	</select>
+	
+	<select id="getTotalCntByMemberId" parameterType="Long" resultType="Long">
+		SELECT count(*)
+		FROM `bookmark`
+		WHERE member_id = #{id};
+	</select>
+
+
+</mapper>

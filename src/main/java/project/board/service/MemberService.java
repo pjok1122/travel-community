@@ -23,13 +23,12 @@ public class MemberService {
 	Sha256Utils sha256Utils;
 	
 	public Member login(MemberDto memberDto) {
+		System.out.println(memberDto.getEmail());
 		Member savedMember = memberRepository.findByEmail(memberDto.getEmail());
 		if (savedMember == null)
 			return null;
 		if (passwordCompare(memberDto, savedMember)) {
-			//로그인 시간 기록
-			savedMember.setLoginDate(LocalDateTime.now());
-			memberRepository.update(savedMember);
+			memberRepository.updateLoginDate(savedMember.getId());
 			return savedMember;
 		}
 		
@@ -49,12 +48,14 @@ public class MemberService {
 	}
 
 	public Member save(MemberDto memberDto) {
-		Member member = Member.builder().email(memberDto.getEmail())
-						.password(memberDto.getPassword())
-						.salt(UUID.randomUUID().toString()).build();
+		String salt = UUID.randomUUID().toString();
 		
-		Long memberId = memberRepository.insert(member);
-//		memberRepository.findById(memberId);
+		String hashPassword = sha256Utils.sha256(memberDto.getPassword(), salt);
+		Member member = Member.builder().email(memberDto.getEmail())
+						.password(hashPassword)
+						.salt(salt).build();
+		
+		memberRepository.insert(member);
 		
 		return member;
 	}
@@ -74,6 +75,32 @@ public class MemberService {
 		} else {
 			return false;
 		}
+	}
+
+	public void update(@Valid MemberDto memberDto) {
+		if(equalPassword(memberDto)) {
+			Member member = memberRepository.findByEmail(memberDto.getEmail());
+			String hashPassword = sha256Utils.sha256(memberDto.getPassword(), member.getSalt());
+			member.setPassword(hashPassword);
+			memberRepository.updatePassword(member);
+			
+		}
+		
+	}
+
+	public Member getMyInfo(Long id) {
+		
+		return memberRepository.findById(id);
+	}
+
+	public int getGoodCount(Long id) {
+		Integer goodCnt = memberRepository.sumGoodCount(id);
+		if (goodCnt == null) goodCnt = 0;
+		return goodCnt;
+	}
+
+	public void delete(Long memberId) {
+		memberRepository.delete(memberId);
 	}
 	
 }

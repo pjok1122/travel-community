@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<a th:if="${session.memberId ==null}" href="/login">Login</a>
+<a th:if="${session.memberId ==null}" href="/register">Register</a>
+
+<a th:unless="${session.memberId ==null}" href="/logout">Logout</a>
+<a th:unless="${session.memberId ==null}" href="/mypage?info=member">Mypage</a>
+
+<a href="/">숙박정보</a>
+</body>
+</html>

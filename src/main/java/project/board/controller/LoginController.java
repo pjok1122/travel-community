@@ -23,8 +23,7 @@ public class LoginController {
 	
 	@Autowired
 	MemberService memberService;
-	
-	
+		
 	@GetMapping("/register")
 	public String getRegisterForm() {
 		return "member/register";
@@ -51,7 +50,7 @@ public class LoginController {
 		
 		Member member = memberService.save(memberDto);
 		session.setAttribute("memberId", member.getId());
-		
+		session.setAttribute("email", member.getEmail());
 		return "index";
 	}
 
@@ -78,6 +77,7 @@ public class LoginController {
 		}
 		else {
 			session.setAttribute("memberId", member.getId());
+			session.setAttribute("email", member.getEmail());
 			return "index";
 		}
 	}

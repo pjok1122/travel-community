@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project.board.repository.ArticleRepository">
+
+	<select id="findByMemberId" resultType="article">
+		SELECT a.*, count(c.id) as commentCnt
+		FROM (SELECT *
+			FROM `article`
+			WHERE member_id = #{id} AND
+				status = #{status}) a LEFT JOIN comment c
+		on a.id = c.article_id
+		GROUP BY a.id;
+	</select>
+	
+	<select id="getArticleCntByMemberId" parameterType="Long" resultType="Long">
+		SELECT count(*)
+		FROM article
+		WHERE member_id = #{id} AND status = "PERMANENT";
+	</select>
+	
+	<select id="getTempArticleCntByMemberId" parameterType="Long" resultType="Long">
+		SELECT count(*)
+		FROM article
+		WHERE member_id = #{id} AND status = "TEMP";
+	</select>
+
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project.board.repository.CommentRepository">
+	
+	<select id="findByMemberId" parameterType="Long" resultType="comment">
+		SELECT *
+		FROM comment
+		WHERE member_id = #{id};
+	</select>
+	
+	<select id="getTotalCntByMemberId" parameterType="Long" resultType="Long">
+		SELECT count(*)
+		FROM comment
+		WHERE member_id = #{id};
+	</select>
+
+
+</mapper>

@@ -19,6 +19,7 @@ public class Article {
 	private LocalDateTime registerDate;
 	private LocalDateTime updateDate;
 	private String nation;
-	private String status;	
+	private String status;
+	private int commentCnt;
 }
 

@@ -8,28 +8,54 @@
 	<select id="findByEmail" parameterType="String"
 		resultType="member">
 		SELECT *
-		FROM member
+		FROM `member`
 		WHERE EMAIL = #{email}
 	</select>
+	
+	<select id="findById" parameterType="Long" resultType="member">
+		SELECT *
+		FROM `member`
+		WHERE id = #{id}
+	</select>
 
-	<update id="update" parameterType="member">
-		UPDATE member
-		SET update_date =
-		NOW(),
-		password = #{password}
+	<update id="updatePassword" parameterType="member">
+		UPDATE `member`
+		SET update_date = NOW(),
+			password = #{password}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateLoginDate" parameterType="Long">
+		UPDATE `member`
+		SET login_date = NOW()
+		WHERE id = #{id}
 	</update>
 
 	<insert id="insert" parameterType="member"
 		useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO member(email,password,
-		salt, register_date)
-		VALUES(#{email}, #{password}, #{salt}, NOW())
+		INSERT INTO `member`(email,password,
+		salt, register_date, login_date)
+		VALUES(#{email}, #{password}, #{salt}, NOW(), NOW())
 	</insert>
 
 	<delete id="delete" parameterType="Long">
 		DELETE
-		FROM member
+		FROM `member`
 		WHERE id= #{id}
 	</delete>
+	
+	<select id="sumGoodCount" parameterType="Long"
+	resultType="Integer">
+		SELECT sum(good) FROM(
+			SELECT good
+			FROM article a
+			WHERE a.member_id = #{id}
+			UNION ALL
+			SELECT good
+			FROM comment c
+			WHERE c.member_id = #{id}
+		) b;
+	
+	</select>
 
 </mapper>
