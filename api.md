@@ -60,11 +60,11 @@
 
 - `/mypage?info={article|bookmark}`
   - view			: `member/mypage/{article|bookmark}`
-  - model			: `Article article`, `int commentCount`, `Page page` 
+  - model			: `Article article`, `int commentCount`, `Long totalCnt`, `Page page` 
 
 - `/mypage?info=comment`
   - view			: `member/mypage/comment`
-  - model			: `Comment comment`, `Page page`
+  - model			: `Comment comment`, `Long totalCnt`, `Page page`
 
 - `/mypage?info=temp_article`
   - view			: `member/mypage/temp_article`
@@ -89,16 +89,16 @@
 ### POST /mypage/auth : 회원정보 변경 전에 회원 인증을 처리한다.
 
 - method        : `isOwner()`
-- parameter		: `MemberDto memberDto`
 
 **success**
 
-- view          : `member/mypage/update`
-- model			: `Boolean isOwner`
+- redirect      : `/mypage/{update|delete}`
+- session		: `Boolean isOwner`
 
 **fail**
 
 - view          : `member/mypage/auth`
+- model			: `String error`
 
 ### GET /mypage/update : 마이 페이지의 회원정보 변경 페이지를 보여준다.
 
@@ -110,7 +110,8 @@
 
 **fail**
 
-- view	        	: `member/login`
+- view	        	: `member/mypage/auth`
+- session			: `String prevPage`
 
 ### POST /mypage/update : 회원 정보 변경을 처리한다. 
 
@@ -119,9 +120,34 @@
 
 **success**
 
-- redirect      	: `GET /mypage?info=member`
+- redirect      	: `/mypage?info=member`
 
 
 **fail**
 
 - view      		: `member/mypage/update`
+- model				: `String error`
+
+### GET /mypage/delete : 회원 정보를 삭제한다.
+
+- method			: `deleteMember()`
+
+**success**
+
+- redirect			: `/`
+
+**fail**
+
+- view				: `member/mypage/auth`
+- session			: `String prevPage`
+
+<br><hr>
+
+## ArticleController
+
+### GET /article 	: articleList를 보여준다.
+
+- method 			: `getArticleList()`
+- parameter			: `Category category` `Nation nation` `Sorted sorted`
+
+**success**
