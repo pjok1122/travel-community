@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import project.board.annotation.LoginAuth;
 import project.board.domain.Member;
 import project.board.dto.MemberDto;
 import project.board.service.MemberService;
@@ -55,12 +56,9 @@ public class LoginController {
 	}
 
 	@GetMapping("/login")
+	@LoginAuth
 	public String getLoginForm(HttpSession session) {
-		if (session.getAttribute("member") == null) {
-			return "member/login";
-		} else {
-			return "index";
-		}
+		return "index";
 	}
 	
 	@PostMapping("/login")
@@ -83,6 +81,7 @@ public class LoginController {
 	}
 	
 	@GetMapping("/logout")
+	@LoginAuth
 	public String logout(HttpSession session) {
 		session.invalidate();
 		return "index";
