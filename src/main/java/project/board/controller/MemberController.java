@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,37 +46,19 @@ public class MemberController {
 	@Autowired
 	CommentService commentService;
 	
-	@GetMapping("")
+	@GetMapping("/{info}")
 	@LoginAuth
-	public String getMypage(@RequestParam(required=true, defaultValue = "member") MyInfo info, HttpSession session, Model model) {
+	public String getMypage
+	(
+		@PathVariable(required=true, value = "info") MyInfo info,
+		@RequestParam(required = false, value = "page") int page, 
+		HttpSession session, 
+		Model model
+	) {
 		Long memberId = (Long)session.getAttribute("memberId");
 		
-		if(info.toString().equals("MEMBER")) {
-			Member member = memberService.getMyInfo(memberId);
-			int like = memberService.getGoodCount(memberId);
-			model.addAttribute("member", member);
-			model.addAttribute("like", like);
-		} else if(info.toString().equals("ARTICLE")) {
-			List<Article> articleList = articleService.getArticleByMemberId(memberId);
-			Long total = articleService.getArticleCntByMemberId(memberId);
-			model.addAttribute("articleList", articleList);
-			model.addAttribute("total", total);
-		} else if(info.toString().equals("TEMP_ARTICLE")) {
-			List<Article> articleList = articleService.getTempArticleByMemberId(memberId);
-			Long total = articleService.getTempArticleCntByMemberId(memberId);
-			model.addAttribute("articleList", articleList);
-			model.addAttribute("total", total);
-		} else if(info.toString().equals("BOOKMARK")) {
-			List<Article> articleList = bookmarkService.getArticleByMemberId(memberId);
-			Long total = bookmarkService.getTotalCntByMemberId(memberId);
-			model.addAttribute("articleList", articleList);
-			model.addAttribute("total", total);
-		} else if(info.toString().equals("COMMENT")) {
-			List<Comment> commentList = commentService.getCommentByMemberId(memberId);
-			Long total = commentService.getTotalCntByMemberId(memberId);
-			model.addAttribute("commentList", commentList);
-			model.addAttribute("total",total);
-		}
+		model.addAttribute("mypage", memberService.getMypage(info, memberId, page));
+		
 		return BASE_VIEW_NAME + info.toString().toLowerCase();
 	}
 	@GetMapping("/auth")
