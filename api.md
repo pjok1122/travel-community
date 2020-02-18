@@ -47,28 +47,28 @@
 
 ## MemberController
 
-### GET /mypage : 마이 페이지를 보여준다.
+### GET /mypage/{info} : 마이 페이지를 보여준다.
 
-- method       		: `getMypage()`
-- parameter			: `MyInfo info `
+- method       	: `getMypage()`
+- parameter			: `int page`
 
 **success**
 
-- `/mypage?info=member`
+- `/mypage/member`
   - view			: `member/mypage/member`
   - model			: `Member member`, `int like`
 
-- `/mypage?info={article|bookmark}`
+- `/mypage/{article|bookmark}`
   - view			: `member/mypage/{article|bookmark}`
-  - model			: `Article article`, `int commentCount`, `Long totalCnt`, `Page page` 
+  - model			: `List<Article> list`, `Page page` 
 
-- `/mypage?info=comment`
+- `/mypage/comment`
   - view			: `member/mypage/comment`
-  - model			: `Comment comment`, `Long totalCnt`, `Page page`
+  - model			: `List<Comment> list`, `Page page`
 
-- `/mypage?info=temp_article`
+- `/mypage/temp_article`
   - view			: `member/mypage/temp_article`
-  - model			: `Article article`
+  - model			: `List<Article> list`, `Page page`
   
 **fail**
 
