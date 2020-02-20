@@ -1,0 +1,1 @@
+RENAME TABLE resource TO upload_file;
