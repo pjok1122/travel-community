@@ -6,11 +6,11 @@
 </head>
 <body>
 
-	<a href="?info=member">회원 정보</a>
-	<a href="?info=temp_article">임시 저장글</a>
-	<a href="?info=article">작성글</a>
-	<a href="?info=comment">작성댓글</a>
-	<a href="?info=bookmark">즐겨찾기 목록</a>
+	<a href="/mypage/member">회원 정보</a>
+	<a href="/mypage/temp_article">임시 저장글</a>
+	<a href="/mypage/article">작성글</a>
+	<a href="/mypage/comment">작성댓글</a>
+	<a href="/mypage/bookmark">즐겨찾기 목록</a>
 
 	<table>
 
@@ -22,7 +22,7 @@
 				<td>조회수</td>
 			</tr>
 		</thead>
-		<tr th:each="article : ${articleList}">
+		<tr th:each="article : ${mypage.page.list}">
 			<td th:text="${article.id}"></td>
 			<td th:text="[ + ${article.nation} + ] + ${article.title} + [+ ${article.commentCnt} +]"></td>
 			<td th:text="${article.registerDate}"></td>
@@ -30,7 +30,7 @@
 		</tr>
 	</table>
 
-<h1 th:text="|Total : ${total}|"></h1>
+<h1 th:text="|Total : ${mypage.page.numberOfRecords}|"></h1>
 
 </body>
 </html>

@@ -5,26 +5,85 @@
 
 <mapper namespace="project.board.repository.ArticleRepository">
 
-	<select id="findByMemberId" resultType="article">
+	<select id="findByMemberId" resultType="articleDto">
 		SELECT a.*, count(c.id) as commentCnt
 		FROM (SELECT *
 			FROM `article`
 			WHERE member_id = #{id} AND
 				status = #{status}) a LEFT JOIN comment c
-		on a.id = c.article_id
-		GROUP BY a.id;
+		ON a.id = c.article_id
+		GROUP BY a.id
+		LIMIT #{offset}, #{numOfRecords}
 	</select>
 	
-	<select id="getArticleCntByMemberId" parameterType="Long" resultType="Long">
+	<select id="getArticleCntByMemberId" parameterType="Long" resultType="Integer">
 		SELECT count(*)
 		FROM article
 		WHERE member_id = #{id} AND status = "PERMANENT";
 	</select>
 	
-	<select id="getTempArticleCntByMemberId" parameterType="Long" resultType="Long">
+	<select id="getTempArticleCntByMemberId" parameterType="Long" resultType="Integer">
 		SELECT count(*)
 		FROM article
 		WHERE member_id = #{id} AND status = "TEMP";
 	</select>
-
+	
+	<select id="findAll" resultType="articleDto">
+		SELECT a.*, count(c.id) as commentCnt
+		FROM (SELECT *
+			FROM article
+			WHERE status="PERMANENT") a LEFT JOIN comment c
+		ON a.id = c.article_id
+		GROUP BY a.id
+		<if test='category!=null and (category neq "전체".toString())'>
+		HAVING category_id = (SELECT id FROM category WHERE title = #{category})
+		</if>
+		<if test='nation!=null and (nation neq "전체".toString())'>
+		AND nation = #{nation}
+		</if>
+		LIMIT #{offset}, #{numOfRecords}
+	</select>
+	
+	<select id="getArticleCnt" resultType="int">
+	SELECT count(*) as totalCnt
+	FROM article
+	WHERE status = "PERMANENT"
+	<if test='category!=null and (category neq "전체".toString())'>
+	AND category_id = (SELECT id FROM category WHERE title = #{category})
+	</if>
+	<if test='nation!=null and (nation neq "전체".toString())'>
+	AND nation = #{nation}
+	</if>
+	</select>
+	
+	<insert id="insertArticle" useGeneratedKeys="true" keyProperty="id">
+	INSERT
+	INTO article(member_id, category_id, title, content, register_date, nation)
+	VALUES(#{memberId}, #{categoryId}, #{title}, #{content}, NOW(), #{nation})
+	</insert>
+	
+	<select id="selectArticleById" resultType="articleDto">
+	SELECT a.*, count(c.id) as commentCnt
+	FROM (SELECT * FROM article WHERE id=#{id}) a
+	LEFT JOIN comment c
+	ON a.id = c.article_id
+	GROUP BY a.id
+	</select>
+	
+	<update id="updateArticle" parameterType="article">
+	UPDATE article
+	SET title = #{title},
+		content = #{content},
+		nation = #{nation},
+		update_date = NOW(),
+		status = "PERMANENT"
+	WHERE id = #{id};
+	</update>
+	
+	<delete id="deleteArticleById">
+	DELETE
+	FROM article
+	WHERE id = #{id}
+	</delete>
+	
 </mapper>
