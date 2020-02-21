@@ -5,10 +5,10 @@
 
 <mapper namespace="project.board.repository.UploadFileRepository">
 
-	<insert id="save" parameterType="uploadFile"
+	<insert id="insert" parameterType="uploadFile"
 	useGeneratedKeys="true" keyProperty="id">
-	INSERT INTO upload_file(file_name, save_file_name, file_path, content_type, size, register_date)
-	VALUES(#{fileName}, #{saveFileName}, #{filePath}, #{contentType}, #{size}, NOW())
+	INSERT INTO upload_file(file_name, file_path, content_type, size, register_date)
+	VALUES(#{fileName}, #{filePath}, #{contentType}, #{size}, NOW())
 	</insert>
 	
 	<select id="findById" resultType="uploadFile">

@@ -4,7 +4,7 @@ import project.board.domain.UploadFile;
 
 public interface UploadFileRepository {
 
-	void save(UploadFile saveFile);
 	UploadFile findById(Long id);
+	void insert(UploadFile saveFile);
 
 }

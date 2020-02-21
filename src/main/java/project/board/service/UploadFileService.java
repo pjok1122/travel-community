@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import project.board.domain.UploadFile;
 import project.board.repository.UploadFileRepository;
+import project.board.util.UploadFileUtils;
 
 @Service
 public class UploadFileService {
@@ -33,36 +34,27 @@ public class UploadFileService {
 				throw new Exception("Failed to store empty file" + file.getOriginalFilename());
 			}
 			
+			// 이미지 파일인지 검사.
+			String extension = UploadFileUtils.getExtension(file.getOriginalFilename());
+			if(!UploadFileUtils.isImageType(extension)) {
+				throw new Exception("Failed to store the file because it is not image file." + file.getOriginalFilename());
+			}
+			
 			//파일을 디스크에 저장하고, DB에 메타정보 저장.
-			String saveFileName = fileSave(rootLocation.toString(), file);
+			String filePath = UploadFileUtils.fileSave(rootLocation.toString(), file);
 			UploadFile saveFile = new UploadFile();
 			saveFile.setFileName(file.getOriginalFilename());
-			saveFile.setSaveFileName(saveFileName);
-			saveFile.setContentType(file.getContentType());
+			saveFile.setContentType(extension);
 			saveFile.setSize(file.getResource().contentLength());
-			saveFile.setRegisterDate(LocalDateTime.now());
-			saveFile.setFilePath(rootLocation.toString().replace(File.separatorChar, '/') +'/' + saveFileName);   
-			uploadFileRepository.save(saveFile); 
+			saveFile.setFilePath(filePath);
+			uploadFileRepository.insert(saveFile); 
 			return saveFile;
 		} catch(IOException e) {
 			throw new Exception("Failed to store file " + file.getOriginalFilename(), e);
 		}
 	}
 
-	private String fileSave(String rootLocation, MultipartFile file) throws IOException {
-		File uploadDir = new File(rootLocation);
-		if(!uploadDir.exists()) {
-			uploadDir.mkdir();
-		}
-		
-		//Ajax로 보낸 파일을 디스크로 복사 및 파일 이름 생성.
-		UUID uuid = UUID.randomUUID();
-		String saveFileName = uuid.toString() + file.getOriginalFilename();
-		File saveFile = new File(rootLocation, saveFileName);
-		FileCopyUtils.copy(file.getBytes(), saveFile);
-		
-		return saveFileName;
-	}
+
 
 	public UploadFile load(Long fileId) {
 		return uploadFileRepository.findById(fileId);

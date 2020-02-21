@@ -27,7 +27,6 @@ public class UploadFileController {
 	public ResponseEntity<?> imageUpload(@RequestParam("file") MultipartFile file){
 		try {
 			UploadFile uploadFile = imageService.store(file);
-			System.out.println(uploadFile.getId());
 			return ResponseEntity.ok().body("/image/" + uploadFile.getId());
 		} catch(Exception e) {
 			e.printStackTrace();
