@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<title>Detail</title>
+<!-- include libraries(jQuery, bootstrap) -->
+<link
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css"
+	rel="stylesheet">
+<script
+	src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
+<script
+	src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+
+
+</head>
+<style>
+.like{
+	padding: 0;
+    border: none;
+    background-color: white;
+    width: 30px;
+}
+
+#like{
+	width: inherit;
+}
+
+</style>
+
+<body>
+
+<div>
+<a href="/accomadation/all">숙박정보</a>
+<a href="/restaurant/all">맛집</a>
+<a href="/festival/all">축제 정보</a>
+<a href="/attractions/all">관광지</a>
+</div>
+
+	<div class="container">
+		<div class="row marketing">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<div style="font-size:12px;" th:text="|[${article.nation}]|"></div>
+							<a th:utext="${article.title}" href="#"></a> <span
+								th:utext="${article.registerDate}" class="pull-right text-right">
+							</span>
+						</h3>
+					</div>
+					<div th:utext="${article.content}" class="panel-body"></div>
+					<button class="primary-btn btn"
+						th:if="${session.memberId} == ${article.memberId}"
+						th:onclick="|window.location.href='/article/update/${article.id}'|">수정하기</button>
+					<form th:if="${session.memberId} == ${article.memberId}" 
+						th:action="|/article/delete/${article.id}|" method="post">
+						<button class="primary-btn btn">삭제하기</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-5">
+			<div class="col-lg-4">
+				<button class="like">
+					<img th:if="${liked} eq 1" id="like" src="/img/imgs/like2.png">
+					<img th:unless="${liked} eq 1" id="like" th:src="@{/img/imgs/like1.png}">
+				</button>
+				<span th:text="${article.good}">좋아요 숫자</span>
+			</div>
+		</div>
+	</div>
+	
+	<footer>
+	아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
+	아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
+	</footer>
+
+	<script th:inline="javascript">
+		$(document).ready(function(){
+			/* <![CDATA[ */
+			var articleId = [[${article.id}]]
+			var liked = [[${liked}]]
+			/* ]] */
+			$(".like").prop("name", liked);
+
+			$(".like").on("click", function(){
+				var that = $(".like");
+ 				var sendData = {'articleId': articleId, 'liked': that.prop("name")};
+ 				console.log(sendData);
+				$.ajax({
+					url : '/article/like',
+					type : 'POST',
+					data : sendData,
+					success : function(liked){
+						that.prop("name", liked);
+						
+						if(liked){
+							$("#like").prop("src", "/img/imgs/like2.png");
+						} else if(like){
+							$("#like").prop("src", "/img/imgs/like1.png");
+						}
+					},
+					complete : function(response){
+						if(response.status == 302){
+							window.location.href=response.responseText;
+						}
+					}
+				});
+			});
+		});
+	</script>
+</body>
+</html>

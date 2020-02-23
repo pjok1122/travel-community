@@ -20,7 +20,7 @@ public interface ArticleRepository {
 
 	int getArticleCnt();
 
-	List<ArticleDto> findAll(String category, String nation, int offset, int numOfRecords);
+	List<ArticleDto> selectArticleList(String category, String nation, int offset, int numOfRecords);
 	
 	int getArticleCnt(String category, String nation);
 
@@ -32,6 +32,11 @@ public interface ArticleRepository {
 
 	void deleteArticleById(Long id);
 
+	void updateHitById(Long id);
+
+	void updateGoodDown(Long id);
+
+	void updateGoodUp(Long id);
 	
 	
 }

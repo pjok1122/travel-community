@@ -2,11 +2,14 @@ package project.board.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.hibernate.validator.constraints.ISBN;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,7 +47,8 @@ public class ArticleController {
 			@RequestParam(required = false, value = "search") String search,
 			Model model)
 	{
-		model.addAllAttributes(articleService.getArticle(category, nation, page, sort));
+		model.addAllAttributes(articleService.getArticleList(category, nation, page, sort));
+		model.addAttribute("category", category.toString().toLowerCase());
 		return "article/list";
 	}
 	
@@ -77,10 +81,19 @@ public class ArticleController {
 	}
 	
 	@GetMapping("/article/{articleId}")
-	public String showArticle(@PathVariable Long articleId, Model model)
+	public String showArticle(
+			@PathVariable Long articleId,
+			HttpSession session,
+			Model model)
 	{
 		ArticleDto article = articleService.getArticleById(articleId);
+		if(article.getStatus().equals("TEMP")) {
+			return "redirect:/";
+		}
+		articleService.increaseHitById(articleId);
+		int liked = articleService.checkArticleLike((Long)session.getAttribute("memberId"), articleId);
 		model.addAttribute("article", article);
+		model.addAttribute("liked", liked);
 		return "article/detail";
 	}
 	
@@ -133,5 +146,22 @@ public class ArticleController {
 		
 		articleService.removeArticleById(articleId);
 		return "redirect:/";
+	}
+	
+	@PostMapping("/article/like")
+	public ResponseEntity<?> processLikeArticle(
+			@RequestParam("articleId") Long articleId,
+			@RequestParam("liked") int liked,
+			HttpSession session,
+			HttpServletRequest request){
+		
+		if(session.getAttribute("memberId") ==null) {
+			session.setAttribute("prevPage", "/article/" + articleId);
+			return ResponseEntity.status(302).body("/login");
+		}
+		
+		int curLiked= articleService.modifyArticleLike((Long) session.getAttribute("memberId"), articleId, liked);
+		
+		return ResponseEntity.ok().body(curLiked);
 	}
 }

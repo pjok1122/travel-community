@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import project.board.annotation.LoginAuth;
 import project.board.domain.Member;
-import project.board.dto.MemberDto;
+import project.board.domain.dto.MemberDto;
 import project.board.service.MemberService;
 
 
@@ -26,12 +27,17 @@ public class LoginController {
 	MemberService memberService;
 		
 	@GetMapping("/register")
-	public String getRegisterForm() {
+	public String getRegisterForm(){
 		return "member/register";
 	}
 	
 	@PostMapping("/register")
-	public String registerMember(HttpSession session, @ModelAttribute @Valid MemberDto memberDto, BindingResult result, Model model) {
+	public String processRegisterForm(
+			HttpSession session,
+			@ModelAttribute @Valid MemberDto memberDto,
+			BindingResult result, 
+			Model model)
+	{
 		//빈칸인 경우,
 		if(result.hasErrors()) {
 			model.addAttribute("error", "Not Empty");
@@ -52,17 +58,24 @@ public class LoginController {
 		Member member = memberService.save(memberDto);
 		session.setAttribute("memberId", member.getId());
 		session.setAttribute("email", member.getEmail());
-		return "index";
+		return "redirect:/";
 	}
 
 	@GetMapping("/login")
-	@LoginAuth
 	public String getLoginForm(HttpSession session) {
-		return "index";
+		if(session.getAttribute("memberId") == null) {
+			return "member/login";
+		}
+		return "redirect:/";
 	}
 	
 	@PostMapping("/login")
-	public String login(HttpSession session, @ModelAttribute @Valid MemberDto memberDto, BindingResult result, Model model) {
+	public String processLoginForm(
+			HttpSession session,
+			@ModelAttribute @Valid MemberDto memberDto,
+			BindingResult result, 
+			Model model)
+	{
 		if (result.hasErrors()) {
 			model.addAttribute("error", "Not Empty");
 			return "member/login";
@@ -76,13 +89,20 @@ public class LoginController {
 		else {
 			session.setAttribute("memberId", member.getId());
 			session.setAttribute("email", member.getEmail());
-			return "index";
+			
+			String prevPage = (String)session.getAttribute("prevPage");
+			if(prevPage !=null) {
+				session.removeAttribute("prevPage");
+				return "redirect:" + prevPage;
+			}
+			
+			return "redirect:/";
 		}
 	}
 	
-	@GetMapping("/logout")
+	@RequestMapping("/logout")
 	@LoginAuth
-	public String logout(HttpSession session) {
+	public String processLogout(HttpSession session) {
 		session.invalidate();
 		return "index";
 	}
