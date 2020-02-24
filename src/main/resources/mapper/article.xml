@@ -28,7 +28,7 @@
 		WHERE member_id = #{id} AND status = "TEMP";
 	</select>
 	
-	<select id="findAll" resultType="articleDto">
+	<select id="selectArticleList" resultType="articleDto">
 		SELECT a.*, count(c.id) as commentCnt
 		FROM (SELECT *
 			FROM article
@@ -41,6 +41,7 @@
 		<if test='nation!=null and (nation neq "전체".toString())'>
 		AND nation = #{nation}
 		</if>
+		ORDER BY a.id DESC
 		LIMIT #{offset}, #{numOfRecords}
 	</select>
 	
@@ -85,5 +86,23 @@
 	FROM article
 	WHERE id = #{id}
 	</delete>
+	
+	<update id="updateHitById">
+	UPDATE article
+	SET hit = hit+1
+	WHERE id = #{id};
+	</update>
+	
+	<update id="updateGoodUp">
+	UPDATE article
+	SET good = good + 1
+	WHERE id = #{id}
+	</update>
+	
+	<update id="updateGoodDown">
+	UPDATE article
+	SET good = good - 1
+	WHERE id = #{id}
+	</update>
 	
 </mapper>

@@ -1,6 +1,7 @@
 package project.board.domain;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
@@ -33,5 +34,6 @@ public class Article extends CommonDomain{
 	@NotBlank
 	private String nation;
 	private String status;
+	
 }
 

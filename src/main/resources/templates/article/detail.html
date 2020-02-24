@@ -66,7 +66,7 @@
 					<img th:if="${liked} eq 1" id="like" src="/img/imgs/like2.png">
 					<img th:unless="${liked} eq 1" id="like" th:src="@{/img/imgs/like1.png}">
 				</button>
-				<span th:text="${article.good}">좋아요 숫자</span>
+				<span th:text="${article.good}" id="likeCount">좋아요 숫자</span>
 			</div>
 		</div>
 	</div>
@@ -82,22 +82,21 @@
 			var articleId = [[${article.id}]]
 			var liked = [[${liked}]]
 			/* ]] */
-			$(".like").prop("name", liked);
-
+			var that = $(".like");
+			that.prop("name", liked);
 			$(".like").on("click", function(){
-				var that = $(".like");
- 				var sendData = {'articleId': articleId, 'liked': that.prop("name")};
- 				console.log(sendData);
-				$.ajax({
+ 				$.ajax({
 					url : '/article/like',
 					type : 'POST',
-					data : sendData,
+					data : {'articleId': articleId},
+					async : false,
 					success : function(liked){
 						that.prop("name", liked);
-						
 						if(liked){
+							alert("좋아요가 반영되었습니다.");
 							$("#like").prop("src", "/img/imgs/like2.png");
 						} else if(like){
+							alert("좋아요를 취소하셨습니다.");
 							$("#like").prop("src", "/img/imgs/like1.png");
 						}
 					},
@@ -107,6 +106,16 @@
 						}
 					}
 				});
+				
+				$.ajax({
+					url : '/article/like',
+					type : 'GET',
+					data : {'articleId' : articleId},
+					success : function(count){
+						console.log(count);
+						$("#likeCount").html(count);
+					}
+				})
 			});
 		});
 	</script>

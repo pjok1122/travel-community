@@ -151,7 +151,6 @@ public class ArticleController {
 	@PostMapping("/article/like")
 	public ResponseEntity<?> processLikeArticle(
 			@RequestParam("articleId") Long articleId,
-			@RequestParam("liked") int liked,
 			HttpSession session,
 			HttpServletRequest request){
 		
@@ -160,8 +159,13 @@ public class ArticleController {
 			return ResponseEntity.status(302).body("/login");
 		}
 		
-		int curLiked= articleService.modifyArticleLike((Long) session.getAttribute("memberId"), articleId, liked);
-		
+		int curLiked = articleService.modifyArticleLike((Long) session.getAttribute("memberId"), articleId);
 		return ResponseEntity.ok().body(curLiked);
+	}
+	
+	@GetMapping("/article/like")
+	@ResponseBody
+	public String getLikeCount(@RequestParam("articleId") Long articleId) {
+		return Integer.toString(articleService.getLikeCount(articleId));
 	}
 }
