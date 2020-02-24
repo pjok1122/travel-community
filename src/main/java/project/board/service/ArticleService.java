@@ -1,5 +1,6 @@
 package project.board.service;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import project.board.domain.Article;
+import project.board.domain.Bookmark;
 import project.board.domain.CommonDomain;
 import project.board.domain.dto.ArticleDto;
 import project.board.domain.dto.Page;
@@ -19,6 +21,7 @@ import project.board.enums.Nation;
 import project.board.enums.Sort;
 import project.board.repository.ArticleLikeRepository;
 import project.board.repository.ArticleRepository;
+import project.board.repository.BookmarkRepository;
 import project.board.repository.CategoryRepository;
 
 @Service
@@ -32,6 +35,9 @@ public class ArticleService {
 	
 	@Autowired
 	CategoryRepository categoryRepository;
+	
+	@Autowired
+	BookmarkRepository bookmarkRepository;
 	
 	public List<ArticleDto> getArticleByMemberId(Long id, Page paging) {
 		return articleRepository.findByMemberId(id, paging.getOffset(), paging.getRecordsPerPage(), "PERMANENT");
@@ -92,14 +98,14 @@ public class ArticleService {
 		articleRepository.updateHitById(articleId);
 	}
 
-	public int checkArticleLike(Long memberId, Long articleId) {
+	public int checkLikeStatus(Long memberId, Long articleId) {
 		Long id = articleLikeRepository.selectByMemberIdAndArticleId(memberId, articleId);
 		if(id == null) return 0;
 		else return 1;
 	}
 
 	@Transactional
-	public int modifyArticleLike(Long memberId, Long articleId) {
+	public int modifyLikeStatus(Long memberId, Long articleId) {
 		Long id = articleLikeRepository.selectByMemberIdAndArticleId(memberId, articleId);
 		
 		if(id == null) {
@@ -116,6 +122,18 @@ public class ArticleService {
 	public int getLikeCount(Long articleId) {
 		return articleRepository.selectArticleById(articleId).getGood();
 	}
-	
-	
+	public int checkBookmarkStatus(Long memberId, Long articleId) {
+		Bookmark bookmark = bookmarkRepository.selectBookmarkByMemberIdAndArticleId(memberId, articleId);
+		if(bookmark == null) return 0;
+		else return 1;
+	}
+
+	public Map<String, Object> checkArticleSatus(Long memberId, Long articleId) {
+		Map<String, Object> map = new HashMap<String,Object>();
+		int liked = checkLikeStatus(memberId, articleId);
+		int bookmark = checkBookmarkStatus(memberId, articleId);
+		map.put("liked", liked);
+		map.put("bookmark", bookmark);
+		return map;
+	}
 }

@@ -5,24 +5,43 @@
 
 <mapper namespace="project.board.repository.BookmarkRepository">
 	
-	<select id="findArticleByMemberId" parameterType="Long" resultType="article">
+	<select id="findArticleByMemberId" resultType="articleDto">
 		SELECT ba.*, count(c.id) as commentCnt
 		FROM
 			(SELECT a.*
 			FROM article a INNER JOIN 
 				(SELECT b.member_id, b.article_id
 				FROM `bookmark` b
-				WHERE member_id = #{id}) t
+				WHERE member_id = #{memberId}) t
 			ON a.id = t.article_id) ba LEFT JOIN comment c
 		ON ba.id = c.article_id
-		GROUP BY ba.id;
+		GROUP BY ba.id
+		LIMIT #{offset}, #{numOfRecords}
 	</select>
 	
-	<select id="getTotalCntByMemberId" parameterType="Long" resultType="Long">
+	<select id="getArticleCntByMemberId" parameterType="Long" resultType="Integer">
 		SELECT count(*)
 		FROM `bookmark`
-		WHERE member_id = #{id};
+		WHERE member_id = #{memberId};
 	</select>
+	
+	<select id="selectBookmarkByMemberIdAndArticleId" resultType="Bookmark">
+		SELECT *
+		FROM `bookmark`
+		WHERE member_id = #{memberId} AND article_id = #{articleId} 
+	</select>
+	
+	<insert id="insertBookmark" useGeneratedKeys="true">
+		INSERT
+		INTO `bookmark`(member_id, article_id, register_date)
+		VALUES(#{memberId}, #{articleId}, NOW())
+	</insert>
+	
+	<delete id="deleteBookmark">
+		DELETE
+		FROM `bookmark`
+		WHERE member_id = #{memberId} AND article_id = #{articleId}
+	</delete>
 
 
 </mapper>

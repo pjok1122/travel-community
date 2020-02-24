@@ -91,9 +91,8 @@ public class ArticleController {
 			return "redirect:/";
 		}
 		articleService.increaseHitById(articleId);
-		int liked = articleService.checkArticleLike((Long)session.getAttribute("memberId"), articleId);
 		model.addAttribute("article", article);
-		model.addAttribute("liked", liked);
+		model.addAllAttributes(articleService.checkArticleSatus((Long)session.getAttribute("memberId"), articleId));
 		return "article/detail";
 	}
 	
@@ -159,13 +158,13 @@ public class ArticleController {
 			return ResponseEntity.status(302).body("/login");
 		}
 		
-		int curLiked = articleService.modifyArticleLike((Long) session.getAttribute("memberId"), articleId);
-		return ResponseEntity.ok().body(curLiked);
+		int likeStatus = articleService.modifyLikeStatus((Long) session.getAttribute("memberId"), articleId);
+		return ResponseEntity.ok().body(likeStatus);
 	}
 	
 	@GetMapping("/article/like")
 	@ResponseBody
-	public String getLikeCount(@RequestParam("articleId") Long articleId) {
-		return Integer.toString(articleService.getLikeCount(articleId));
+	public Integer getLikeCount(@RequestParam("articleId") Long articleId) {
+		return articleService.getLikeCount(articleId);
 	}
 }
