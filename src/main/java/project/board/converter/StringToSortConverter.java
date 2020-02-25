@@ -3,16 +3,16 @@ package project.board.converter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import project.board.enums.MyInfo;
+import project.board.enums.Sort;
 
 @Component
-public class StringToMyInfoConverter implements Converter<String, MyInfo>{
+public class StringToSortConverter implements Converter<String, Sort> {
 	@Override
-	public MyInfo convert(String source) {
+	public Sort convert(String source) {
 		try {
-			return MyInfo.valueOf(source.toUpperCase());
+			return Sort.valueOf(source.toUpperCase());
 		} catch(IllegalArgumentException e) {
-			return MyInfo.MEMBER;
+			return Sort.NEWEST;
 		}
 	}
 }

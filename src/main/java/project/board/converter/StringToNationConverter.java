@@ -3,16 +3,18 @@ package project.board.converter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import project.board.enums.MyInfo;
+import project.board.enums.Nation;
 
 @Component
-public class StringToMyInfoConverter implements Converter<String, MyInfo>{
+public class StringToNationConverter implements Converter<String, Nation>{
+	
 	@Override
-	public MyInfo convert(String source) {
+	public Nation convert(String source) {
 		try {
-			return MyInfo.valueOf(source.toUpperCase());
+			return Nation.valueOf(source.toUpperCase());
 		} catch(IllegalArgumentException e) {
-			return MyInfo.MEMBER;
+			return Nation.ALL;
 		}
 	}
+
 }
