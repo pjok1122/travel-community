@@ -10,8 +10,51 @@
 <a th:if="${session.memberId ==null}" href="/register">Register</a>
 
 <a th:unless="${session.memberId ==null}" href="/logout">Logout</a>
-<a th:unless="${session.memberId ==null}" href="/mypage?info=member">Mypage</a>
+<a th:unless="${session.memberId ==null}" href="/mypage/member">Mypage</a>
 
-<a href="/">숙박정보</a>
+<a href="/accomadation/all">숙박정보</a>
+<a href="/restaurant/all">맛집</a>
+<a href="/festival/all">축제 정보</a>
+<a href="/attractions/all">관광지</a>
+
+<h1> 제목 </h1>
+
+<div>
+	<a href="#">전체</a>
+	<a href="?nation=대만">대만</a>
+	<a href="?nation=일본">일본</a>
+	<a href="?nation=중국">중국</a>
+	<a href="?nation=태국">태국</a>
+</div>
+
+<h3>정렬</h3>
+<div>
+	<a href="#">최신순</a>
+	<a href="#">인기순</a>
+</div>
+
+<table>
+	<thead>
+		<tr>
+			<td>번호</td>
+			<td>제목</td>
+			<td>글쓴이</td>
+			<td>날짜</td>
+			<td>조회수</td>
+		</tr>
+	</thead>
+	<tbody>
+		<tr th:each= "article : ${articleList}">
+			<td th:article="${article.id}"></td>
+			<td th:article="${article.title}"></td>
+			<td th:article="${article.author}"></td>
+			<td th:article="${article.registerDate}"></td>
+			<td th:article="${article.hit}"></td>
+		</tr>
+	</tbody>
+
+
+</table>
+
 </body>
 </html>

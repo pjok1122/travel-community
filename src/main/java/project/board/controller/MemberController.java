@@ -21,7 +21,7 @@ import project.board.annotation.LoginAuth;
 import project.board.domain.Article;
 import project.board.domain.Comment;
 import project.board.domain.Member;
-import project.board.dto.MemberDto;
+import project.board.domain.dto.MemberDto;
 import project.board.enums.MyInfo;
 import project.board.service.ArticleService;
 import project.board.service.BookmarkService;
@@ -48,15 +48,13 @@ public class MemberController {
 	
 	@GetMapping("/{info}")
 	@LoginAuth
-	public String getMypage
-	(
-		@PathVariable(required=true, value = "info") MyInfo info,
-		@RequestParam(required = false, value = "page") int page, 
+	public String getMypage(
+		@PathVariable(required = true, value = "info") MyInfo info,
+		@RequestParam(required = false, value = "page", defaultValue = "1") int page, 
 		HttpSession session, 
-		Model model
-	) {
+		Model model)
+	{
 		Long memberId = (Long)session.getAttribute("memberId");
-		
 		model.addAttribute("mypage", memberService.getMypage(info, memberId, page));
 		
 		return BASE_VIEW_NAME + info.toString().toLowerCase();
@@ -69,7 +67,12 @@ public class MemberController {
 	
 	@PostMapping("/auth")
 	@LoginAuth
-	public String isOwner(@ModelAttribute @Valid MemberDto memberDto, BindingResult result, Model model, HttpSession session) {
+	public String isOwner(
+			@ModelAttribute @Valid MemberDto memberDto, 
+			BindingResult result, 
+			Model model, 
+			HttpSession session)
+	{
 		if(result.hasErrors()) {
 			model.addAttribute("error", "Not Empty");
 			return BASE_VIEW_NAME + "auth";
@@ -88,7 +91,10 @@ public class MemberController {
 	
 	@GetMapping("/update")
 	@LoginAuth
-	public String getMypageUpdateForm(HttpServletRequest request, HttpSession session) {
+	public String getUpdateMypageForm(
+			HttpServletRequest request,
+			HttpSession session)
+	{
 		session.setAttribute("prevPage", request.getRequestURI());
 		
 		if(session.getAttribute("isOwner") == null) {
@@ -99,10 +105,13 @@ public class MemberController {
 		}
 	}
 	
-	
 	@PostMapping("/update")
 	@LoginAuth
-	public String updateMemberInfo(HttpSession session, @ModelAttribute @Valid MemberDto memberDto, BindingResult result, Model model) {
+	public String processUpdateMemberForm(
+			@ModelAttribute @Valid MemberDto memberDto,
+			BindingResult result,
+			HttpSession session,
+			Model model) {
 		if(session.getAttribute("isOwner")== null) {
 			return BASE_VIEW_NAME +"auth";
 		}
@@ -119,12 +128,15 @@ public class MemberController {
 		
 		memberService.update(memberDto);
 		session.removeAttribute("isOwner");
-		return "redirect:/mypage?info=member";	
+		return "redirect:/mypage/member";	
 	}
 	
 	@RequestMapping("/delete")
 	@LoginAuth
-	public String deleteMember(HttpServletRequest request, HttpSession session) {
+	public String deleteMember(
+			HttpServletRequest request,
+			HttpSession session) 
+	{
 		if(session.getAttribute("isOwner")==null) {
 			session.setAttribute("prevPage", request.getRequestURI());
 			return BASE_VIEW_NAME +"auth";

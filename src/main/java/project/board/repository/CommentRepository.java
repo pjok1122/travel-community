@@ -9,6 +9,6 @@ import project.board.domain.Comment;
 @Mapper
 public interface CommentRepository {
 
-	List<Comment> findByMemberId(Long memberId);
-	Long getTotalCntByMemberId(Long memberId);
+	List<Comment> findByMemberId(Long memberId, int offset, int numOfRecords);
+	Integer getCommentCntByMemberId(Long memberId);
 }

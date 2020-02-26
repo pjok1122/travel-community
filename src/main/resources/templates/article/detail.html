@@ -15,15 +15,28 @@
 
 </head>
 <style>
-.like{
+.icon{
 	padding: 0;
     border: none;
     background-color: white;
     width: 30px;
 }
 
-#like{
+#like, #bookmark{
 	width: inherit;
+}
+
+.control-button{
+	float:right;
+	margin-right: 5px;
+}
+
+footer{
+	position: absolute;
+	left:0;
+	bottom:0;
+	width:100%;
+	background-color: black;
 }
 
 </style>
@@ -50,30 +63,37 @@
 						</h3>
 					</div>
 					<div th:utext="${article.content}" class="panel-body"></div>
-					<button class="primary-btn btn"
-						th:if="${session.memberId} == ${article.memberId}"
-						th:onclick="|window.location.href='/article/update/${article.id}'|">수정하기</button>
-					<form th:if="${session.memberId} == ${article.memberId}" 
-						th:action="|/article/delete/${article.id}|" method="post">
-						<button class="primary-btn btn">삭제하기</button>
-					</form>
 				</div>
 			</div>
 		</div>
 		<div class="row mt-5">
 			<div class="col-lg-4">
-				<button class="like">
-					<img th:if="${liked} eq 1" id="like" src="/img/imgs/like2.png">
-					<img th:unless="${liked} eq 1" id="like" th:src="@{/img/imgs/like1.png}">
+				<button class="icon" id="icon-like">
+					<img th:if="${liked} eq 1" id="like" th:name="${liked}" src="/img/imgs/like2.png">
+					<img th:unless="${liked} eq 1" id="like" th:name="${liked}" th:src="@{/img/imgs/like1.png}">
 				</button>
 				<span th:text="${article.good}" id="likeCount">좋아요 숫자</span>
+				<button class="icon" id="icon-bookmark">
+					<img th:if="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" src="/img/imgs/bookmark2.png">
+					<img th:unless="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" th:src="@{/img/imgs/bookmark1.png}">
+				</button>
+				
+				<span class="control-button">
+				<button class="primary-btn btn"
+						th:if="${session.memberId} == ${article.memberId}"
+						th:onclick="|window.location.href='/article/update/${article.id}'|">수정하기</button>
+				<button class="primary-btn btn"
+						th:if="${session.memberId} == ${article.memberId}"
+						th:onclick="|window.location.href='/article/delete/${article.id}'|">삭제하기</button>
+				</span>
 			</div>
 		</div>
 	</div>
 	
 	<footer>
-	아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
-	아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
+	좋아요1 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
+	좋아요2 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
+	북마크 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon">www.flaticon.com</a>
 	</footer>
 
 	<script th:inline="javascript">
@@ -82,20 +102,19 @@
 			var articleId = [[${article.id}]]
 			var liked = [[${liked}]]
 			/* ]] */
-			var that = $(".like");
-			that.prop("name", liked);
-			$(".like").on("click", function(){
+			var likeIcon = $("#icon-like");
+			$("#icon-like").on("click", function(){
  				$.ajax({
 					url : '/article/like',
 					type : 'POST',
 					data : {'articleId': articleId},
 					async : false,
 					success : function(liked){
-						that.prop("name", liked);
+						likeIcon.prop("name", liked);
 						if(liked){
 							alert("좋아요가 반영되었습니다.");
 							$("#like").prop("src", "/img/imgs/like2.png");
-						} else if(like){
+						} else {
 							alert("좋아요를 취소하셨습니다.");
 							$("#like").prop("src", "/img/imgs/like1.png");
 						}
@@ -114,6 +133,29 @@
 					success : function(count){
 						console.log(count);
 						$("#likeCount").html(count);
+					}
+				})
+			});
+			
+			$("#icon-bookmark").on("click", function(){
+				$.ajax({
+					url: '/ajax/bookmark',
+					type : 'POST',
+					data : {'articleId' : articleId},
+					success : function(bookmark){
+						$("#icon-bookmark").prop("name", bookmark);
+						if(bookmark){
+							alert("북마크에 추가되었습니다.");
+							$("#bookmark").prop("src", "/img/imgs/bookmark2.png");
+						} else{
+							alert("북마크에서 삭제했습니다.");
+							$("#bookmark").prop("src", "/img/imgs/bookmark1.png");
+						}
+					},
+					complete : function(response){
+						if(response.status == 302){
+							window.location.href=response.responseText;
+						}
 					}
 				})
 			});

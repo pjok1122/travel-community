@@ -1,6 +1,9 @@
 package project.board.service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -8,16 +11,30 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import project.board.common.Sha256Utils;
+import project.board.domain.Article;
+import project.board.domain.Comment;
+import project.board.domain.CommonDomain;
 import project.board.domain.Member;
-import project.board.dto.MemberDto;
+import project.board.domain.dto.MemberDto;
+import project.board.domain.dto.Page;
+import project.board.enums.MyInfo;
 import project.board.repository.MemberRepository;
+import project.board.util.Sha256Utils;
 
 @Service
 public class MemberService {
 
 	@Autowired
 	MemberRepository memberRepository;
+	
+	@Autowired
+	ArticleService articleService;
+	
+	@Autowired
+	BookmarkService bookmarkService;
+	
+	@Autowired
+	CommentService commentService;
 	
 	@Autowired
 	Sha256Utils sha256Utils;
@@ -88,12 +105,12 @@ public class MemberService {
 		
 	}
 
-	public Member getMyInfo(Long id) {
+	private Member getMyInfo(Long id) {
 		
 		return memberRepository.findById(id);
 	}
 
-	public int getGoodCount(Long id) {
+	private int getGoodCount(Long id) {
 		Integer goodCnt = memberRepository.sumGoodCount(id);
 		if (goodCnt == null) goodCnt = 0;
 		return goodCnt;
@@ -103,4 +120,75 @@ public class MemberService {
 		memberRepository.delete(memberId);
 	}
 	
+	private Map<Object, Object> mypage(Long memberId){
+		Member member = getMyInfo(memberId);
+		int like = getGoodCount(memberId);
+		
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		map.put("member", member);
+		map.put("like", like);
+		
+		return map;
+	}
+	
+	private Map<Object, Object> myArticle(Long memberId, Page paging){
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		paging.setNumberOfRecordsAndMakePageInfo(articleService.getArticleCntByMemberId(memberId));
+		paging.setList(articleService.getArticleByMemberId(memberId, paging));
+		map.put("page", paging);
+		
+		return map;
+	}
+	
+	private Map<Object, Object> myTempArticle(Long memberId, Page paging){
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		paging.setNumberOfRecordsAndMakePageInfo(articleService.getTempArticleCntByMemberId(memberId));
+		paging.setList(articleService.getTempArticleByMemberId(memberId, paging));
+		map.put("page", paging);
+		
+		return map;
+	}
+	
+	private Map<Object, Object> myBookmark(Long memberId, Page paging){
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		paging.setNumberOfRecordsAndMakePageInfo(bookmarkService.getArticleCntByMemberId(memberId));
+		paging.setList(bookmarkService.getArticleByMemberId(memberId, paging));
+		map.put("page", paging);
+		
+		return map;
+	}
+	
+	private Map<Object, Object> myComment(Long memberId, Page paging){
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		paging.setNumberOfRecordsAndMakePageInfo(commentService.getCommentCntByMemberId(memberId));
+		paging.setList(commentService.getCommentByMemberId(memberId, paging));
+		map.put("page", paging);
+		
+		return map;
+	}
+
+	
+	public Map<Object, Object> getMypage(MyInfo info, Long memberId, int page){
+		
+		Page paging = new Page(page);
+		
+		switch (info) {
+		
+			case MEMBER:
+				return mypage(memberId);
+				
+			case ARTICLE:
+				return myArticle(memberId, paging);
+	
+			case TEMP_ARTICLE:
+				return myTempArticle(memberId, paging);
+	
+			case BOOKMARK:
+				return myBookmark(memberId, paging);
+	
+			case COMMENT:
+				return myComment(memberId, paging);
+		}
+		return null;			
+	}
 }

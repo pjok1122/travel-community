@@ -7,7 +7,9 @@ import org.apache.ibatis.type.Alias;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.Builder.Default;
 
 @Data
@@ -15,15 +17,18 @@ import lombok.Builder.Default;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Member {
-	private Long id;
+@ToString
+@EqualsAndHashCode(callSuper = false)
+public class Member extends CommonDomain{
+//	private Long id;
 	private String email;
 	private String password;
 	private String salt;
-	private LocalDateTime registerDate;
-	private LocalDateTime updateDate;
+//	private LocalDateTime registerDate;
+//	private LocalDateTime updateDate;
 	private LocalDateTime loginDate;
 	
 	@Default
 	private String role = "USER";
+	
 }

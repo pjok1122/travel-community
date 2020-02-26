@@ -5,16 +5,17 @@
 
 <mapper namespace="project.board.repository.CommentRepository">
 	
-	<select id="findByMemberId" parameterType="Long" resultType="comment">
+	<select id="findByMemberId" resultType="comment">
 		SELECT *
 		FROM comment
-		WHERE member_id = #{id};
+		WHERE member_id = #{memberId}
+		LIMIT #{offset}, #{numOfRecords}
 	</select>
 	
-	<select id="getTotalCntByMemberId" parameterType="Long" resultType="Long">
+	<select id="getCommentCntByMemberId" parameterType="Long" resultType="Integer">
 		SELECT count(*)
 		FROM comment
-		WHERE member_id = #{id};
+		WHERE member_id = #{memberId};
 	</select>
 
 
