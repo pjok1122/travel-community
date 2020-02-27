@@ -18,6 +18,24 @@
 <a href="/festival/all">축제 정보</a>
 <a href="/attractions/all">관광지</a>
 </div>
+<br>
+<div>
+<a href="./all">전체</a>
+<a href="./tw">대만</a>
+<a href="./jp">일본</a>
+<a href="./cn">중국</a>
+<a href="./th">태국</a>
+<a href="./vn">베트남</a>
+</div>
+
+<h3>정렬</h3>
+<div>
+	<a href="?sort=newest">최신순</a>
+	<a href="?sort=popular">인기순</a>
+</div>
+
+
+</div>
 	<table>
 		<thead>
 			<tr>
@@ -34,6 +52,7 @@
 			<td th:text="${article.hit}"></td>
 		</tr>
 	</table>
+</div>
 
 <h1 th:text="|Total : ${page.numberOfRecords}|"></h1>
 

@@ -20,6 +20,7 @@ public enum Nation {
 	private Nation(String fullName, String krValue) {
 		this.fullName = fullName;
 		this.krValue = krValue;
+		
 	}
 }
 
