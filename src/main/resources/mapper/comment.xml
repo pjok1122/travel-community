@@ -18,21 +18,25 @@
 		WHERE member_id = #{memberId};
 	</select>
 	
-	<insert id="insertComment" useGeneratedKeys="true" keyProperty="id">
+	<insert id="insertComment">
 		INSERT
-		INTO comment(article_id, member_id, parent_comment_id, content)
-		VALUES(#{articleId}, #{memberId}, #{parentCommentId}, #{content})
+		INTO comment(article_id, member_id, parent_comment_id, content, register_date)
+		VALUES(#{articleId}, #{memberId}, #{parentCommentId}, #{content}, NOW())
 	</insert>
 	
-	<select id="selectCommentById">
+	<select id="selectCommentById" resultType="comment">
 		SELECT * 
 		FROM comment 
 		WHERE id = #{id}
 	</select>
 	
-	<select id="selectCommentByArticleId">
-		SELECT * 
-		FROM comment 
+	<select id="selectCommentByArticleId" resultType="commentDto">
+		SELECT 
+			c.*, 
+			m.email writer
+		FROM comment c  
+		JOIN member m 
+		ON c.member_id = m.id 
 		WHERE article_id = ${articleId}
 	</select>
 

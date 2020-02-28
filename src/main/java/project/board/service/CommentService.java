@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import project.board.domain.Comment;
-import project.board.domain.CommonDomain;
+import project.board.domain.dto.CommentDto;
 import project.board.domain.dto.Page;
 import project.board.repository.CommentRepository;
 
@@ -26,6 +26,16 @@ public class CommentService {
 		return cnt;
 	}
 	
+	public CommentDto getById(Long id)
+	{
+		return commentRepository.selectCommentById(id);
+	}
+	
+	public List<CommentDto> getByArticleId(Long articleId)
+	{
+		return commentRepository.selectCommentByArticleId(articleId);
+	}
+	
 	public void create(Long articleId, Long memberId, Long parentCommentId, String content)
 	{
 		if(content.length() > 300)
@@ -37,12 +47,8 @@ public class CommentService {
 		{
 			
 		}
-		else
-		{
-			
-		}
 		
 		commentRepository.insertComment(articleId, memberId, parentCommentId, content);
-		
+//		return getById(Long.valueOf(id));
 	}
 }

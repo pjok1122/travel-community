@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import project.board.domain.Comment;
+import project.board.domain.dto.CommentDto;
 
 @Mapper
 public interface CommentRepository {
@@ -13,7 +14,7 @@ public interface CommentRepository {
 	List<Comment> findByMemberId(Long memberId, int offset, int numOfRecords);
 	Integer getCommentCntByMemberId(Long memberId);
 	
-	int insertComment(@Param("articleId") Long articleId, @Param("memberId") Long memberId, @Param("parentCommentId") Long parentCommentId, @Param("content") String content);
-	Comment selectCommentById(@Param("id") Long id);
-	List<Comment> selectCommentByArticleId(@Param("articleId") Long articleId);
+	void insertComment(@Param("articleId") Long articleId, @Param("memberId") Long memberId, @Param("parentCommentId") Long parentCommentId, @Param("content") String content);
+	CommentDto selectCommentById(@Param("id") Long id);
+	List<CommentDto> selectCommentByArticleId(@Param("articleId") Long articleId);
 }

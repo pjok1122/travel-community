@@ -107,7 +107,7 @@ footer{
 	</div>
 	
 	<div class="container">
-        <div class="commentList"></div>
+        <div class="commentList" id="commentList"></div>
     </div>
 
     <div class="container">
@@ -157,21 +157,55 @@ footer{
         </div>
     </div>
 
-	<footer>
-	좋아요1 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
-	좋아요2 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
-	북마크 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon">www.flaticon.com</a>
-	경고 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
-	</footer>
 
 	<script th:inline="javascript">
-
+	function getCommentList(articleId){
+	    $.ajax({
+	        type:'GET',
+	        url : "/comment",
+	       // dataType : "json",
+	        data : {
+	        	'articleId': articleId
+	        },
+	        //contentType: "application/x-www-form-urlencoded; charset=UTF-8", 
+	        success : function(data){
+	          	console.log(data);  
+	            var html = "";
+	            var cCnt = data.length;
+	            
+	            if(data.length > 0){
+	                
+	                for(i=0; i<data.length; i++){
+	                    html += "<div>";
+	                    html += "<div><h6><strong>"+data[i].writer+"</strong></h6>";
+	                    html += data[i].content + " ";
+	                    html += "</div>";
+	                    html += "</div>";
+	                }
+	            } else {
+	                html += "<div>";
+	                html += "<div><table class='table'><h6><strong>등록된 댓글이 없습니다.</strong></h6>";
+	                html += "</table></div>";
+	                html += "</div>";
+	            }
+	            $("#commentList").html(html);
+	            
+	        },
+	        error:function(request,status,error){
+	            
+	       }
+	        
+	    });
+	}
+	
 		$(document).ready(function(){
 			/* <![CDATA[ */
 			var articleId = [[${article.id}]]
 			var liked = [[${liked}]]
 			/* ]] */
 			var likeIcon = $("#icon-like");
+			
+			getCommentList(articleId);
 			
 			$("#comment-insert").on("click", function(){
 				//console.log($("#commentContent").val());
@@ -186,6 +220,7 @@ footer{
 			        },
 			        success : function(data){
 			        	console.log(data);
+			        	getCommentList(articleId);
 			        	<!--
 			            if(data == 1) {
 			                commentList(); //댓글 작성 후 댓글 목록 reload
