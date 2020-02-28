@@ -13,7 +13,8 @@ import project.board.domain.Comment;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class ArticleDto extends Article{
-	private int commentCnt; 
+	private int commentCnt;
+	private String email;
 	
 	private List<Comment> comments = new ArrayList<Comment>();
 

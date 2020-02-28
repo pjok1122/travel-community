@@ -199,6 +199,7 @@
 **success**
 
 - view				: `article/detail`
+- model				: `ArticleDto articleDto`
 
 **fail**
 

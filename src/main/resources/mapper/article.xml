@@ -64,11 +64,17 @@
 	</insert>
 	
 	<select id="selectArticleById" resultType="articleDto">
-	SELECT a.*, count(c.id) as commentCnt
-	FROM (SELECT * FROM article WHERE id=#{id}) a
+	SELECT am.*, count(c.id) as commentCnt
+	FROM (
+			SELECT a.*, m.email
+			FROM article a
+			INNER JOIN `member` m
+			ON a.member_id = m.id
+			WHERE a.id = #{id}
+		 ) am
 	LEFT JOIN comment c
-	ON a.id = c.article_id
-	GROUP BY a.id
+	ON am.id = c.article_id
+	GROUP BY am.id
 	</select>
 	
 	<update id="updateArticle" parameterType="article">

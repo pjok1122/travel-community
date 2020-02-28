@@ -22,7 +22,7 @@
     width: 30px;
 }
 
-#like, #bookmark{
+#like, #bookmark, #report{
 	width: inherit;
 }
 
@@ -37,6 +37,19 @@ footer{
 	bottom:0;
 	width:100%;
 	background-color: black;
+}
+
+.list-type{
+	list-style-type: none;
+	padding-left: 15px;
+
+}
+
+#rdo-text-area{
+	display:none;
+	width:530px;
+	height:80px;
+	margin-left: 10px;
 }
 
 </style>
@@ -77,6 +90,9 @@ footer{
 					<img th:if="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" src="/img/imgs/bookmark2.png">
 					<img th:unless="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" th:src="@{/img/imgs/bookmark1.png}">
 				</button>
+				<button class="icon" id="icon-report" onclick="$('#exampleModal').modal('show')">
+					<img id="report" src="/img/imgs/report.png">
+				</button>
 				
 				<span class="control-button">
 				<button class="primary-btn btn"
@@ -90,10 +106,45 @@ footer{
 		</div>
 	</div>
 	
+	
+	<!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel" th:utext="|제목 : ${article.title}|">Modal title</h5>
+                    <h5 class="modal-title" th:utext="|작성자 : ${article.email}|">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h4>사유 선택 : 대표적인 사유를 선택해주세요.</h4>
+                	<ul class="list-type">
+	                    <li><input type="radio" name="checkInfo" id="rdo-illegal" value="1" checked="checked">부적절한 홍보 게시글</li>
+	                    <li><input type="radio" name="checkInfo" id="rdo-obscenity" value="2">음란성 또는 청소년에게 부적합한 내용</li>
+	                    <li><input type="radio" name="checkInfo" id="rdo-libel" value="3">명예훼손/사생활 침해 등 저작권침해 행위</li>
+	                    <li><input type="radio" name="checkInfo" id="rdo-etc" value="4">기타</li>
+                    </ul>
+                    	<textarea id="rdo-text-area" name="reportDesc" cols="50" rows="5" placeholder="해당 신고는 커뮤니티 운영자에게 전달되며, 부적절한 내용으로 판단될 경우 해당 게시물은 삭제됩니다."></textarea>
+                    
+                    
+                    
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary" id="submit-report"data-dismiss="modal">신고하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 	<footer>
 	좋아요1 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
 	좋아요2 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
 	북마크 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon">www.flaticon.com</a>
+	경고 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
 	</footer>
 
 	<script th:inline="javascript">
@@ -112,10 +163,8 @@ footer{
 					success : function(liked){
 						likeIcon.prop("name", liked);
 						if(liked){
-							alert("좋아요가 반영되었습니다.");
 							$("#like").prop("src", "/img/imgs/like2.png");
 						} else {
-							alert("좋아요를 취소하셨습니다.");
 							$("#like").prop("src", "/img/imgs/like1.png");
 						}
 					},
@@ -145,10 +194,8 @@ footer{
 					success : function(bookmark){
 						$("#icon-bookmark").prop("name", bookmark);
 						if(bookmark){
-							alert("북마크에 추가되었습니다.");
 							$("#bookmark").prop("src", "/img/imgs/bookmark2.png");
 						} else{
-							alert("북마크에서 삭제했습니다.");
 							$("#bookmark").prop("src", "/img/imgs/bookmark1.png");
 						}
 					},
@@ -158,6 +205,31 @@ footer{
 						}
 					}
 				})
+			});
+			
+			$("input:radio[name=checkInfo]").on("click", function(){
+				if($("input[name=checkInfo]:checked").val() == 4){
+					$("#rdo-text-area").css("display", "block");
+				} else{
+					$("#rdo-text-area").css("display", "none");
+				}
+			})
+			
+			$("#submit-report").on("click", function(){
+				var checkInfo = $("input[name=checkInfo]:checked").val();
+				var sendData = {'articleId':articleId, 'checkInfo':checkInfo};
+				if(checkInfo == 4){
+					reportContent = $("#rdo-text-area").val();
+					sendData['reportContent'] = reportContent;
+				}
+				$.ajax({
+					url : '/ajax/report',
+					type : 'POST',
+					data : sendData,
+					success : function(data){
+						alert("신고가 접수되었습니다.");
+					}
+				});
 			});
 		});
 	</script>
