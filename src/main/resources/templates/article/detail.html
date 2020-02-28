@@ -52,6 +52,10 @@ footer{
 	margin-left: 10px;
 }
 
+#len-count{
+	display:none;
+}
+
 </style>
 
 <body>
@@ -90,7 +94,7 @@ footer{
 					<img th:if="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" src="/img/imgs/bookmark2.png">
 					<img th:unless="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" th:src="@{/img/imgs/bookmark1.png}">
 				</button>
-				<button class="icon" id="icon-report" onclick="$('#exampleModal').modal('show')">
+				<button class="icon" id="icon-report">
 					<img id="report" src="/img/imgs/report.png">
 				</button>
 				
@@ -126,7 +130,9 @@ footer{
 	                    <li><input type="radio" name="checkInfo" id="rdo-libel" value="3">명예훼손/사생활 침해 등 저작권침해 행위</li>
 	                    <li><input type="radio" name="checkInfo" id="rdo-etc" value="4">기타</li>
                     </ul>
-                    	<textarea id="rdo-text-area" name="reportDesc" cols="50" rows="5" placeholder="해당 신고는 커뮤니티 운영자에게 전달되며, 부적절한 내용으로 판단될 경우 해당 게시물은 삭제됩니다."></textarea>
+                    	<textarea id="rdo-text-area" name="reportDesc" cols="50" rows="5" placeholder="해당 신고는 커뮤니티 운영자에게 전달되며, 부적절한 내용으로 판단될 경우 해당 게시물은 삭제됩니다." onkeyup="checkLength(this)"></textarea>
+                    	<span id="len-count">0 / 200 자</span>
+                    	
                     
                     
                     
@@ -206,12 +212,30 @@ footer{
 					}
 				})
 			});
+			$("#icon-report").on("click", function(){
+				$.ajax({
+					url : '/ajax/login_check',
+					type : 'GET',
+					success: function(data){
+						$('#exampleModal').modal('show');				
+					},
+					complete : function(response){
+						if(response.status == 302){
+							alert("로그인이 필요한 작업입니다.");
+							window.location.href=response.responseText;
+						}
+					}
+				})
+				
+			})
 			
 			$("input:radio[name=checkInfo]").on("click", function(){
 				if($("input[name=checkInfo]:checked").val() == 4){
 					$("#rdo-text-area").css("display", "block");
+					$("#len-count").css("display", "block");
 				} else{
 					$("#rdo-text-area").css("display", "none");
+					$("#len-count").css("display", "none");
 				}
 			})
 			
@@ -223,7 +247,7 @@ footer{
 					sendData['reportContent'] = reportContent;
 				}
 				$.ajax({
-					url : '/ajax/report',
+					url : '/ajax/report/article',
 					type : 'POST',
 					data : sendData,
 					success : function(data){
@@ -232,6 +256,16 @@ footer{
 				});
 			});
 		});
+		
+		function checkLength(obj){
+			var content = $(obj).val();
+			$('#len-count').html("("+ content.length + " / 200 자)");
+			
+			if(content.length > 200){
+				$(obj).val(content.substring(0,200));
+				$('#len-count').html("(200 / 200 자)");
+			}
+		}
 	</script>
 </body>
 </html>
