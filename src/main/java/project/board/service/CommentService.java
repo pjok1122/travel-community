@@ -25,5 +25,24 @@ public class CommentService {
 		if (cnt==null) cnt = 0;
 		return cnt;
 	}
-
+	
+	public void create(Long articleId, Long memberId, Long parentCommentId, String content)
+	{
+		if(content.length() > 300)
+		{
+			content = content.substring(0, 300);
+		}
+		
+		if(parentCommentId == null)
+		{
+			
+		}
+		else
+		{
+			
+		}
+		
+		commentRepository.insertComment(articleId, memberId, parentCommentId, content);
+		
+	}
 }

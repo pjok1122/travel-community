@@ -106,7 +106,24 @@ footer{
 		</div>
 	</div>
 	
-	
+	<div class="container">
+        <div class="commentList"></div>
+    </div>
+
+    <div class="container">
+        <label for="content">comment</label>
+        <form name="commentInsertForm">
+            <div class="input-group">
+               <input type="hidden" name="bno" value="${detail.bno}"/>
+               <input type="text" class="form-control" id="commentContent" name="commentContent" placeholder="내용을 입력하세요.">
+               <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" name="commentInsertBtn" id="comment-insert">등록</button>
+               </span>
+              </div>
+        </form>
+    </div>
+
+
 	<!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -148,12 +165,38 @@ footer{
 	</footer>
 
 	<script th:inline="javascript">
+
 		$(document).ready(function(){
 			/* <![CDATA[ */
 			var articleId = [[${article.id}]]
 			var liked = [[${liked}]]
 			/* ]] */
 			var likeIcon = $("#icon-like");
+			
+			$("#comment-insert").on("click", function(){
+				//console.log($("#commentContent").val());
+				$.ajax({
+					url: '/comment',
+					type : 'POST',
+					data : {
+			        	'articleId': articleId,
+			        	'content': $("#commentContent").val(), 
+			        	'parentCommentId': ''
+			        	
+			        },
+			        success : function(data){
+			        	console.log(data);
+			        	<!--
+			            if(data == 1) {
+			                commentList(); //댓글 작성 후 댓글 목록 reload
+			                $('[name=content]').val('');
+			            }
+			        	-->
+			        }
+				})
+				
+			});
+			
 			$("#icon-like").on("click", function(){
  				$.ajax({
 					url : '/article/like',

@@ -17,6 +17,23 @@
 		FROM comment
 		WHERE member_id = #{memberId};
 	</select>
-
+	
+	<insert id="insertComment" useGeneratedKeys="true" keyProperty="id">
+		INSERT
+		INTO comment(article_id, member_id, parent_comment_id, content)
+		VALUES(#{articleId}, #{memberId}, #{parentCommentId}, #{content})
+	</insert>
+	
+	<select id="selectCommentById">
+		SELECT * 
+		FROM comment 
+		WHERE id = #{id}
+	</select>
+	
+	<select id="selectCommentByArticleId">
+		SELECT * 
+		FROM comment 
+		WHERE article_id = ${articleId}
+	</select>
 
 </mapper>
