@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project.board.repository.ArticleLikeRepository">
+	<select id="selectByMemberIdAndArticleId" resultType="Long">
+	SELECT id
+	FROM article_like
+	WHERE member_id = #{memberId} AND article_id = #{articleId}
+	</select>
+	
+	<delete id="deleteByMemberIdAndArticleId">
+	DELETE
+	FROM article_like
+	WHERE member_id = #{memberId} AND article_id = #{articleId}
+	</delete>
+
+	<insert id="insertByMemberIdAndArticleId"
+	useGeneratedKeys="true">
+	INSERT
+	INTO article_like(member_id, article_id, register_date)
+	VALUES(#{memberId}, #{articleId}, NOW())
+	</insert>
+
+</mapper>

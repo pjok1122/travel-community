@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	
+	<h1> 회원 정보 변경 및 수정</h1>
+	<form method="POST" action="/mypage/auth">
+		<div>
+			<label for="email">이메일 : </label>
+			<input type="email" name="email"
+				id="email" th:value="${session.email}">
+			<!-- <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</p> -->
+		</div>
+		<div>
+			<label for="password">비밀번호 : </label> <input type="password"
+				name="password" id="password" placeholder="password">
+			<!-- <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password Error</p> -->
+		</div>
+		<div th:text="${error}"></div>
+		<input type="submit">
+	</form>
+
+
+
+</body>
+</html>
