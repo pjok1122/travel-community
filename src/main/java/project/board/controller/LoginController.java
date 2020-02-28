@@ -4,6 +4,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -106,4 +107,16 @@ public class LoginController {
 		session.invalidate();
 		return "index";
 	}
+	
+	@GetMapping("/ajax/login_check")
+	public ResponseEntity<?> processLoginCheck(HttpSession session){
+		if(session.getAttribute("memberId") ==null) {
+			return ResponseEntity.status(302).body("/login");
+		} else {
+			return ResponseEntity.ok().body(true);
+		}
+	}
+	
+	
+	
 }

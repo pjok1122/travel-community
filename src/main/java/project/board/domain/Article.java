@@ -20,6 +20,7 @@ public class Article extends CommonDomain{
 	private Long categoryId;
 	
 	@NotBlank
+	@Length(max = 50)
 	private String title;
 	
 	@NotBlank

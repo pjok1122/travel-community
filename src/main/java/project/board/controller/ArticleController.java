@@ -93,6 +93,7 @@ public class ArticleController {
 		articleService.increaseHitById(articleId);
 		model.addAttribute("article", article);
 		model.addAllAttributes(articleService.checkArticleSatus((Long)session.getAttribute("memberId"), articleId));
+		session.setAttribute("prevPage", "/article/" + articleId);
 		return "article/detail";
 	}
 	
@@ -154,7 +155,6 @@ public class ArticleController {
 			HttpServletRequest request){
 		
 		if(session.getAttribute("memberId") ==null) {
-			session.setAttribute("prevPage", "/article/" + articleId);
 			return ResponseEntity.status(302).body("/login");
 		}
 		

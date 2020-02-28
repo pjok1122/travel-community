@@ -23,6 +23,7 @@ import project.board.repository.ArticleLikeRepository;
 import project.board.repository.ArticleRepository;
 import project.board.repository.BookmarkRepository;
 import project.board.repository.CategoryRepository;
+import project.board.util.ScriptEscapeUtils;
 
 @Service
 public class ArticleService {
@@ -38,6 +39,9 @@ public class ArticleService {
 	
 	@Autowired
 	BookmarkRepository bookmarkRepository;
+	
+	@Autowired
+	ScriptEscapeUtils scriptEscaper;
 	
 	public List<ArticleDto> getArticleByMemberId(Long id, Page paging) {
 		return articleRepository.findByMemberId(id, paging.getOffset(), paging.getRecordsPerPage(), "PERMANENT");
@@ -77,6 +81,7 @@ public class ArticleService {
 		Long categoryId = categoryRepository.selectIdByTitle(category.getKrValue());
 		article.setMemberId(memberId);
 		article.setCategoryId(categoryId);
+		article.setTitle((scriptEscaper.scriptEscpae(article.getTitle())));
 		articleRepository.insertArticle(article);
 		return article.getId();
 	}
@@ -87,6 +92,7 @@ public class ArticleService {
 
 	public void modifyArticle(Long articleId, @Valid Article article) {
 		article.setId(articleId);
+		article.setTitle((scriptEscaper.scriptEscpae(article.getTitle())));
 		articleRepository.updateArticle(article);
 	}
 

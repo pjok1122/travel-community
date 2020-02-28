@@ -30,11 +30,11 @@ public class BookmarkController {
 			Model model)
 	{
 		if(session.getAttribute("memberId") == null) {
-			session.setAttribute("prevPage", "/article/" + articleId);
-			ResponseEntity.status(302).body("/login");
+			return ResponseEntity.status(302).body("/login");
 		}
-		
-		int bookmarkStatus = bookmarkService.modifyBookmarkStatus((Long)session.getAttribute("memberId"), articleId);
-		return ResponseEntity.ok().body(bookmarkStatus);
+		else {
+			int bookmarkStatus = bookmarkService.modifyBookmarkStatus((Long)session.getAttribute("memberId"), articleId);
+			return ResponseEntity.ok().body(bookmarkStatus);
+		}
 	}
 }

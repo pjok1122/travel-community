@@ -31,7 +31,7 @@
 				<option value="일본">일본
 			</select>
 			<input type="text" class="form-control" id="title" name="title"
-				placeholder="title" required>
+				placeholder="title" onkeyup="checkLength(this)" required>
 		</div>
 		<div class="form-group">
 			<textarea class="form-control" id="summernote" name="content"
@@ -78,6 +78,13 @@
 					alert("이미지 파일이 아닙니다.");
 				}
 			});
+		}
+		
+		function checkLength(obj){
+			var title = $(obj).val();
+			if(title.length > 50){
+				$(obj).val(title.substring(0,50));
+			}
 		}
 	</script>
 </body>

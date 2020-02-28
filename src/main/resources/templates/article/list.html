@@ -47,7 +47,7 @@
 		</thead>
 		<tr th:each="article : ${page.list}">
 			<td th:text="${article.id}"></td>
-			<td><a th:href="|/article/${article.id}" th:text="|[${article.nation}] ${article.title} [${article.commentCnt}]|"></a></td>
+			<td><a th:href="|/article/${article.id}" th:utext="|[${article.nation}] ${article.title} [${article.commentCnt}]|"></a></td>
 			<td th:text="${article.registerDate}"></td>
 			<td th:text="${article.hit}"></td>
 		</tr>
