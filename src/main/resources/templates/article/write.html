@@ -18,34 +18,126 @@
 	rel="stylesheet">
 <script
 	src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
+
+<style type="text/css">
+
+.list{
+	list-style:none;
+}
+
+.item{
+	border-bottom: 1px solid #e5e5e5;
+	position: relative;
+	transition: background-color .25s ease-out;
+}
+
+.article-button{
+	display: block;
+    padding: 24px 60px 16px 40px;
+    text-decoration: none;
+}
+
+.item{
+    position: relative;
+    border-bottom: 1px solid #eee;
+    transition: background-color .25s ease-out;
+}
+
+.item-id{
+	display:none;
+}
+
+.item-nation, .item-title{
+    display: inline;
+    overflow: hidden;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    color: #444;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.item-date{
+	display : block;
+    margin-top: 3px;
+    font-size: 12px;
+    line-height: 1.67;
+    color: #999;
+}
+
+.delete-button{
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    /* padding: 15px; */
+    transform: translate(0,-50%);
+}
+
+</style>
+
 </head>
+
+
 <body>
-	<form id="articleForm" role="form" method="post">
-		<br style="clear: both">
-		<h3 style="margin-bottom: 25px;">Article Form</h3>
-		
-		<div class="form-group">
-			<select name="nation">
-				<option value="대만">대만
-				<option value="태국">태국
-				<option value="일본">일본
-			</select>
-			<input type="text" class="form-control" id="title" name="title"
-				placeholder="title" onkeyup="checkLength(this)" required>
+	<div class="mt-5">
+		<div class="col-12">
+			<form id="articleForm" role="form" method="post">
+				<br style="clear: both">
+				<h3 style="margin-bottom: 25px;">Article Form</h3>
 			
-			<button>임시저장</button>
-			<button>불러오기</button>
+				<div class="form-group">
+					<input type="hidden" name="id" id="articleId">
+					
+					<select id="nation" name="nation">
+						<option value="대만">대만
+						<option value="태국">태국
+						<option value="일본">일본
+					</select>
+					<input type="text" class="form-control" id="title" name="title"
+						placeholder="title" onkeyup="checkLength(this)" required>
+					
+					<button type="button" class="btn btn-primary" id="temp-save" onclick="saveTempArticle()">임시저장</button>
+					<button type="button" class="btn btn-primary" id="temp-load" onclick="loadTempArticleList()">불러오기</button>
+				</div>
+				<div class="form-group">
+					<textarea class="form-control" id="content" name="content"
+						placeholder="content" maxlength="140" rows="7"></textarea>
+				</div>
+				<button type="submit" id="submit" name="submit"
+					class="btn btn-primary pull-right">등록</button>
+			</form>
 		</div>
-		<div class="form-group">
-			<textarea class="form-control" id="summernote" name="content"
-				placeholder="content" maxlength="140" rows="7"></textarea>
-		</div>
-		<button type="submit" id="submit" name="submit"
-			class="btn btn-primary pull-right">등록</button>
-	</form>
+	</div>
+	
+	<!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h2 class="modal-title" id="exampleModalLabel">임시 저장글</h2>
+                    <h5 class="modal-title" id="articleCount"></h5>
+                </div>
+                <div class="article">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary" id="submit-report"data-dismiss="modal">신고하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+       
 	<script>
+	var tempArticles = null;
+	
 		$(document).ready(function() {
-			$('#summernote').summernote({
+			$('#content').summernote({
 				height : 300,
 				minHeight : null,
 				maxHeight : null,
@@ -89,6 +181,106 @@
 				$(obj).val(title.substring(0,50));
 			}
 		}
+		
+		function saveTempArticle(){
+			var title = $("#title").val();
+			var content = $("#content").val();
+			var category = window.location.pathname.split("/")[1];
+			var nation = $("#nation").val();
+			if(title.length <= 0 || content.length <=0){
+				alert("제목과 내용을 입력해주세요.");
+			}
+			else{
+				var data = {'title':title, 'content':content,'category':category, 'nation':nation};
+				ajaxTempWrite(data);
+			}
+		}
+		
+		function deleteTempArticle(index){
+			articleId = tempArticles[index].id;
+			$.ajax({
+				url : '/ajax/temp/delete',
+				data : {'articleId':articleId},
+				type : 'POST',
+				success : function(data){
+					$("#articleId").val(null);
+				},
+				complete : function(response){
+					if(response.status == 302){
+						window.location.href=response.responseText;
+					}
+				}
+			});
+		}
+		
+		function ajaxTempWrite(data){
+			var articleId = $("#articleId").val();
+			var url = '/ajax/temp/';
+			url += (articleId==="" ? 'write' : 'update');
+			if(articleId){
+				data['articleId']=articleId;
+			}
+			$.ajax({
+				url : url,
+				data : data,
+				type : 'POST',
+				success : function(id){
+					alert("임시저장이 완료되었습니다.");
+					$("#articleId").val(id);
+				},
+				complete : function(response){
+					if(response.status==400){
+						alert("임시저장 글은 최대 10개까지만 저장이 가능합니다.");
+					}
+				}
+			});
+		}
+		function loadTempArticle(index){
+			var article = tempArticles[index];
+			$("#exampleModal").modal('toggle');
+			$("#articleId").val(article.id);
+			$("#nation").val(article.nation);
+			$("#title").val(article.title);
+			$("#content").summernote("code", article.content);
+		}
+		
+		function loadTempArticleList(){
+			getTempArticleList();
+			$("#exampleModal").modal('toggle');
+		}
+		
+		
+		function getTempArticleList(){
+			$.ajax({
+				url: "/ajax/temp",
+				type: "GET",
+				async : false,
+				success : function(articles){
+					tempArticles = articles;
+					$("#articleCount").html(`총 ${articles.length}개`);
+					var html = `<ul class="list">`;
+					for(var i=0;i<articles.length;i++){
+						html += `<li class="item">
+							<a class="article-button" role="button" onclick="loadTempArticle(${i})">
+								<input type="hidden" id="index" value=${i}></span>
+								<span class="item-nation">[${articles[i].nation}]</span>
+								<span class="item-title">${articles[i].title} </span>
+								<span class="item-date">${articles[i].updateDate > articles[i].registerDate ? articles[i].updateDate : articles[i].registerDate}</span>
+								<button type="button" title="삭제" class="delete-button" onclick="deleteTempArticle(${i})">삭제</button>
+							</a>
+							</li>`
+					}
+					html += '</ul>';
+					$(".article").html(html);
+				},
+				complete : function(response){
+					if(response.status == 302){
+						window.location.href=response.responseText;
+					}
+				}
+			})
+		}
+		
 	</script>
 </body>
 </html>

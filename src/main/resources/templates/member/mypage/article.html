@@ -22,15 +22,15 @@
 				<td>조회수</td>
 			</tr>
 		</thead>
-		<tr th:each="article : ${mypage.page.list}">
-			<td th:text="${article.id}"></td>
-			<td th:text="[ + ${article.nation} + ] + ${article.title} + [+ ${article.commentCnt} +]"></td>
+		<tr th:each="article,iterStat : ${page.list}">
+			<td th:text="${iterStat.count}+${page.currentPageNo - 1}*${page.recordsPerPage}"></td>
+			<td><a th:text="|[${article.nation}] ${article.title} [${article.commentCnt}]|" th:href="@{/article/{id}(id =${article.id})}"></a></td>
 			<td th:text="${article.registerDate}"></td>
 			<td th:text="${article.hit}"></td>
 		</tr>
 	</table>
 
-<h1 th:text="|Total : ${mypage.page.numberOfRecords}|"></h1>
+<h1 th:text="|Total : ${page.numberOfRecords}|"></h1>
 
 </body>
 </html>

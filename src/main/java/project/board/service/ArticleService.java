@@ -43,12 +43,14 @@ public class ArticleService {
 	@Autowired
 	ScriptEscapeUtils scriptEscaper;
 	
+	private final int TEMP_ARTICLE_MAX_SIZE = 10;
+	
 	public List<ArticleDto> getArticleByMemberId(Long id, Page paging) {
-		return articleRepository.findByMemberId(id, paging.getOffset(), paging.getRecordsPerPage(), "PERMANENT");
+		return articleRepository.selectArticleListByMemberId(id, paging.getOffset(), paging.getRecordsPerPage(), "PERMANENT");
 	}
 
 	public List<ArticleDto> getTempArticleByMemberId(Long id, Page paging) {
-		return articleRepository.findByMemberId(id, paging.getOffset(), paging.getRecordsPerPage(), "TEMP");
+		return articleRepository.selectArticleListByMemberId(id, paging.getOffset(), paging.getRecordsPerPage(), "TEMP");
 	}
 
 	public int getArticleCntByMemberId(Long memberId) {
@@ -81,8 +83,31 @@ public class ArticleService {
 		Long categoryId = categoryRepository.selectIdByTitle(category.getKrValue());
 		article.setMemberId(memberId);
 		article.setCategoryId(categoryId);
-		article.setTitle((scriptEscaper.scriptEscpae(article.getTitle())));
-		articleRepository.insertArticle(article);
+		article.setTitle((scriptEscaper.scriptEscape(article.getTitle())));
+		
+		if(article.getId()!=null) {
+			articleRepository.updateTempToPermanent(article);
+		}
+		else{
+			articleRepository.insertArticle(article);
+		}
+		return article.getId();
+	}
+	
+	public Boolean checkTempArticleWritable(Long memberId) {
+		if(getTempArticleCntByMemberId(memberId) < TEMP_ARTICLE_MAX_SIZE) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public Long createTempArticle(Article article, Category category, Long memberId) {		
+		Long categoryId = categoryRepository.selectIdByTitle(category.getKrValue());
+		article.setMemberId(memberId);
+		article.setCategoryId(categoryId);
+		article.setTitle((scriptEscaper.scriptEscape(article.getTitle())));
+		articleRepository.insertTempArticle(article);
 		return article.getId();
 	}
 
@@ -92,7 +117,7 @@ public class ArticleService {
 
 	public void modifyArticle(Long articleId, @Valid Article article) {
 		article.setId(articleId);
-		article.setTitle((scriptEscaper.scriptEscpae(article.getTitle())));
+		article.setTitle((scriptEscaper.scriptEscape(article.getTitle())));
 		articleRepository.updateArticle(article);
 	}
 
@@ -142,4 +167,21 @@ public class ArticleService {
 		map.put("bookmark", bookmark);
 		return map;
 	}
+
+	public boolean checkArticleOwner(Long memberId, ArticleDto article) {
+		if(article.getMemberId().equals(memberId)) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean checkStatusTemp(ArticleDto article) {
+		if(article.getStatus().equals("TEMP")) {
+			return true;
+		}
+		return false;
+	}
+
+
+
 }

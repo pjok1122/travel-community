@@ -1,6 +1,7 @@
 package project.board.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -18,11 +19,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import project.board.annotation.AjaxLoginAuth;
 import project.board.annotation.LoginAuth;
+import project.board.annotation.isArticleOwner;
 import project.board.domain.Article;
 import project.board.domain.dto.ArticleDto;
 import project.board.domain.dto.Page;
@@ -31,12 +35,21 @@ import project.board.enums.Nation;
 import project.board.enums.Sort;
 import project.board.repository.ArticleRepository;
 import project.board.service.ArticleService;
+import project.board.service.MemberService;
+import project.board.util.MySessionUtils;
 
 @Controller
 public class ArticleController {
 	
 	@Autowired
 	ArticleService articleService;
+	
+	@Autowired
+	MemberService memberService;
+	
+	@Autowired
+	MySessionUtils sessionUtils;
+	
 	
 	@GetMapping("/{category}/{nation}")
 	public String getBoardByCategoryAndNation(
@@ -75,8 +88,7 @@ public class ArticleController {
 			model.addAttribute("error", "NOT EMPTY");
 			return "article/write";
 		}
-		
-		Long articleId = articleService.createArticle(article, category, (Long) session.getAttribute("memberId"));
+		Long articleId = articleService.createArticle(article, category, sessionUtils.getMemberId(session));
 		return "redirect:/article/" + articleId;
 	}
 		
@@ -87,12 +99,12 @@ public class ArticleController {
 			Model model)
 	{
 		ArticleDto article = articleService.getArticleById(articleId);
-		if(article.getStatus().equals("TEMP")) {
+		if(articleService.checkStatusTemp(article)) {
 			return "redirect:/";
 		}
 		articleService.increaseHitById(articleId);
 		model.addAttribute("article", article);
-		model.addAllAttributes(articleService.checkArticleSatus((Long)session.getAttribute("memberId"), articleId));
+		model.addAllAttributes(articleService.checkArticleSatus(sessionUtils.getMemberId(session), articleId));
 		session.setAttribute("prevPage", "/article/" + articleId);
 		return "article/detail";
 	}
@@ -105,7 +117,7 @@ public class ArticleController {
 			Model model)
 	{
 		ArticleDto article = articleService.getArticleById(articleId);
-		if(!article.getMemberId().equals(session.getAttribute("memberId"))) {
+		if(!articleService.checkArticleOwner(sessionUtils.getMemberId(session), article)) {
 			return "redirect:/";
 		}
 		
@@ -115,6 +127,7 @@ public class ArticleController {
 	
 	@PostMapping("/article/update/{articleId}")
 	@LoginAuth
+	@isArticleOwner
 	public String processUpdateArticleForm(
 			@PathVariable Long articleId,
 			@ModelAttribute @Valid Article article,
@@ -124,41 +137,29 @@ public class ArticleController {
 		if(result.hasErrors()) {
 			return "article/update";
 		}
-		ArticleDto oldArticle = articleService.getArticleById(articleId);
-		if(!oldArticle.getMemberId().equals(session.getAttribute("memberId"))) {
-			return "redirect:/";
-		}
-		
 		articleService.modifyArticle(articleId, article);
 		return "redirect:/article/" + articleId;
 	}
 	
 	@RequestMapping("/article/delete/{articleId}")
 	@LoginAuth
+	@isArticleOwner
 	public String deleteArticle(
 			@PathVariable("articleId") Long articleId,
 			HttpSession session)
-	{
-		ArticleDto article = articleService.getArticleById(articleId);
-		if(!article.getMemberId().equals(session.getAttribute("memberId"))) {
-			return "redirect:/";
-		}
-		
+	{	
 		articleService.removeArticleById(articleId);
 		return "redirect:/";
 	}
 	
 	@PostMapping("/article/like")
+	@AjaxLoginAuth
 	public ResponseEntity<?> processLikeArticle(
 			@RequestParam("articleId") Long articleId,
 			HttpSession session,
-			HttpServletRequest request){
-		
-		if(session.getAttribute("memberId") ==null) {
-			return ResponseEntity.status(302).body("/login");
-		}
-		
-		int likeStatus = articleService.modifyLikeStatus((Long) session.getAttribute("memberId"), articleId);
+			HttpServletRequest request)
+	{
+		int likeStatus = articleService.modifyLikeStatus(sessionUtils.getMemberId(session), articleId);
 		return ResponseEntity.ok().body(likeStatus);
 	}
 	
@@ -169,7 +170,72 @@ public class ArticleController {
 	}
 	
 	@PostMapping("/ajax/temp/write")
-	public ResponseEntity<?> processTempArticleWirte(){
-		return null;
+	@AjaxLoginAuth
+	@isArticleOwner
+	public ResponseEntity<?> processTempArticleWirte(
+			@RequestParam("category") Category category,
+			@ModelAttribute @Valid Article article,
+			BindingResult result,
+			HttpSession session)
+	{
+		Long memberId = sessionUtils.getMemberId(session);
+
+		if(result.hasErrors() || !articleService.checkTempArticleWritable(memberId)) {
+			return ResponseEntity.badRequest().build();
+		}
+		
+		Long id = articleService.createTempArticle(article, category, memberId);
+		return ResponseEntity.ok().body(id);
+	}
+	
+	@PostMapping("/ajax/temp/update")
+	@AjaxLoginAuth
+	public ResponseEntity<?> processTempArticleWirte(
+			@RequestParam("articleId") Long articleId,
+			@ModelAttribute @Valid Article article,
+			BindingResult result,
+			HttpSession session)
+	{
+		if(result.hasErrors()) {
+			return ResponseEntity.badRequest().build();
+		}
+		
+		ArticleDto oldArticle = articleService.getArticleById(articleId);
+		Long memberId = sessionUtils.getMemberId(session);
+		
+		//글의 주인이 아니거나 TEMP 글이 아니라면, 잘못된 요청.
+		if(!articleService.checkArticleOwner(memberId, oldArticle) || !articleService.checkStatusTemp(oldArticle)) {
+			return ResponseEntity.badRequest().build();
+		}
+		
+		articleService.modifyArticle(articleId, article);
+		return ResponseEntity.ok().body(articleId);
+	}
+	
+	@GetMapping("/ajax/temp")
+	@AjaxLoginAuth
+	public ResponseEntity<?> getTempArticleList(HttpSession session){
+		Long memberId = sessionUtils.getMemberId(session);
+		
+		List<ArticleDto> tempArticles = articleService.getTempArticleByMemberId(memberId, new Page(1));
+		return ResponseEntity.ok().body(tempArticles);
+	}
+	
+	@PostMapping("/ajax/temp/delete")
+	@AjaxLoginAuth
+	public ResponseEntity<?> deleteTempArticle(
+			HttpSession session,
+			@RequestParam("articleId") Long articleId
+			)
+	{
+		Long memberId =sessionUtils.getMemberId(session);
+		ArticleDto article = articleService.getArticleById(articleId);
+		
+		if(!articleService.checkArticleOwner(memberId, article) || !articleService.checkStatusTemp(article)) {
+			return ResponseEntity.badRequest().build();
+		}
+		
+		articleService.removeArticleById(articleId);
+		return ResponseEntity.ok().build();
 	}
 }

@@ -12,7 +12,7 @@ import project.board.domain.dto.ArticleDto;
 @Mapper
 public interface ArticleRepository {
 
-	List<ArticleDto> findByMemberId(Long id, int offset, int numOfRecords, String status);
+	List<ArticleDto> selectArticleListByMemberId(Long id, int offset, int numOfRecords, String status);
 
 	Integer getArticleCntByMemberId(Long memberId);
 
@@ -26,6 +26,8 @@ public interface ArticleRepository {
 
 	void insertArticle(@Valid Article article);
 
+	void insertTempArticle(@Valid Article article);
+
 	ArticleDto selectArticleById(Long id);
 
 	void updateArticle(Article article);
@@ -37,6 +39,9 @@ public interface ArticleRepository {
 	void updateGoodDown(Long id);
 
 	void updateGoodUp(Long id);
+
+	void updateTempToPermanent(Article article);
+
 	
 	
 }
