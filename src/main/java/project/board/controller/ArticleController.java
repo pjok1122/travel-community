@@ -79,7 +79,7 @@ public class ArticleController {
 		Long articleId = articleService.createArticle(article, category, (Long) session.getAttribute("memberId"));
 		return "redirect:/article/" + articleId;
 	}
-	
+		
 	@GetMapping("/article/{articleId}")
 	public String showArticle(
 			@PathVariable Long articleId,
@@ -166,5 +166,10 @@ public class ArticleController {
 	@ResponseBody
 	public Integer getLikeCount(@RequestParam("articleId") Long articleId) {
 		return articleService.getLikeCount(articleId);
+	}
+	
+	@PostMapping("/ajax/temp/write")
+	public ResponseEntity<?> processTempArticleWirte(){
+		return null;
 	}
 }
