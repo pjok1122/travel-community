@@ -55,7 +55,7 @@ public class MemberController {
 		Model model)
 	{
 		Long memberId = (Long)session.getAttribute("memberId");
-		model.addAttribute("mypage", memberService.getMypage(info, memberId, page));
+		model.addAllAttributes(memberService.getMypage(info, memberId, page));
 		
 		return BASE_VIEW_NAME + info.toString().toLowerCase();
 	}

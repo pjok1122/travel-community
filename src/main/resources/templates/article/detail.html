@@ -73,10 +73,23 @@ footer{
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h3 class="panel-title">
-							<div style="font-size:12px;" th:text="|[${article.nation}]|"></div>
-							<a th:utext="${article.title}" href="#"></a> <span
-								th:utext="${article.registerDate}" class="pull-right text-right">
-							</span>
+							<div style="font-size:12px;color:red;" th:text="|[${article.nation}]|"></div>
+							<div><a th:utext="${article.title}" href="#"></a></div>
+							
+							<div class="meta-info">
+							<span th:text="${article.email}" ></span>
+								<span
+									th:utext="${article.registerDate}" class="pull-right text-right">
+								</span>
+								<span th:if="${article.updateDate}!=null" th:utext="|마지막 수정일자 : ${article.updateDate}|"></span>
+								<label>조회 : </label>
+								<span th:text="${article.hit}"></span>
+								<label>댓글 : </label>
+								<span th:text="${article.commentCnt}"></span>
+								<label>좋아요  : </label>
+								<span class="likeCount" th:text="${article.good}"></span>
+							</div>
+							
 						</h3>
 					</div>
 					<div th:utext="${article.content}" class="panel-body"></div>
@@ -89,7 +102,7 @@ footer{
 					<img th:if="${liked} eq 1" id="like" th:name="${liked}" src="/img/imgs/like2.png">
 					<img th:unless="${liked} eq 1" id="like" th:name="${liked}" th:src="@{/img/imgs/like1.png}">
 				</button>
-				<span th:text="${article.good}" id="likeCount">좋아요 숫자</span>
+				<span th:text="${article.good}" class="likeCount">좋아요 숫자</span>
 				<button class="icon" id="icon-bookmark">
 					<img th:if="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" src="/img/imgs/bookmark2.png">
 					<img th:unless="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" th:src="@{/img/imgs/bookmark1.png}">
@@ -132,11 +145,6 @@ footer{
                     </ul>
                     	<textarea id="rdo-text-area" name="reportDesc" cols="50" rows="5" placeholder="해당 신고는 커뮤니티 운영자에게 전달되며, 부적절한 내용으로 판단될 경우 해당 게시물은 삭제됩니다." onkeyup="checkLength(this)"></textarea>
                     	<span id="len-count">0 / 200 자</span>
-                    	
-                    
-                    
-                    
-                    
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
@@ -187,7 +195,7 @@ footer{
 					data : {'articleId' : articleId},
 					success : function(count){
 						console.log(count);
-						$("#likeCount").html(count);
+						$(".likeCount").html(count);
 					}
 				})
 			});

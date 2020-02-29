@@ -6,16 +6,16 @@
 <mapper namespace="project.board.repository.BookmarkRepository">
 	
 	<select id="findArticleByMemberId" resultType="articleDto">
-		SELECT ba.*, count(c.id) as commentCnt
+		SELECT ba.*
 		FROM
-			(SELECT a.*
+			(SELECT a.*, t.register_date as bm_register_date
 			FROM article a INNER JOIN 
-				(SELECT b.member_id, b.article_id
+				(SELECT b.member_id, b.article_id, b.register_date
 				FROM `bookmark` b
 				WHERE member_id = #{memberId}) t
 			ON a.id = t.article_id) ba LEFT JOIN comment c
 		ON ba.id = c.article_id
-		GROUP BY ba.id
+		ORDER BY ba.bm_register_date DESC
 		LIMIT #{offset}, #{numOfRecords}
 	</select>
 	

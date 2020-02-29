@@ -14,11 +14,11 @@
 
 
 <div>
-	<ul style="list-style-type: none;font-size: larger;"th:object="${mypage.member}">
+	<ul style="list-style-type: none;font-size: larger;"th:object="${member}">
 		<li th:text="|아이디 : *{email}|"></li>
 		<li th:text="|가입일자 : *{registerDate}|"></li>
 		<li th:text="|최근 로그인 : *{loginDate}|"></li>
-		<li th:text="|좋아요 수 : ${mypage.like}|"></li>
+		<li th:text="|좋아요 수 : ${like}|"></li>
 	</ul>
 </div>
 

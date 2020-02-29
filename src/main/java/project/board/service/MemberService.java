@@ -120,19 +120,19 @@ public class MemberService {
 		memberRepository.delete(memberId);
 	}
 	
-	private Map<Object, Object> mypage(Long memberId){
+	private Map<String, Object> mypage(Long memberId){
 		Member member = getMyInfo(memberId);
 		int like = getGoodCount(memberId);
 		
-		Map<Object, Object> map = new HashMap<Object, Object>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("member", member);
 		map.put("like", like);
 		
 		return map;
 	}
 	
-	private Map<Object, Object> myArticle(Long memberId, Page paging){
-		Map<Object, Object> map = new HashMap<Object, Object>();
+	private Map<String, Object> myArticle(Long memberId, Page paging){
+		Map<String, Object> map = new HashMap<String, Object>();
 		paging.setNumberOfRecordsAndMakePageInfo(articleService.getArticleCntByMemberId(memberId));
 		paging.setList(articleService.getArticleByMemberId(memberId, paging));
 		map.put("page", paging);
@@ -140,8 +140,8 @@ public class MemberService {
 		return map;
 	}
 	
-	private Map<Object, Object> myTempArticle(Long memberId, Page paging){
-		Map<Object, Object> map = new HashMap<Object, Object>();
+	public Map<String, Object> myTempArticle(Long memberId, Page paging){
+		Map<String, Object> map = new HashMap<String, Object>();
 		paging.setNumberOfRecordsAndMakePageInfo(articleService.getTempArticleCntByMemberId(memberId));
 		paging.setList(articleService.getTempArticleByMemberId(memberId, paging));
 		map.put("page", paging);
@@ -149,8 +149,8 @@ public class MemberService {
 		return map;
 	}
 	
-	private Map<Object, Object> myBookmark(Long memberId, Page paging){
-		Map<Object, Object> map = new HashMap<Object, Object>();
+	private Map<String, Object> myBookmark(Long memberId, Page paging){
+		Map<String, Object> map = new HashMap<String, Object>();
 		paging.setNumberOfRecordsAndMakePageInfo(bookmarkService.getArticleCntByMemberId(memberId));
 		paging.setList(bookmarkService.getArticleByMemberId(memberId, paging));
 		map.put("page", paging);
@@ -158,8 +158,8 @@ public class MemberService {
 		return map;
 	}
 	
-	private Map<Object, Object> myComment(Long memberId, Page paging){
-		Map<Object, Object> map = new HashMap<Object, Object>();
+	private Map<String, Object> myComment(Long memberId, Page paging){
+		Map<String, Object> map = new HashMap<String, Object>();
 		paging.setNumberOfRecordsAndMakePageInfo(commentService.getCommentCntByMemberId(memberId));
 		paging.setList(commentService.getCommentByMemberId(memberId, paging));
 		map.put("page", paging);
@@ -168,7 +168,7 @@ public class MemberService {
 	}
 
 	
-	public Map<Object, Object> getMypage(MyInfo info, Long memberId, int page){
+	public Map<String, Object> getMypage(MyInfo info, Long memberId, int page){
 		
 		Page paging = new Page(page);
 		
