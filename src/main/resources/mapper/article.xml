@@ -66,7 +66,7 @@
 	<select id="selectArticleById" resultType="articleDto">
 	SELECT am.*, count(c.id) as commentCnt
 	FROM (
-			SELECT a.*, m.email
+			SELECT a.*, m.email, m.id as memberId
 			FROM article a
 			INNER JOIN `member` m
 			ON a.member_id = m.id

@@ -22,8 +22,8 @@
     width: 30px;
 }
 
-#like, #bookmark, #report{
-	width: inherit;
+.icon>img{
+    width: inherit;
 }
 
 .control-button{
@@ -69,10 +69,20 @@ footer{
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h3 class="panel-title">
-							<div style="font-size:12px;" th:text="|[${article.nation}]|"></div>
-							<a th:utext="${article.title}" href="#"></a> <span
-								th:utext="${article.registerDate}" class="pull-right text-right">
-							</span>
+							<div style="font-size:12px;color:red;" th:text="|[${article.nation}]|"></div>
+                     		<div><a th:utext="${article.title}" href="#"></a></div>
+                     
+                     		<div class="meta-info">
+                     			<span id="email" th:text="${article.email}" ></span>
+                        		<span th:utext="${article.registerDate}" class="pull-right text-right"></span>
+                        <span th:if="${article.updateDate}!=null" th:utext="|마지막 수정일자 : ${article.updateDate}|"></span>
+                        <label>조회 : </label>
+                        <span th:text="${article.hit}"></span>
+                        <label>댓글 : </label>
+                        <span th:text="${article.commentCnt}"></span>
+                        <label>좋아요  : </label>
+                        <span class="likeCount" th:text="${article.good}"></span>
+                     </div>
 						</h3>
 					</div>
 					<div th:utext="${article.content}" class="panel-body"></div>
@@ -85,7 +95,7 @@ footer{
 					<img th:if="${liked} eq 1" id="like" th:name="${liked}" src="/img/imgs/like2.png">
 					<img th:unless="${liked} eq 1" id="like" th:name="${liked}" th:src="@{/img/imgs/like1.png}">
 				</button>
-				<span th:text="${article.good}" id="likeCount">좋아요 숫자</span>
+				<span th:text="${article.good}" class="likeCount">좋아요 숫자</span>
 				<button class="icon" id="icon-bookmark">
 					<img th:if="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" src="/img/imgs/bookmark2.png">
 					<img th:unless="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" th:src="@{/img/imgs/bookmark1.png}">
@@ -154,12 +164,11 @@ footer{
     </div>
 
 
-	<script th:inline="javascript">
-	function getCommentList(articleId){
+<script th:inline="javascript">
+	function getCommentList(articleId, email){
 	    $.ajax({
 	        type:'GET',
 	        url : "/comment",
-	       // dataType : "json",
 	        data : {
 	        	'articleId': articleId
 	        },
@@ -167,26 +176,28 @@ footer{
 	        success : function(data){
 	          	console.log(data);  
 	            var html = "";
-	            var cCnt = data.length;
 	            
 	            if(data.length > 0){
-	                
 	                for(i=0; i<data.length; i++){
 	                    html += "<div>";
-		                    html += "<div><h6><strong>"+data[i].writer+"</strong></h6>";
+		                    html += "<div><h6><strong>"+data[i].writer+"</strong>&nbsp "+data[i].registerDate+"</h6>";
 		                    html += data[i].content + " ";
 		                    html += "</div>";
-	                    	html += "<div class='col-lg-4'>";
+	                    	html += "<div class='col'>";
 			                    html += "<button class='icon' id='icon-like-comment'>";
-			                    html += "<img th:if='${liked-comment} eq 1' id='like' th:name='${liked-comment}' src='/img/imgs/like2.png'>";
-			                    html += "<img th:unless='${liked-comment} eq 1' id='like' th:name='${liked-comment}' th:src='@{/img/imgs/like1.png}'>";
+			                    html += "<img th:if='${liked-comment} eq 1' th:name='${liked-comment}' src='/img/imgs/like2.png'>";
+			                    //html += "<img th:unless='${liked-comment} eq 1' th:name='${liked-comment}' th:src='@{/img/imgs/like1.png}'>";
 			                    html += "</button>";
 			                    html += " 댓글달기";
-		                    	html += " 삭제";
-		                    	html += "<button class='icon' id='icon-report' onclick='$('#exampleModal').modal('show')'>";
-		                    	html += "<img id='report' src='/img/imgs/report.png'>";
+			                    if (data[i].writer == email)
+			                    {
+		                    	html += "<button type='button' class='btn btn-dark'>삭제</button>";
+			                    }
+		                    	html += "<button class='icon' id='icon-report-comment' onclick='$('#exampleModal').modal('show')'>";
+		                    	html += "<img class='report' src='/img/imgs/report.png'>";
 		                    	html += "</button>";
 		                    html += "</div>";
+		                    html += "<div style='border-bottom: 1px dotted #ccc'></div>";
 	                    html += "</div>";
 	                }
 	            } else {
@@ -196,12 +207,10 @@ footer{
 	                html += "</div>";
 	            }
 	            $("#commentList").html(html);
-	            
 	        },
 	        error:function(request,status,error){
 	            
 	       }
-	        
 	    });
 	}
 	
@@ -211,11 +220,11 @@ footer{
 			var liked = [[${liked}]]
 			/* ]] */
 			var likeIcon = $("#icon-like");
+			var email = document.getElementById('email').innerText;
 			
-			getCommentList(articleId);
+			getCommentList(articleId, email);
 			
 			$("#comment-insert").on("click", function(){
-				//console.log($("#commentContent").val());
 				$.ajax({
 					url: '/comment',
 					type : 'POST',
@@ -223,14 +232,13 @@ footer{
 			        	'articleId': articleId,
 			        	'content': $("#commentContent").val(), 
 			        	'parentCommentId': ''
-			        	
 			        },
 			        success : function(data){
 			        	console.log(data);
 			        	getCommentList(articleId);
+			        	document.getElementById('commentContent').value = ''
 			        }
 				})
-				
 			});
 			
 			$("#icon-like").on("click", function(){
@@ -260,7 +268,7 @@ footer{
 					data : {'articleId' : articleId},
 					success : function(count){
 						console.log(count);
-						$("#likeCount").html(count);
+						$(".likeCount").html(count);
 					}
 				})
 			});

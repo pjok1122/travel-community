@@ -15,7 +15,8 @@ import project.board.domain.Comment;
 public class ArticleDto extends Article{
 	private int commentCnt;
 	private String email;
+	private Long memberId;
 	
-	private List<Comment> comments = new ArrayList<Comment>();
+	//private List<Comment> comments = new ArrayList<Comment>();
 
 }
