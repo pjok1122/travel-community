@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ScriptEscapeUtils {
 	
-	public String scriptEscpae(String content) {
+	public String scriptEscape(String content) {
 		return content.replaceAll("<", "&lt;");
 	}
 }
