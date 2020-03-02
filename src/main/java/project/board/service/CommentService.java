@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import project.board.domain.Comment;
-import project.board.domain.CommonDomain;
+import project.board.domain.dto.CommentDto;
 import project.board.domain.dto.Page;
 import project.board.repository.CommentRepository;
 
@@ -25,5 +25,58 @@ public class CommentService {
 		if (cnt==null) cnt = 0;
 		return cnt;
 	}
-
+	
+	private Comment getById(Long id)
+	{
+		return commentRepository.selectCommentById(id);
+	}
+	
+	public Comment getById(Long id, Long memberId)
+	{
+		return commentRepository.selectCommentByIdAndMemberId(id, memberId);
+	}
+	
+	public List<CommentDto> getByArticleId(Long articleId)
+	{
+		return commentRepository.selectCommentByArticleId(articleId);
+	}
+	
+	public void create(Long articleId, Long memberId, Long parentCommentId, String content)
+	{
+		if(content.length() > 300)
+		{
+			content = content.substring(0, 300);
+		}
+		
+		if(parentCommentId == null)
+		{
+			
+		}
+		
+		commentRepository.insertComment(articleId, memberId, parentCommentId, content);
+	}
+	
+	public void delete(Long commentId, Long memberId)
+	{
+		Comment comment = getById(commentId, memberId);
+		
+		if(comment.getParentCommentId() == null)
+		{
+			deleteCommentById(commentId);
+		}
+		else
+		{
+			updateCommentContentById(commentId, "삭제된 댓글입니다.");
+		}
+	}
+	
+	public void deleteCommentById(Long id)
+	{
+		commentRepository.deleteCommentById(id);
+	}
+	
+	public void updateCommentContentById(Long id, String content)
+	{
+		commentRepository.updateCommentContentById(id, content);
+	}
 }

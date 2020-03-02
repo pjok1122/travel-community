@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import org.apache.ibatis.type.Alias;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +16,7 @@ import lombok.Setter;
 public class CommonDomain {
 	private Long id;
 	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
 	private LocalDateTime registerDate;
 	private LocalDateTime updateDate;
 }

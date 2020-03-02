@@ -17,6 +17,46 @@
 		FROM comment
 		WHERE member_id = #{memberId};
 	</select>
-
+	
+	<insert id="insertComment">
+		INSERT
+		INTO comment(article_id, member_id, parent_comment_id, content, register_date)
+		VALUES(#{articleId}, #{memberId}, #{parentCommentId}, #{content}, NOW())
+	</insert>
+	
+	<select id="selectCommentById" resultType="comment">
+		SELECT * 
+		FROM comment 
+		WHERE id = #{id}
+	</select>
+	
+	<select id="selectCommentByIdAndMemberId" resultType="comment">
+		SELECT * 
+		FROM comment 
+		WHERE id = #{id}
+		AND member_id = #{memberId}
+	</select>
+	
+	<select id="selectCommentByArticleId" resultType="commentDto">
+		SELECT 
+			c.*, 
+			m.email writer
+		FROM comment c  
+		JOIN member m 
+		ON c.member_id = m.id 
+		WHERE article_id = #{articleId}
+	</select>
+	
+	<delete id="deleteCommentById">
+		DELETE 
+		FROM comment 
+		WHERE id = #{id}
+	</delete>
+	
+	<update id="updateCommentContentById">
+		UPDATE comment 
+		SET content = #{content}
+		WHERE id = #{id}
+	</update>
 
 </mapper>

@@ -11,7 +11,7 @@
 	src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
 <script
 	src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
-
+<script src="/js/article/detail.js"></script>
 
 </head>
 <style>
@@ -22,8 +22,8 @@
     width: 30px;
 }
 
-#like, #bookmark, #report{
-	width: inherit;
+.icon>img{
+    width: inherit;
 }
 
 .control-button{
@@ -74,22 +74,20 @@ footer{
 					<div class="panel-heading">
 						<h3 class="panel-title">
 							<div style="font-size:12px;color:red;" th:text="|[${article.nation}]|"></div>
-							<div><a th:utext="${article.title}" href="#"></a></div>
-							
-							<div class="meta-info">
-							<span th:text="${article.email}" ></span>
-								<span
-									th:utext="${article.registerDate}" class="pull-right text-right">
-								</span>
-								<span th:if="${article.updateDate}!=null" th:utext="|마지막 수정일자 : ${article.updateDate}|"></span>
-								<label>조회 : </label>
-								<span th:text="${article.hit}"></span>
-								<label>댓글 : </label>
-								<span th:text="${article.commentCnt}"></span>
-								<label>좋아요  : </label>
-								<span class="likeCount" th:text="${article.good}"></span>
-							</div>
-							
+                     		<div><a th:utext="${article.title}" href="#"></a></div>
+                     
+                     		<div class="meta-info">
+                     			<span style="display:none" id="articleId" th:text="${article.id}" ></span>
+                     			<span id="email" th:text="${article.email}" ></span>
+                        		<span th:utext="${article.registerDate}" class="pull-right text-right"></span>
+                        <span th:if="${article.updateDate}!=null" th:utext="|마지막 수정일자 : ${article.updateDate}|"></span>
+                        <label>조회 : </label>
+                        <span th:text="${article.hit}"></span>
+                        <label>댓글 : </label>
+                        <span th:text="${article.commentCnt}"></span>
+                        <label>좋아요  : </label>
+                        <span class="likeCount" th:text="${article.good}"></span>
+                     </div>
 						</h3>
 					</div>
 					<div th:utext="${article.content}" class="panel-body"></div>
@@ -123,7 +121,22 @@ footer{
 		</div>
 	</div>
 	
-	
+	<div class="container">
+        <div class="commentList" id="commentList"></div>
+    </div>
+
+    <div class="container">
+        <label for="content">comment</label>
+            <div class="input-group">
+               <input type="hidden" name="bno" value="${detail.bno}"/>
+               <input type="text" class="form-control" id="commentContent" name="commentContent" placeholder="내용을 입력하세요.">
+               <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" name="commentInsertBtn" id="comment-insert">등록</button>
+               </span>
+             </div>
+    </div>
+
+
 	<!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -154,20 +167,15 @@ footer{
         </div>
     </div>
 
-	<footer>
-	좋아요1 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
-	좋아요2 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
-	북마크 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon">www.flaticon.com</a>
-	경고 아이콘 제작자 <a href="https://www.flaticon.com/kr/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/kr/" title="Flaticon"> www.flaticon.com</a>
-	</footer>
 
-	<script th:inline="javascript">
+<script th:inline="javascript">
 		$(document).ready(function(){
 			/* <![CDATA[ */
 			var articleId = [[${article.id}]]
 			var liked = [[${liked}]]
 			/* ]] */
 			var likeIcon = $("#icon-like");
+			
 			$("#icon-like").on("click", function(){
  				$.ajax({
 					url : '/article/like',
