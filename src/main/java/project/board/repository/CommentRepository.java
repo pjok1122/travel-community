@@ -15,6 +15,9 @@ public interface CommentRepository {
 	Integer getCommentCntByMemberId(Long memberId);
 	
 	void insertComment(@Param("articleId") Long articleId, @Param("memberId") Long memberId, @Param("parentCommentId") Long parentCommentId, @Param("content") String content);
-	CommentDto selectCommentById(@Param("id") Long id);
+	Comment selectCommentById(@Param("id") Long id);
+	Comment selectCommentByIdAndMemberId(@Param("id") Long id, @Param("memberId") Long memberId);
 	List<CommentDto> selectCommentByArticleId(@Param("articleId") Long articleId);
+	void deleteCommentById(@Param("id") Long id);
+	void updateCommentContentById(@Param("id") Long id, @Param("content") String content);
 }

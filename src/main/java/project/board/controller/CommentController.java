@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import project.board.domain.Comment;
@@ -17,6 +19,7 @@ import project.board.service.CommentService;
 import project.board.util.CommonUtils;
 
 @Controller
+@RequestMapping("/comment")
 public class CommentController {
 	
 	@Autowired
@@ -25,8 +28,7 @@ public class CommentController {
 	@Autowired
 	private CommonUtils utils;
 	
-	@PostMapping("/comment")
-//	@LoginAuth
+	@PostMapping("")
 	public ResponseEntity<?> create
 	(
 		@RequestParam Long articleId,
@@ -36,11 +38,11 @@ public class CommentController {
 	)
 	{
 		commentService.create(articleId, utils.memberIdConvert(session), parentCommentId, content);
+		
 		return ResponseEntity.ok().build();
 	}
 	
-	@GetMapping("/comment")
-//	@LoginAuth
+	@GetMapping("")
 	public ResponseEntity<?> getCommentByArticleId
 	(
 		@RequestParam Long articleId, 
@@ -48,6 +50,19 @@ public class CommentController {
 	)
 	{
 		List<CommentDto> comments = commentService.getByArticleId(articleId);
+		
 		return ResponseEntity.ok().body(comments);
+	}
+	
+	@PostMapping("/delete/{commentId}")
+	public ResponseEntity<?> delete
+	(
+		@PathVariable Long commentId, 
+		HttpSession session
+	)
+	{
+		commentService.delete(commentId, utils.memberIdConvert(session));
+		
+		return ResponseEntity.ok().build(); 
 	}
 }

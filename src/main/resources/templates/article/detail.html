@@ -11,7 +11,7 @@
 	src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
 <script
 	src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
-
+<script src="/js/article/detail.js"></script>
 
 </head>
 <style>
@@ -73,6 +73,7 @@ footer{
                      		<div><a th:utext="${article.title}" href="#"></a></div>
                      
                      		<div class="meta-info">
+                     			<span style="display:none" id="articleId" th:text="${article.id}" ></span>
                      			<span id="email" th:text="${article.email}" ></span>
                         		<span th:utext="${article.registerDate}" class="pull-right text-right"></span>
                         <span th:if="${article.updateDate}!=null" th:utext="|마지막 수정일자 : ${article.updateDate}|"></span>
@@ -122,15 +123,13 @@ footer{
 
     <div class="container">
         <label for="content">comment</label>
-        <form name="commentInsertForm">
             <div class="input-group">
                <input type="hidden" name="bno" value="${detail.bno}"/>
                <input type="text" class="form-control" id="commentContent" name="commentContent" placeholder="내용을 입력하세요.">
                <span class="input-group-btn">
                     <button class="btn btn-default" type="button" name="commentInsertBtn" id="comment-insert">등록</button>
                </span>
-              </div>
-        </form>
+             </div>
     </div>
 
 
@@ -165,81 +164,12 @@ footer{
 
 
 <script th:inline="javascript">
-	function getCommentList(articleId, email){
-	    $.ajax({
-	        type:'GET',
-	        url : "/comment",
-	        data : {
-	        	'articleId': articleId
-	        },
-	        //contentType: "application/x-www-form-urlencoded; charset=UTF-8", 
-	        success : function(data){
-	          	console.log(data);  
-	            var html = "";
-	            
-	            if(data.length > 0){
-	                for(i=0; i<data.length; i++){
-	                    html += "<div>";
-		                    html += "<div><h6><strong>"+data[i].writer+"</strong>&nbsp "+data[i].registerDate+"</h6>";
-		                    html += data[i].content + " ";
-		                    html += "</div>";
-	                    	html += "<div class='col'>";
-			                    html += "<button class='icon' id='icon-like-comment'>";
-			                    html += "<img th:if='${liked-comment} eq 1' th:name='${liked-comment}' src='/img/imgs/like2.png'>";
-			                    //html += "<img th:unless='${liked-comment} eq 1' th:name='${liked-comment}' th:src='@{/img/imgs/like1.png}'>";
-			                    html += "</button>";
-			                    html += " 댓글달기";
-			                    if (data[i].writer == email)
-			                    {
-		                    	html += "<button type='button' class='btn btn-dark'>삭제</button>";
-			                    }
-		                    	html += "<button class='icon' id='icon-report-comment' onclick='$('#exampleModal').modal('show')'>";
-		                    	html += "<img class='report' src='/img/imgs/report.png'>";
-		                    	html += "</button>";
-		                    html += "</div>";
-		                    html += "<div style='border-bottom: 1px dotted #ccc'></div>";
-	                    html += "</div>";
-	                }
-	            } else {
-	                html += "<div>";
-	                html += "<div><table class='table'><h6><strong>등록된 댓글이 없습니다.</strong></h6>";
-	                html += "</table></div>";
-	                html += "</div>";
-	            }
-	            $("#commentList").html(html);
-	        },
-	        error:function(request,status,error){
-	            
-	       }
-	    });
-	}
-	
 		$(document).ready(function(){
 			/* <![CDATA[ */
 			var articleId = [[${article.id}]]
 			var liked = [[${liked}]]
 			/* ]] */
 			var likeIcon = $("#icon-like");
-			var email = document.getElementById('email').innerText;
-			
-			getCommentList(articleId, email);
-			
-			$("#comment-insert").on("click", function(){
-				$.ajax({
-					url: '/comment',
-					type : 'POST',
-					data : {
-			        	'articleId': articleId,
-			        	'content': $("#commentContent").val(), 
-			        	'parentCommentId': ''
-			        },
-			        success : function(data){
-			        	console.log(data);
-			        	getCommentList(articleId);
-			        	document.getElementById('commentContent').value = ''
-			        }
-				})
-			});
 			
 			$("#icon-like").on("click", function(){
  				$.ajax({

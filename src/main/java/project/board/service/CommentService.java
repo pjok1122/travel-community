@@ -26,9 +26,14 @@ public class CommentService {
 		return cnt;
 	}
 	
-	public CommentDto getById(Long id)
+	private Comment getById(Long id)
 	{
 		return commentRepository.selectCommentById(id);
+	}
+	
+	public Comment getById(Long id, Long memberId)
+	{
+		return commentRepository.selectCommentByIdAndMemberId(id, memberId);
 	}
 	
 	public List<CommentDto> getByArticleId(Long articleId)
@@ -49,6 +54,29 @@ public class CommentService {
 		}
 		
 		commentRepository.insertComment(articleId, memberId, parentCommentId, content);
-//		return getById(Long.valueOf(id));
+	}
+	
+	public void delete(Long commentId, Long memberId)
+	{
+		Comment comment = getById(commentId, memberId);
+		
+		if(comment.getParentCommentId() == null)
+		{
+			deleteCommentById(commentId);
+		}
+		else
+		{
+			updateCommentContentById(commentId, "삭제된 댓글입니다.");
+		}
+	}
+	
+	public void deleteCommentById(Long id)
+	{
+		commentRepository.deleteCommentById(id);
+	}
+	
+	public void updateCommentContentById(Long id, String content)
+	{
+		commentRepository.updateCommentContentById(id, content);
 	}
 }
