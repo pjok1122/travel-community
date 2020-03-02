@@ -20,9 +20,9 @@ public interface ArticleRepository {
 
 	int getArticleCnt();
 
-	List<ArticleDto> selectArticleList(String category, String nation, int offset, int numOfRecords);
+	List<ArticleDto> selectArticleList(String category, String nation, String search, int offset, int numOfRecords);
 	
-	int getArticleCnt(String category, String nation);
+	int getArticleCnt(String category, String nation, String search);
 
 	void insertArticle(@Valid Article article);
 

@@ -60,7 +60,11 @@ public class ArticleController {
 			@RequestParam(required = false, value = "search") String search,
 			Model model)
 	{
-		model.addAllAttributes(articleService.getArticleList(category, nation, page, sort));
+		if(search!=null) {
+			search = search.trim();
+		}
+		
+		model.addAllAttributes(articleService.getArticleList(category, nation, page, sort, search));
 		model.addAttribute("category", category.toString().toLowerCase());
 		return "article/list";
 	}

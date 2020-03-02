@@ -64,16 +64,12 @@ public class ArticleService {
 		if(totalCnt==null)	totalCnt = 0;
 		return totalCnt;
 	}
-
-	public int getArticleCnt(Category category, Nation nation) {
-		return articleRepository.getArticleCnt(category.getKrValue(), nation.getKrValue());
-	}
 	
-	public Map<String, Object> getArticleList(Category category, Nation nation, int page, Sort sort) {
+	public Map<String, Object> getArticleList(Category category, Nation nation, int page, Sort sort, String search) {
 		Map<String, Object> map = new HashMap<String,Object>();
 		Page paging = new Page(page);
-		paging.setNumberOfRecordsAndMakePageInfo(articleRepository.getArticleCnt(category.getKrValue(), nation.getKrValue()));
-		paging.setList(articleRepository.selectArticleList(category.getKrValue(), nation.getKrValue(), paging.getOffset(), paging.getRecordsPerPage()));
+		paging.setNumberOfRecordsAndMakePageInfo(articleRepository.getArticleCnt(category.getKrValue(), nation.getKrValue(), search));
+		paging.setList(articleRepository.selectArticleList(category.getKrValue(), nation.getKrValue(), search, paging.getOffset(), paging.getRecordsPerPage()));
 		
 		map.put("page", paging);
 		return map;
