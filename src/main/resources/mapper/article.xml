@@ -34,7 +34,7 @@
 	</select>
 	
 	<select id="selectArticleList" resultType="articleDto">
-		SELECT a.*, count(c.id) as commentCnt
+		SELECT a.*, (a.hit+a.good*3) as score, count(c.id) as commentCnt
 		FROM article a
 		LEFT JOIN comment c
 		ON a.id = c.article_id
@@ -51,7 +51,12 @@
 			</if>
 		</where>
 		GROUP BY a.id
-		ORDER BY register_date DESC
+		<if test='sort eq "NEWEST"'>
+		ORDER BY register_date DESC		
+		</if>
+		<if test='sort eq "POPULAR"'>
+		ORDER BY score DESC
+		</if>
 		LIMIT #{offset}, #{numOfRecords}
 	</select>
 	

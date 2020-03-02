@@ -39,7 +39,7 @@ public class ArticleService {
 	
 	@Autowired
 	BookmarkRepository bookmarkRepository;
-	
+
 	@Autowired
 	ScriptEscapeUtils scriptEscaper;
 	
@@ -69,7 +69,7 @@ public class ArticleService {
 		Map<String, Object> map = new HashMap<String,Object>();
 		Page paging = new Page(page);
 		paging.setNumberOfRecordsAndMakePageInfo(articleRepository.getArticleCnt(category.getKrValue(), nation.getKrValue(), search));
-		paging.setList(articleRepository.selectArticleList(category.getKrValue(), nation.getKrValue(), search, paging.getOffset(), paging.getRecordsPerPage()));
+		paging.setList(articleRepository.selectArticleList(category.getKrValue(), nation.getKrValue(), search, sort.toString(), paging.getOffset(), paging.getRecordsPerPage()));
 		
 		map.put("page", paging);
 		return map;

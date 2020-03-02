@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import project.board.domain.Article;
 import project.board.domain.dto.ArticleDto;
+import project.board.enums.Sort;
 
 @Mapper
 public interface ArticleRepository {
@@ -20,7 +21,7 @@ public interface ArticleRepository {
 
 	int getArticleCnt();
 
-	List<ArticleDto> selectArticleList(String category, String nation, String search, int offset, int numOfRecords);
+	List<ArticleDto> selectArticleList(String category, String nation, String search, String sort, int offset, int numOfRecords);
 	
 	int getArticleCnt(String category, String nation, String search);
 

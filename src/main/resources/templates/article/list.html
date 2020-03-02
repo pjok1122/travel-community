@@ -1,72 +1,139 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Insert title here</title>
 
-<a th:if="${session.memberId ==null}" href="/login">Login</a>
-<a th:if="${session.memberId ==null}" href="/register">Register</a>
+    <!-- include libraries(jQuery, bootstrap) -->
+    <link
+      href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css"
+      rel="stylesheet"
+    />
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+    <!-- include summernote css/js-->
+    <link
+      href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css"
+      rel="stylesheet"
+    />
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
+  </head>
+  <body>
+    <a th:if="${session.memberId ==null}" href="/login">Login</a>
+    <a th:if="${session.memberId ==null}" href="/register">Register</a>
 
-<a th:unless="${session.memberId ==null}" href="/logout">Logout</a>
-<a th:unless="${session.memberId ==null}" href="/mypage/member">Mypage</a>
+    <a th:unless="${session.memberId ==null}" href="/logout">Logout</a>
+    <a th:unless="${session.memberId ==null}" href="/mypage/member">Mypage</a>
 
-<div>
-<a href="/accomadation/all">숙박정보</a>
-<a href="/restaurant/all">맛집</a>
-<a href="/festival/all">축제 정보</a>
-<a href="/attractions/all">관광지</a>
-</div>
-<br>
-<div>
-<a href="./all">전체</a>
-<a href="./tw">대만</a>
-<a href="./jp">일본</a>
-<a href="./cn">중국</a>
-<a href="./th">태국</a>
-<a href="./vn">베트남</a>
-</div>
+    <div>
+      <a href="/accomadation/all">숙박정보</a>
+      <a href="/restaurant/all">맛집</a>
+      <a href="/festival/all">축제 정보</a>
+      <a href="/attractions/all">관광지</a>
+    </div>
+    <br />
+    <div>
+      <a href="./all">전체</a>
+      <a href="./tw">대만</a>
+      <a href="./jp">일본</a>
+      <a href="./cn">중국</a>
+      <a href="./th">태국</a>
+      <a href="./vn">베트남</a>
+    </div>
 
-<h3>정렬</h3>
-<div>
-	<a href="?sort=newest">최신순</a>
-	<a href="?sort=popular">인기순</a>
-</div>
+    <h3>정렬</h3>
+    <div>
+      <a href="" id="newest">최신순</a>
+      <a href="" id="popular">인기순</a>
+    </div>
 
-<div>
-검색
-</div>
+    <div>
+      <input type="text" id="search" />
+      <span class="glyphicon glyphicon-search" id="search-icon"></span>
+    </div>
 
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <td>번호</td>
+            <td>제목</td>
+            <td>날짜</td>
+            <td>조회수</td>
+          </tr>
+        </thead>
+        <tr th:each="article,iterStat : ${page.list}">
+          <td th:text="${iterStat.count}"></td>
+          <td>
+            <a
+              th:href="@{/article/{id}(id=${article.id})}"
+              th:utext="|[${article.nation}] ${article.title} [${article.commentCnt}]|"
+            ></a>
+          </td>
+          <td th:text="${article.registerDate}"></td>
+          <td th:text="${article.hit}"></td>
+        </tr>
+      </table>
+    </div>
 
-<div>
-	<table>
-		<thead>
-			<tr>
-				<td>번호</td>
-				<td>제목</td>
-				<td>날짜</td>
-				<td>조회수</td>
-			</tr>
-		</thead>
-		<tr th:each="article,iterStat : ${page.list}">
-			<td th:text="${iterStat.count}"></td>
-			<td><a th:href="@{/article/{id}(id=${article.id})}" th:utext="|[${article.nation}] ${article.title} [${article.commentCnt}]|"></a></td>
-			<td th:text="${article.registerDate}"></td>
-			<td th:text="${article.hit}"></td>
-		</tr>
-	</table>
-</div>
+    <h1 th:text="|Total : ${page.numberOfRecords}|"></h1>
 
-<h1 th:text="|Total : ${page.numberOfRecords}|"></h1>
+    <button onclick="window.location.href='./write'">글쓰기</button>
 
-<button onclick="window.location.href='./write'">글쓰기</button>
+    <script>
+      $(function() {
+        var url = location.pathname;
+        var queryString = location.search;
+        var paramMap = queryStringToObject(queryString);
 
-<script>
-$(function(){
-	var 
-})
-</script>
+        sortHref($("#newest"), url, paramMap);
+        sortHref($("#popular"), url, paramMap);
 
-</body>
+        $("#search-icon").on("click", function() {
+          search(url, paramMap);
+        });
+      });
+
+      function search(url, paramMap) {
+        var search = $("#search")
+          .val()
+          .trim();
+
+        if (search == "") {
+          alert("검색할 내용을 넣어주세요.");
+        } else {
+          paramMap["search"] = search;
+          window.location.href = url + objectToQueryString(paramMap);
+        }
+      }
+
+      function sortHref(obj, url, params) {
+        params["sort"] = obj.attr("id");
+        var qs = objectToQueryString(params);
+        obj.attr("href", url + qs);
+      }
+
+      function objectToQueryString(obj) {
+        var qs = "?";
+        for (var prop in obj) {
+          qs += prop + "=" + obj[prop] + "&";
+        }
+
+        return qs.slice(0, -1);
+      }
+
+      function queryStringToObject(queryString) {
+        if (queryString.length == 0) {
+          return {};
+        }
+        var paramObj = {};
+        var params = queryString.substr(1).split("&");
+        params.forEach(function(param) {
+          i = param.indexOf("=");
+          paramObj[param.substr(0, i)] = param.substr(i + 1);
+        });
+        return paramObj;
+      }
+    </script>
+  </body>
 </html>
