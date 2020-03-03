@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<div class="container-fluid">
+<div class="navbar-header">
+      <a href="/" class="navbar-brand mb-0 h1">Asia Travel Community</a>
+   </div>
+      <div class="navbar-collapse collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav mr-auto">
+              <li class="nav-item active"><a class="nav-link" href="/">Home</a></li>
+              <li class="nav-item"><a class="nav-link" href="/attractions/all">관광</a></li>
+              <li class="nav-item"><a class="nav-link" href="/restaurant/all">맛집</a></li>
+              <li class="nav-item"><a class="nav-link" href="/festival/all">축제</a></li>
+              <li class="nav-item"><a class="nav-link" href="/accomodation/all">숙박</a></li>
+          </ul>
+	
+          <ul class="navbar-nav ml-auto">
+              <li class="nav-item dropdown" th:if="${session.memberId==null}">
+              	<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="/login">로그인</a>
+                      <a class="dropdown-item" href="/register">회원가입</a>
+                  </div>
+              </li>
+              <li class="nav-item" th:unless="${session.memberId==null}">
+              	<a class="nav-link" href="/mypage"><i class="far fa-id-card"></i>내 정보</a>
+              </li>
+              <li class="nav-item" th:unless="${session.memberId==null}">
+              	<a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i>로그아웃</a>
+          </ul>
+      </div>
+     </div>
+</nav>

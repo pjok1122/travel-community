@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css" />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<script src="webjars/jquery/3.4.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<div class="container-fluid">
+	<div class="navbar-header">
+       <a href="/" class="navbar-brand mb-0 h1">Asia Travel Community</a>
+    </div>
+       <div class="navbar-collapse collapse" id="navbarNavDropdown">
+           <ul class="navbar-nav mr-auto">
+               <li class="nav-item active"><a class="nav-link" href="/">Home</a></li>
+               <li class="nav-item"><a class="nav-link" href="/attractions/all">관광</a></li>
+               <li class="nav-item"><a class="nav-link" href="/restaurant/all">맛집</a></li>
+               <li class="nav-item"><a class="nav-link" href="/festival/all">축제</a></li>
+               <li class="nav-item"><a class="nav-link" href="/accomodation/all">숙박</a></li>
+           </ul>
+		
+           <ul class="navbar-nav ml-auto">
+               <li class="nav-item dropdown" th:if="${session.memberId==null}">
+               	<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                       <i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
+                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                       <a class="dropdown-item" href="/login">로그인</a>
+                       <a class="dropdown-item" href="/register">회원가입</a>
+                   </div>
+               </li>
+               <li class="nav-item" th:unless="${session.memberId==null}">
+               	<a class="nav-link" href="/mypage"><i class="far fa-id-card"></i>내 정보</a>
+               </li>
+               <li class="nav-item" th:unless="${session.memberId==null}">
+               	<a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i>로그아웃</a>
+           </ul>
+       </div>
+      </div>
+	</nav>
+</body>
+</html>

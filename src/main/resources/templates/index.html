@@ -3,23 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+
+	<th:block th:include="common/head.html">
 </head>
 <body>
 
-<a th:if="${session.memberId ==null}" href="/login">Login</a>
-<a th:if="${session.memberId ==null}" href="/register">Register</a>
-
-<a th:unless="${session.memberId ==null}" href="/logout">Logout</a>
-<a th:unless="${session.memberId ==null}" href="/mypage/member">Mypage</a>
-
-<div>
-<a href="/accomadation/all">숙박정보</a>
-<a href="/restaurant/all">맛집</a>
-<a href="/festival/all">축제 정보</a>
-<a href="/attractions/all">관광지</a>
-</div>
-
-
+	<th:block th:include="common/navBar.html"></th:block>
 
 </body>
 </html>
