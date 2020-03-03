@@ -34,32 +34,47 @@
 	</select>
 	
 	<select id="selectArticleList" resultType="articleDto">
-		SELECT a.*, count(c.id) as commentCnt
-		FROM (SELECT *
-			FROM article
-			WHERE status="PERMANENT") a LEFT JOIN comment c
+		SELECT a.*, (a.hit+a.good*3) as score, count(c.id) as commentCnt
+		FROM article a
+		LEFT JOIN comment c
 		ON a.id = c.article_id
+		<where>
+			<if test='category neq "전체".toString()'>
+				a.category_id = (SELECT id FROM category WHERE title = #{category})
+			</if>			
+			<if test='nation!=null and (nation neq "전체".toString())'>
+				AND a.nation = #{nation}
+			</if>
+				AND a.status = 'PERMANENT'
+			<if test='search!=null'>
+				AND  a.title like CONCAT('%', #{search}, '%') 
+			</if>
+		</where>
 		GROUP BY a.id
-		<if test='category!=null and (category neq "전체".toString())'>
-		HAVING category_id = (SELECT id FROM category WHERE title = #{category})
+		<if test='sort eq "NEWEST"'>
+		ORDER BY register_date DESC		
 		</if>
-		<if test='nation!=null and (nation neq "전체".toString())'>
-		AND nation = #{nation}
+		<if test='sort eq "POPULAR"'>
+		ORDER BY score DESC
 		</if>
-		ORDER BY register_date DESC
 		LIMIT #{offset}, #{numOfRecords}
 	</select>
 	
 	<select id="getArticleCnt" resultType="int">
 		SELECT count(*) as totalCnt
 		FROM article
-		WHERE status = "PERMANENT"
-		<if test='category!=null and (category neq "전체".toString())'>
-		AND category_id = (SELECT id FROM category WHERE title = #{category})
-		</if>
-		<if test='nation!=null and (nation neq "전체".toString())'>
-		AND nation = #{nation}
-		</if>
+		<where>
+			<if test='category neq "전체".toString()'>
+			AND category_id = (SELECT id FROM category WHERE title = #{category})
+			</if>
+			<if test='nation!=null and (nation neq "전체".toString())'>
+			AND nation = #{nation}
+			</if>
+			AND status = "PERMANENT"
+			<if test='search!=null'>
+			AND title like CONCAT('%', #{search}, '%') 
+			</if>
+		</where>
 	</select>
 	
 	<insert id="insertArticle" useGeneratedKeys="true" keyProperty="id">
