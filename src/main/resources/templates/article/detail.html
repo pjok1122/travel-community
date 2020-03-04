@@ -56,6 +56,22 @@ footer{
 	display:none;
 }
 
+ .pb-cmnt-container {
+     font-family: Lato;
+     margin-top: 10px;
+ }
+
+ .pb-cmnt-textarea {
+     resize: none;
+     padding: 20px;
+     height: 130px;
+     width: 100%;
+     border: 1px solid; 
+ }
+ .panel {
+ 	margin: 10px;
+ 	
+ }
 </style>
 
 <body>
@@ -125,6 +141,7 @@ footer{
         <div class="commentList" id="commentList"></div>
     </div>
 
+	<!-- 
     <div class="container">
         <label for="content">comment</label>
             <div class="input-group">
@@ -135,7 +152,22 @@ footer{
                </span>
              </div>
     </div>
+     -->
 
+	<div class="container pb-cmnt-container">
+	    <div class="row" style="background-color:#F8F8F8">
+	        <div class="col-md-10 col-md-offset-1">
+	            <div class="panel panel-default">
+	                <div class="panel-body">
+	                	<span><strong id="writer"></strong></span>
+	                    <textarea placeholder="댓글을 입력해주세요" class="pb-cmnt-textarea" id="commentContent" name="commentContent"></textarea>
+                    	<span> 0 / 300</span>
+                        <button class="btn btn-primary pull-right" type="button" id="comment-insert">등록</button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
 
 	<!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

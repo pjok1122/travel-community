@@ -113,7 +113,7 @@ public class LoginController {
 		if(session.getAttribute("memberId") ==null) {
 			return ResponseEntity.status(302).body("/login");
 		} else {
-			return ResponseEntity.ok().body(true);
+			return ResponseEntity.ok().body(session.getAttribute("email"));
 		}
 	}
 	
