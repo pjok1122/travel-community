@@ -4,8 +4,8 @@
 			<a href="/" class="navbar-brand mb-0 h1">Asia Travel Community</a>
 		</div>
 		<div class="navbar-collapse collapse" id="navbarNavDropdown">
-			<ul class="navbar-nav mr-auto">
-				<li class="nav-item active"><a class="nav-link" href="/">Home</a></li>
+			<ul id="category-nav" class="navbar-nav mr-auto">
+				<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
 				<li class="nav-item"><a class="nav-link"
 					href="/attractions/all">관광</a></li>
 				<li class="nav-item"><a class="nav-link" href="/restaurant/all">맛집</a></li>
@@ -35,3 +35,20 @@
 		</div>
 	</div>
 </nav>
+
+<script>
+$(function(){
+	makeCategoryActive();
+})
+
+function makeCategoryActive(){
+	var categories = $("#category-nav > li.nav-item").children('a.nav-link');
+	var curUrl = window.location.pathname.split('/')[1];
+	for(category of categories){
+		url = category.getAttribute("href").split('/')[1];
+		if(curUrl === url){
+			category.setAttribute("class", category.getAttribute("class") + " active");
+		}
+	}
+}
+</script>

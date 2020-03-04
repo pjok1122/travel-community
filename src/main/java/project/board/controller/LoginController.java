@@ -63,8 +63,9 @@ public class LoginController {
 	}
 
 	@GetMapping("/login")
-	public String getLoginForm(HttpSession session) {
+	public String getLoginForm(HttpSession session, Model model) {
 		if(session.getAttribute("memberId") == null) {
+			model.addAttribute("memberDto", new MemberDto());
 			return "member/login";
 		}
 		return "redirect:/";
@@ -73,7 +74,7 @@ public class LoginController {
 	@PostMapping("/login")
 	public String processLoginForm(
 			HttpSession session,
-			@ModelAttribute @Valid MemberDto memberDto,
+			@ModelAttribute("memberDto") @Valid MemberDto memberDto,
 			BindingResult result, 
 			Model model)
 	{

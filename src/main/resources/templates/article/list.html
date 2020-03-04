@@ -5,7 +5,8 @@
 <title>Insert title here</title>
 
 <!-- include libraries(jQuery, bootstrap) -->
-<th:block th:include="common/head.html"></th:block>
+<th:block th:replace="/common/html/head.html"></th:block>
+
 
 <style>
 #search{
@@ -17,13 +18,13 @@
 </head>
 <body>
 	
-	<th:block th:include="common/navBar.html"></th:block>
+	<th:block th:replace="/common/html/navBar.html"></th:block>
 
 	<div class="container mt-5">
 		<div class="row">
 			<div class="col-12">
-				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link active" href="./all">전체</a></li>
+				<ul id="nation-nav" class="nav nav-tabs justify-content-center">
+					<li class="nav-item"><a class="nav-link" href="./all">전체</a></li>
 					<li class="nav-item"><a class="nav-link" href="./tw">대만</a></li>
 					<li class="nav-item"><a class="nav-link" href="./la">라오스</a></li>
 					<li class="nav-item"><a class="nav-link" href="./my">말레이시아</a></li>
@@ -42,7 +43,7 @@
 	  </div>
 		<div class="row">
 			<div class="col">
-				<div class="btn-group" role="group">
+				<div id="sort-group" class="btn-group" role="group">
 					<a type="button" class="btn btn-secondary" id="newest">최신순</a>
 					<a type="button" class="btn btn-secondary" id="popular">인기순</a>
 				</div>
@@ -68,7 +69,7 @@
 				</tr>
 			</thead>
 			<tr th:each="article,iterStat : ${page.list}">
-				<th scope="row" th:text="${iterStat.count}"></th>
+				<th scope="row" th:text="${iterStat.count} + ${page.currentPageNo-1}*${page.recordsPerPage}"></th>
 				<td><a th:href="@{/article/{id}(id=${article.id})}">
 						<span th:utext="|[${article.nation}]| "></span>
 						<span th:utext="|${article.title}|"></span>
@@ -79,44 +80,76 @@
 				<td th:text="${article.hit}"></td>
 			</tr>
 		</table>
-	</div>
-	
-	<div class="container">
-		<div class="row">
-			<div class="col">
-				<nav aria-label="Search result page">
-					<ul class="pagination justify-content-center">
-						<li class="page-item"><a class="page-link" href="#"
-							aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-						</a></li>
-						<li class="page-item" th:each="num : ${#numbers.sequence(1,{page.sizeOfPage})}">
-						<a class="page-link" href="#" th:text="${page.startPageNo}+${numStat.index}"></a></li>
-						<li class="page-item"><a class="page-link" href="#"
-							aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-						</a></li>
-					</ul>
-				</nav>
+		<div class="row justify-content-between mb-3">
+			<div class="col-4 float-left mt-2">
+				<h5 th:text="|Total : ${page.numberOfRecords}|"></h5>
+			</div>
+			<div class="col-2">
+				<button class="btn btn-primary float-right" onclick="window.location.href='./write'">글쓰기</button>
 			</div>
 		</div>
 	</div>
-	<h1 th:text="|Total : ${page.numberOfRecords}|"></h1>
-
-	<button onclick="window.location.href='./write'">글쓰기</button>
-
+	
+	<th:block th:replace="common/html/pagination.html"></th:block>
+	
+	<script th:src="@{/common/js/urlParser.js}"></script>
 	<script>
 		$(function() {
 			var url = location.pathname;
 			var queryString = location.search;
 			var paramMap = queryStringToObject(queryString);
-
+			
 			sortHref($("#newest"), url, paramMap);
 			sortHref($("#popular"), url, paramMap);
-
+			makePageLink(url, paramMap);
+			makeNationActive(url);
+			makeSortActive(paramMap);
+						
 			$("#search-icon").on("click", function() {
 				search(url, paramMap);
 			});
 		});
+		
+		function makeSortActive(paramMap){
+			var sortButtons = $("#sort-group").children('a');
+			var curSort = paramMap['sort'] ? paramMap['sort'] : "newest";
+			for(sortButton of sortButtons){
+				var sortVal = sortButton.getAttribute("id");
+				if(curSort === sortVal){
+					sortButton.setAttribute('class', sortButton.getAttribute('class') + ' active');
+				}
+				
+			}
+		} 
+		
+		function makeNationActive(url){
+			var navLinks = $("#nation-nav > li.nav-item").children('a.nav-link');
+			var curNation = url.slice(url.lastIndexOf('/')+1);	
+			for(navLink of navLinks){
+				nation = navLink.getAttribute("href").slice(2);
+				if(curNation === nation){
+					navLink.setAttribute("class", navLink.getAttribute("class")+ " active");
+				}
+			}
+		}
+		
+		function makePageLink(url, paramMap){
+			var pageLinks = $(".page-link");
+			for(pageLink of pageLinks){
+				var pageNo = pageLink.getAttribute("href");
+				paramMap['page'] = pageNo;
+				var qs = objectToQueryString(paramMap);
+				pageLink.setAttribute("href", url+qs);
+			}
+		}
 
+		function sortHref(obj, url, params) {
+			const params_copy = {...params};
+			params_copy["sort"] = obj.attr("id");
+			var qs = objectToQueryString(params_copy);
+			obj.attr("href", url + qs);
+		}
+		
 		function search(url, paramMap) {
 			var search = $("#search").val().trim();
 
@@ -128,33 +161,6 @@
 			}
 		}
 
-		function sortHref(obj, url, params) {
-			params["sort"] = obj.attr("id");
-			var qs = objectToQueryString(params);
-			obj.attr("href", url + qs);
-		}
-
-		function objectToQueryString(obj) {
-			var qs = "?";
-			for ( var prop in obj) {
-				qs += prop + "=" + obj[prop] + "&";
-			}
-
-			return qs.slice(0, -1);
-		}
-
-		function queryStringToObject(queryString) {
-			if (queryString.length == 0) {
-				return {};
-			}
-			var paramObj = {};
-			var params = queryString.substr(1).split("&");
-			params.forEach(function(param) {
-				i = param.indexOf("=");
-				paramObj[param.substr(0, i)] = param.substr(i + 1);
-			});
-			return paramObj;
-		}
 	</script>
 </body>
 </html>

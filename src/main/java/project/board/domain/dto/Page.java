@@ -62,7 +62,8 @@ public class Page {
 		}
 		
 		startPageNo = ((currentPageNo-1) / sizeOfPage) * sizeOfPage + 1; //한 번에 보여지는 페이지 번호가 3개씩이라면, startPageNo= 1+3x 꼴이 된다.
-		endPageNo = (endPageNo > finalPageNo) ? finalPageNo : startPageNo + sizeOfPage - 1;
+		endPageNo = startPageNo + sizeOfPage - 1;
+		endPageNo = (endPageNo > finalPageNo) ? finalPageNo : endPageNo;
 		
 		prevPageNo = (currentPageNo==1) ? 1 : currentPageNo-1;
 		nextPageNo = (currentPageNo==finalPageNo) ? finalPageNo : currentPageNo+1;

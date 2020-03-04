@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <title>Login</title>
 
-<th:block th:include="common/head.html"></th:block>
+<th:block th:include="common/html/head.html"></th:block>
 </head>
 <body>
 	
-	<th:block th:include="common/navBar.html"></th:block>
+	<th:block th:include="common/html/navBar.html"></th:block>
 	
 	<div class="container">
 		<div class="row mt-5 justify-content-center">
@@ -21,18 +21,18 @@
 	<div class="container">
 		<div class="row mt-5 justify-content-center">
 			<div class="col-8">
-		<form action="/login" method="post">
+		<form th:action="@{/login}" th:object="${memberDto}" method="post">
 			<div class="form-group">
 				<label for="email">이메일 </label>
-				<input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
-				<!-- <small id="emailHelp" class="form-text text-muted" th:if="${fields.hasErrors('email')" th:errors="*{email}"></small> -->
+				<input type="email" class="form-control" th:field="*{email}" aria-describedby="emailHelp">
 			</div>
-			
 			<div class="form-group">
 				<label for="password">비밀번호 </label>
-				<input type="password" class="form-control" id="password" name="password">
+				<input type="password" class="form-control" th:field="*{password}">
 			</div>
-			<div th:text="${error}"></div>
+			<div class="form-group">
+				<small id="error" th:if="${#fields.hasErrors('*')}" th:errors="*{password}">Incorrect date</small>
+			</div>
 			<button type="submit" class="btn btn-primary">로그인</button>
 		</form>
 		</div>
