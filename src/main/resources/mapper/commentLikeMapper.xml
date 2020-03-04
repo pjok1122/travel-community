@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project.board.repository.CommentLikeRepository">
+	<insert id="insertCommentLikeByMemberIdAndCommentId">
+		INSERT 
+		INTO comment_like(member_id, comment_id, register_date) 
+		VALUES(#{memberId}, #{commentId}, NOW())
+	</insert>
+	
+	<delete id="deleteCommentLikeByMemberIdAndCommentId">
+		DELETE 
+		FROM comment_like 
+		WHERE member_id = #{memberId} AND comment_id = #{commentId}
+	</delete>
+	
+	<select id="selectCommentLikeByMemberIdAndCommentId" resultType="Boolean">
+		SELECT IF(COUNT(id) > 0, 1, 0) AS `result`
+		FROM comment_like 
+		WHERE member_id = #{memberId} AND comment_id = #{commentId}
+	</select>
+	
+</mapper>

@@ -24,6 +24,13 @@ $(document).ready(function(){
 		{
 			commentInsert(articleId, parent.parentElement.getElementsByTagName("textarea")[0].value, commentId);
 		}	
+		else if(current.innerText == '좋아요')
+		{
+			console.log(current.innerText);
+
+			console.log(parent.parentElement.parentElement);
+			commentLikeInsert(parent.parentElement.parentElement.getAttribute("name"));
+		}
 		else if(current.innerText == '댓글달기')
 		{
 			var reply = document.getElementById('comment-reply')
@@ -82,6 +89,21 @@ $(document).ready(function(){
 		return email;
 	}
 	
+	function commentLikeInsert(commentId)
+	{
+		$.ajax({
+			url: '/comment/like',
+			type : 'POST',
+			data : {
+	        	'commentId': commentId
+	        },
+	        success : function(data){
+	        	console.log(data);
+	        	getCommentList(articleId);
+	        }
+		});
+	}
+	
 	function commentInsert(articleId, content, parentCommentId){
 		$.ajax({
 			url: '/comment',
@@ -95,7 +117,7 @@ $(document).ready(function(){
 	        	getCommentList(articleId);
 	        	document.getElementById('commentContent').value = ''
 	        }
-		})
+		});
 	}
 	
 	function commentDelete(commentId){
@@ -161,7 +183,8 @@ $(document).ready(function(){
 		                				</h6>
 		                				${reply.content}
 		                				<div>
-		                					[좋아요] [신고]
+		                					<a href="#">좋아요</a>
+		                					<a href="#">신고</a>
 		                				</div>
 		                			</div>
 	                				`

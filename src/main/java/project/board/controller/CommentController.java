@@ -2,6 +2,7 @@ package project.board.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import project.board.annotation.AjaxLoginAuth;
 import project.board.domain.Comment;
 import project.board.domain.dto.CommentDto;
 import project.board.service.CommentService;
@@ -64,5 +66,17 @@ public class CommentController {
 		commentService.delete(commentId, utils.memberIdConvert(session));
 		
 		return ResponseEntity.ok().build(); 
+	}
+	
+	@PostMapping("/like")
+	//@AjaxLoginAuth
+	public ResponseEntity<?> processLikeArticle
+	(
+		@RequestParam("commentId") Long commentId,
+		HttpSession session
+	)
+	{
+		Boolean like = commentService.like(utils.memberIdConvert(session), commentId);
+		return ResponseEntity.ok().body(like);
 	}
 }

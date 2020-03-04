@@ -8,13 +8,17 @@ import org.springframework.stereotype.Service;
 import project.board.domain.Comment;
 import project.board.domain.dto.CommentDto;
 import project.board.domain.dto.Page;
+import project.board.repository.CommentLikeRepository;
 import project.board.repository.CommentRepository;
 
 @Service
 public class CommentService {
 
 	@Autowired
-	CommentRepository commentRepository;
+	private CommentRepository commentRepository;
+	
+	@Autowired
+	private CommentLikeRepository commentLikeRepository;
 	
 	public List<Comment> getCommentByMemberId(Long memberId, Page paging) {
 		return commentRepository.findByMemberId(memberId, paging.getOffset(), paging.getRecordsPerPage());
@@ -80,5 +84,38 @@ public class CommentService {
 	public void updateCommentContentById(Long id, String content)
 	{
 		commentRepository.updateCommentContentById(id, content);
+	}
+	
+	public boolean selectCommentLikeByMemberIdAndCommentId(Long memberId, Long commentId)
+	{
+		return commentLikeRepository.selectCommentLikeByMemberIdAndCommentId(memberId, commentId);
+	}
+	
+	public void deleteCommentLikeByMemberIdAndCommentId(Long memberId, Long commentId)
+	{
+		commentLikeRepository.deleteCommentLikeByMemberIdAndCommentId(memberId, commentId);
+	}
+	
+	public void insertCommentLikeByMemberIdAndCommentId(Long memberId, Long commentId)
+	{
+		commentLikeRepository.insertCommentLikeByMemberIdAndCommentId(memberId, commentId);
+	}	
+	
+	public boolean like(Long memberId, Long commentId)
+	{
+		Boolean isAlreayLike = selectCommentLikeByMemberIdAndCommentId(memberId, commentId);
+		
+		if(isAlreayLike)
+		{
+			deleteCommentLikeByMemberIdAndCommentId(memberId, commentId);
+			
+			return false;
+		}
+		else
+		{
+			insertCommentLikeByMemberIdAndCommentId(memberId, commentId);
+			
+			return true;
+		}
 	}
 }
