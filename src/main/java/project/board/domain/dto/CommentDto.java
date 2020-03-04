@@ -9,9 +9,20 @@ import project.board.domain.Comment;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CommentDto extends Comment{
+public class CommentDto extends Comment
+{
 	private String writer;
 	
-//	private List<Comment> replies = new ArrayList<Comment>();
+	private List<ReplyDto> replies = new ArrayList<ReplyDto>();
+	
+	public boolean replyEmpty()
+	{
+		if(replies.isEmpty())
+		{
+			return true;
+		}
+		
+		return false;
+	}
 
 }

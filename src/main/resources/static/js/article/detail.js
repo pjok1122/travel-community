@@ -73,8 +73,8 @@ $(document).ready(function(){
 			
 			complete : function(response){
 				if(response.status == 302){
-					alert("로그인이 필요한 작업입니다.");
-					window.location.href=response.responseText;
+//					alert("로그인이 필요한 작업입니다.");
+//					window.location.href=response.responseText;
 				}
 			}
 		});
@@ -99,7 +99,6 @@ $(document).ready(function(){
 	}
 	
 	function commentDelete(commentId){
-		console.log(commentId);
 	    $.ajax({
 	        url : '/comment/delete/'+commentId,
 	        type : 'post',
@@ -110,7 +109,6 @@ $(document).ready(function(){
 	}
 	
 	function getCommentList(articleId){
-		console.log(email);
 	    $.ajax({
 	        type:'GET',
 	        url : "/comment",
@@ -162,6 +160,9 @@ $(document).ready(function(){
 		                					${reply.writer == article_writer ? `&nbsp[글쓴이]` : ''}
 		                				</h6>
 		                				${reply.content}
+		                				<div>
+		                					[좋아요] [신고]
+		                				</div>
 		                			</div>
 	                				`
 	                			).join("")}

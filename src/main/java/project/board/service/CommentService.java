@@ -31,14 +31,16 @@ public class CommentService {
 		return commentRepository.selectCommentById(id);
 	}
 	
-	public Comment getById(Long id, Long memberId)
+	public CommentDto getById(Long id, Long memberId)
 	{
 		return commentRepository.selectCommentByIdAndMemberId(id, memberId);
 	}
 	
 	public List<CommentDto> getByArticleId(Long articleId)
 	{
-		return commentRepository.selectCommentByArticleId(articleId);
+		List<CommentDto> list = commentRepository.selectCommentByArticleId(articleId);
+		System.out.println();
+		return list;
 	}
 	
 	public void create(Long articleId, Long memberId, Long parentCommentId, String content)
@@ -58,9 +60,9 @@ public class CommentService {
 	
 	public void delete(Long commentId, Long memberId)
 	{
-		Comment comment = getById(commentId, memberId);
+		CommentDto comment = getById(commentId, memberId);
 		
-		if(comment.getParentCommentId() == null)
+		if(comment.replyEmpty())
 		{
 			deleteCommentById(commentId);
 		}

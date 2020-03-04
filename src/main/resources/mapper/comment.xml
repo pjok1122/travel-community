@@ -4,6 +4,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="project.board.repository.CommentRepository">
+
+	<resultMap type="commentDto" id="commentDto">
+		<id column="id" property="id" />
+		<result column="content" property="content" />
+		<result column="good" property="good" />
+		<result column="writer" property="writer" />
+		<result column="register_date" property="registerDate" />
+		<collection property="replies" ofType="replyDto">
+			<result column="reply_content" property="content" />
+			<result column="reply_writer" property="writer" />
+			<result column="reply_good" property="good" />
+			<result column="reply_register_date" property="registerDate" />
+		</collection>
+	</resultMap>
 	
 	<select id="findByMemberId" resultType="comment">
 		SELECT *
@@ -30,14 +44,30 @@
 		WHERE id = #{id}
 	</select>
 	
-	<select id="selectCommentByIdAndMemberId" resultType="comment">
-		SELECT * 
-		FROM comment 
-		WHERE id = #{id}
-		AND member_id = #{memberId}
+	<select id="selectCommentByIdAndMemberId" resultMap="commentDto">
+		SELECT  
+			c1.id id,
+			c1.content content, 
+			c1.register_date registerDate, 
+			c1.good good, 
+			CASE 
+				WHEN c1.parent_comment_id IS NULL THEN c2.content 
+				ELSE c2.content 
+			END AS reply_content, 
+			m2.email reply_writer, 
+			c2.register_date reply_register_date, 
+			c2.good reply_good
+		FROM comment c1 
+		LEFT JOIN comment c2
+		ON c1.id = c2.parent_comment_id
+		LEFT JOIN member m2 
+		ON c2.member_id = m2.id 
+		WHERE c1.id = #{id}
+		AND c1.member_id = #{memberId}
 	</select>
 	
-	<select id="selectCommentByArticleId" resultType="commentDto">
+	<select id="selectCommentByArticleId" resultMap="commentDto">
+		<!--  
 		SELECT 
 			c.*, 
 			m.email writer
@@ -45,6 +75,30 @@
 		JOIN member m 
 		ON c.member_id = m.id 
 		WHERE article_id = #{articleId}
+		-->
+		SELECT 
+			c1.id id,
+			c1.content content, 
+			c1.register_date registerDate, 
+			c1.good good, 
+			m1.email writer, 
+			CASE 
+				WHEN c1.parent_comment_id IS NULL THEN c2.content 
+				ELSE c2.content 
+			END AS reply_content, 
+			m2.email reply_writer, 
+			c2.register_date reply_register_date, 
+			c2.good reply_good
+		FROM comment c1  
+		LEFT JOIN comment c2 
+		ON c1.id = c2.parent_comment_id 
+		INNER JOIN member m1 
+		ON c1.member_id = m1.id 
+		LEFT JOIN member m2 
+		ON c2.member_id = m2.id
+		WHERE c1.article_id = #{articleId} 
+		AND c1.parent_comment_id IS NULL 
+		ORDER BY c1.id DESC 
 	</select>
 	
 	<delete id="deleteCommentById">
