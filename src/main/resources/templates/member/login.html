@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Login</title>
 
 <th:block th:include="common/head.html"></th:block>
 </head>
@@ -11,26 +11,26 @@
 	<th:block th:include="common/navBar.html"></th:block>
 	
 	<div class="container">
-		<div class="row mt-5">
-			<div class="col-12">
-				<h1> Login Form</h1>
+		<div class="row mt-5 justify-content-center">
+			<div class="col-8 text-center">
+				<h1>Login Form</h1>
 			</div>
 		</div>
 	</div>
 	
 	<div class="container">
-		<div class="row mt-5">
-			<div class="col-12">
+		<div class="row mt-5 justify-content-center">
+			<div class="col-8">
 		<form action="/login" method="post">
 			<div class="form-group">
 				<label for="email">이메일 </label>
-				<input type="email" class="form-control" id="email" aria-describedby="emailHelp">
+				<input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
 				<!-- <small id="emailHelp" class="form-text text-muted" th:if="${fields.hasErrors('email')" th:errors="*{email}"></small> -->
 			</div>
 			
 			<div class="form-group">
 				<label for="password">비밀번호 </label>
-				<input type="password" class="form-control" id="password">
+				<input type="password" class="form-control" id="password" name="password">
 			</div>
 			<div th:text="${error}"></div>
 			<button type="submit" class="btn btn-primary">로그인</button>
@@ -38,22 +38,5 @@
 		</div>
 		</div>
 	</div>
-
-
-<!-- 	<form method="POST" action="/login">
-		<div>
-			<label for="email">이메일 : </label> <input type="email" name="email"
-				id="email" placeholder="email">
-			<p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</p>
-		</div>
-		<div>
-			<label for="password">비밀번호 : </label> <input type="password"
-				name="password" id="password" placeholder="password">
-			<p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password Error</p>
-		</div>
-		<div th:text="${error}"></div>
-		<input type="submit">
-	</form>
- -->
 </body>
 </html>

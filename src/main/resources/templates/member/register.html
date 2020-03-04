@@ -2,29 +2,47 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Register</title>
+
+<th:block th:include="common/head.html"></th:block>
 </head>
 <body>
-
-	<form method="POST" action="">
-		<div>
-			<label for="email">이메일 : </label> <input type="email" name="email"
-				id="email" placeholder="email">
-			<!-- <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</p> -->
+	
+	<th:block th:include="common/navBar.html"></th:block>
+	
+	<div class="container">
+		<div class="row mt-5 justify-content-center">
+			<div class="col-8 text-center">
+				<h1>Register Form</h1>
+			</div>
 		</div>
-		<div>
-			<label for="password">비밀번호 : </label> <input type="password"
-				name="password" id="password" placeholder="password">
-			<!-- <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password Error</p> -->
+	</div>
+	
+	<div class="container">
+		<div class="row mt-5 justify-content-center">
+			<div class="col-8">
+				<form action="/register" method="post">
+					<div class="form-group">
+						<label for="email">이메일 </label>
+						<input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+						<!-- <small id="emailHelp" class="form-text text-muted" th:if="${fields.hasErrors('email')" th:errors="*{email}"></small> -->
+					</div>
+					
+					<div class="form-group">
+						<label for="password">비밀번호 </label>
+						<input type="password" class="form-control" id="password" name="password">
+					</div>
+					
+					<div class="form-group">
+						<label for="rePassword">비밀번호 확인</label>
+						<input type="password" class="form-control" id="rePassword" name="rePassword">
+					</div>
+					
+					<div th:text="${error}"></div>
+					<button type="submit" class="btn btn-primary mt-3">회원가입</button>
+				</form>
+			</div>
 		</div>
-		<div>
-			<label for="re_password">비밀번호 : </label> <input type="password"
-				name="rePassword" id="re_password" placeholder="password">
-			<!-- <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password Error</p> -->
-		</div>
-		<div th:text="${error}"></div>
-		<input type="submit">
-	</form>
-
+	</div>
 </body>
 </html>
