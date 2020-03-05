@@ -51,6 +51,8 @@ public class ArticleController {
 	MySessionUtils sessionUtils;
 	
 	
+	private static final String WRITE_AND_UPDATE_FORM = "article/write_and_update";
+	
 	@GetMapping("/{category}/{nation}")
 	public String getBoardByCategoryAndNation(
 			@PathVariable("category") Category category,
@@ -65,34 +67,32 @@ public class ArticleController {
 		}
 		
 		model.addAllAttributes(articleService.getArticleList(category, nation, page, sort, search));
-		model.addAttribute("category", category.toString().toLowerCase());
 		return "article/list";
 	}
 	
-	@GetMapping("/{category}/write")
+	@GetMapping("/article/write")
 	@LoginAuth
 	public String getCreationForm(
-			@PathVariable(value = "category") Category category,
 			HttpSession session,
 			Model model)
 	{
-		return "article/write";
+		model.addAttribute("article", new Article());
+		return WRITE_AND_UPDATE_FORM;
 	}
 	
-	@PostMapping("/{category}/write")
+	@PostMapping("/article/write")
 	@LoginAuth
 	public String processCreationForm(
-			@PathVariable Category category,
 			@ModelAttribute @Valid Article article,
 			BindingResult result,
 			HttpSession session,
 			Model model)
 	{
 		if(result.hasErrors()) {
-			model.addAttribute("error", "NOT EMPTY");
-			return "article/write";
+			model.addAttribute("article", article);
+			return WRITE_AND_UPDATE_FORM;
 		}
-		Long articleId = articleService.createArticle(article, category, sessionUtils.getMemberId(session));
+		Long articleId = articleService.createArticle(article, sessionUtils.getMemberId(session));
 		return "redirect:/article/" + articleId;
 	}
 		
@@ -126,7 +126,7 @@ public class ArticleController {
 		}
 		
 		model.addAttribute("article", article);
-		return "article/update";
+		return WRITE_AND_UPDATE_FORM;
 	}
 	
 	@PostMapping("/article/update/{articleId}")
@@ -139,7 +139,7 @@ public class ArticleController {
 			HttpSession session)
 	{
 		if(result.hasErrors()) {
-			return "article/update";
+			return WRITE_AND_UPDATE_FORM;
 		}
 		articleService.modifyArticle(articleId, article);
 		return "redirect:/article/" + articleId;
@@ -175,7 +175,6 @@ public class ArticleController {
 	
 	@PostMapping("/ajax/temp/write")
 	@AjaxLoginAuth
-	@isArticleOwner
 	public ResponseEntity<?> processTempArticleWirte(
 			@RequestParam("category") Category category,
 			@ModelAttribute @Valid Article article,

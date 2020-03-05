@@ -21,7 +21,7 @@ public interface ArticleRepository {
 
 	int getArticleCnt();
 
-	List<ArticleDto> selectArticleList(String category, String nation, String search, String sort, int offset, int numOfRecords);
+	List<ArticleDto> selectArticleList(String category, String categoryKr, String nation, String search, String sort, int offset, int numOfRecords);
 	
 	int getArticleCnt(String category, String nation, String search);
 

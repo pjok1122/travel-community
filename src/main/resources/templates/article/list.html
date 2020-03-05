@@ -36,8 +36,8 @@
 				</ul>
 			</div>
 		</div>
-	  <div class="row mt-4 justify-content-center">
-	    <div class="col col-lg-2">
+	  <div class="row mt-4">
+	  	<div class="col text-center">
 	      <h1>글목록</h1>
 	    </div>
 	  </div>
@@ -58,37 +58,7 @@
 	</div>
 
 	
-	<div class="container mt-2">
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th scope="col">번호</th>
-					<th scope="col">제목</th>
-					<th scope="col">날짜</th>
-					<th scope="col">조회수</th>
-				</tr>
-			</thead>
-			<tr th:each="article,iterStat : ${page.list}">
-				<th scope="row" th:text="${iterStat.count} + ${page.currentPageNo-1}*${page.recordsPerPage}"></th>
-				<td><a th:href="@{/article/{id}(id=${article.id})}">
-						<span th:utext="|[${article.nation}]| "></span>
-						<span th:utext="|${article.title}|"></span>
-						<span th:utext="|[${article.commentCnt}]|"></span>
-					</a>
-				</td>
-				<td th:text="${#temporals.format(article.registerDate, 'yyyy-MM-dd HH:mm')}"></td>
-				<td th:text="${article.hit}"></td>
-			</tr>
-		</table>
-		<div class="row justify-content-between mb-3">
-			<div class="col-4 float-left mt-2">
-				<h5 th:text="|Total : ${page.numberOfRecords}|"></h5>
-			</div>
-			<div class="col-2">
-				<button class="btn btn-primary float-right" onclick="window.location.href='./write'">글쓰기</button>
-			</div>
-		</div>
-	</div>
+	<th:block th:replace="common/html/article_list.html"></th:block>	
 	
 	<th:block th:replace="common/html/pagination.html"></th:block>
 	
@@ -108,6 +78,10 @@
 			$("#search-icon").on("click", function() {
 				search(url, paramMap);
 			});
+			
+			$("#search").keyup(function(e){
+				if(e.keyCode == 13) search(url, paramMap);
+			})
 		});
 		
 		function makeSortActive(paramMap){

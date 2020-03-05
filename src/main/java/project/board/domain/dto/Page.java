@@ -29,6 +29,9 @@ public class Page {
 		this.currentPageNo = currentPageNo;
 		this.recordsPerPage = 10;
 		this.sizeOfPage = 3;
+		this.startPageNo = 1;
+		this.endPageNo = 1;
+		this.finalPageNo = 1;
 	}
 	
 	public Page(int currentPageNo, int numberOfRecords) {
@@ -43,9 +46,6 @@ public class Page {
 	}
 	
 	public void makePageInfo() {
-		if(numberOfRecords==0) { 		//게시물이 없는 경우
-			return ;
-		}
 		if(currentPageNo <=0){
 			currentPageNo= 1;			//기본 값 설정
 			firstPageNo = 1;			//기본 값 설정
@@ -53,6 +53,10 @@ public class Page {
 		
 		if(recordsPerPage == 0) {
 			recordsPerPage = 10;		//기본 값 설정
+		}
+
+		if(numberOfRecords==0) { 		//게시물이 없는 경우
+			return;
 		}
 		
 		finalPageNo = (numberOfRecords + (recordsPerPage -1)) / recordsPerPage;

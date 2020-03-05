@@ -34,13 +34,13 @@
 	</select>
 	
 	<select id="selectArticleList" resultType="articleDto">
-		SELECT a.*, (a.hit+a.good*3) as score, count(c.id) as commentCnt
+		SELECT a.*, #{category} as category ,(a.hit+a.good*3) as score, count(c.id) as commentCnt
 		FROM article a
 		LEFT JOIN comment c
 		ON a.id = c.article_id
 		<where>
 			<if test='category neq "전체".toString()'>
-				a.category_id = (SELECT id FROM category WHERE title = #{category})
+				a.category_id = (SELECT id FROM category WHERE title = #{categoryKr})
 			</if>			
 			<if test='nation!=null and (nation neq "전체".toString())'>
 				AND a.nation = #{nation}

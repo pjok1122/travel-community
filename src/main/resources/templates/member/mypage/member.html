@@ -2,28 +2,36 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Mypage-MemberInfo</title>
+<th:block th:replace="common/html/head.html"></th:block>
 </head>
 <body>
+	
+	<th:block th:replace="common/html/mypage_nav_bar"></th:block>
 
-	<a href="/mypage/member">회원 정보</a>
-	<a href="/mypage/temp_article">임시 저장글</a>
-	<a href="/mypage/article">작성글</a>
-	<a href="/mypage/comment">작성댓글</a>
-	<a href="/mypage/bookmark">즐겨찾기 목록</a>
-
-
-<div>
-	<ul style="list-style-type: none;font-size: larger;"th:object="${member}">
-		<li th:text="|아이디 : *{email}|"></li>
-		<li th:text="|가입일자 : *{registerDate}|"></li>
-		<li th:text="|최근 로그인 : *{loginDate}|"></li>
-		<li th:text="|좋아요 수 : ${like}|"></li>
-	</ul>
+<div class="container-sm mt-5">
+	<div class="row justify-content-center">
+		<div class="col-8">
+			<div class="card">
+			  <div class="card-body">
+			    <h1 class="card-title">회원 정보</h1>
+			  </div>
+			  
+			  <ul class="list-group list-group-flush" th:object="${member}">
+			    <li class="list-group-item" th:text="|이메일 : *{email}|"></li>
+			    <li class="list-group-item" th:text="|가입일자 : *{registerDate}|"></li>
+			    <li class="list-group-item" th:text="|최근 로그인 : ${#temporals.format(member.loginDate, 'yyyy-MM-dd HH:mm')}|"></li>
+			    <li class="list-group-item" th:text="|좋아요 수 : ${like}|"></li>
+			  </ul>
+			  <div class="card-body">
+			    <a href="/mypage/update" class="card-link">회원 정보 변경</a>
+			    <a href="/mypage/delete" class="card-link">탈퇴</a>
+			  </div>
+			</div>
+		</div>
+	</div>
 </div>
 
-<a href="/mypage/update">회원 정보 변경</a>
-<a href="/mypage/delete">탈퇴</a>
 
 </body>
 </html>

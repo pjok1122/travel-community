@@ -40,6 +40,7 @@ public class Article extends CommonDomain{
 	
 	@NotBlank
 	private String nation;
+	
 	private String status;
 	
 }

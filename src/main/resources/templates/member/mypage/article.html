@@ -3,34 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+
+<th:block th:replace="common/html/head.html"></th:block>
 </head>
 <body>
-
-	<a href="/mypage/member">회원 정보</a>
-	<a href="/mypage/temp_article">임시 저장글</a>
-	<a href="/mypage/article">작성글</a>
-	<a href="/mypage/comment">작성댓글</a>
-	<a href="/mypage/bookmark">즐겨찾기 목록</a>
-
-	<table>
-
-		<thead>
-			<tr>
-				<td>번호</td>
-				<td>제목</td>
-				<td>날짜</td>
-				<td>조회수</td>
-			</tr>
-		</thead>
-		<tr th:each="article,iterStat : ${page.list}">
-			<td th:text="${iterStat.count}+${page.currentPageNo - 1}*${page.recordsPerPage}"></td>
-			<td><a th:text="|[${article.nation}] ${article.title} [${article.commentCnt}]|" th:href="@{/article/{id}(id =${article.id})}"></a></td>
-			<td th:text="${article.registerDate}"></td>
-			<td th:text="${article.hit}"></td>
-		</tr>
-	</table>
-
-<h1 th:text="|Total : ${page.numberOfRecords}|"></h1>
-
+	
+	<th:block th:replace="common/html/mypage_nav_bar"></th:block>
+	
+	<div class="row mt-4 text-center">
+	    <div class="col">
+	      <h1>작성 글</h1>
+	    </div>
+	  </div>
+	
+	<th:block th:replace="common/html/article_list.html"></th:block>
+	<th:block th:replace="common/html/pagination.html"></th:block>
+	
 </body>
 </html>

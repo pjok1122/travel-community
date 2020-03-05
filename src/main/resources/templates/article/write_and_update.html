@@ -1,51 +1,14 @@
 <!DOCTYPE html>
 <html>
-<head xmlns:th="http://www.thymeleaf.org">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width" />
-<title>Example</title>
-<!-- include libraries(jQuery, bootstrap) -->
-<link
-	href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css"
-	rel="stylesheet">
-<script
-	src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
-<script
-	src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
-<!-- include summernote css/js-->
-<link
-	href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css"
-	rel="stylesheet">
-<script
-	src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
-
+	<head xmlns:th="http://www.thymeleaf.org">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width" />
+	<title>Article Write</title>
+	
+	<th:block th:replace="common/html/head.html"></th:block>
+    <th:block th:replace="common/html/summernote_head.html"></th:block>
+     
 <style type="text/css">
-
-.list{
-	list-style:none;
-}
-
-.item{
-	border-bottom: 1px solid #e5e5e5;
-	position: relative;
-	transition: background-color .25s ease-out;
-}
-
-.article-button{
-	display: block;
-    padding: 24px 60px 16px 40px;
-    text-decoration: none;
-}
-
-.item{
-    position: relative;
-    border-bottom: 1px solid #eee;
-    transition: background-color .25s ease-out;
-}
-
-.item-id{
-	display:none;
-}
 
 .item-nation, .item-title{
     display: inline;
@@ -72,9 +35,11 @@
     position: absolute;
     top: 50%;
     right: 6px;
+    z-index:100;
     /* padding: 15px; */
     transform: translate(0,-50%);
 }
+
 
 </style>
 
@@ -82,52 +47,92 @@
 
 
 <body>
-	<div class="mt-5">
-		<div class="col-12">
-			<form id="articleForm" role="form" method="post">
-				<br style="clear: both">
-				<h3 style="margin-bottom: 25px;">Article Form</h3>
-			
-				<div class="form-group">
-					<input type="hidden" name="id" id="articleId">
-					
-					<select id="nation" name="nation">
-						<option value="대만">대만
-						<option value="태국">태국
-						<option value="일본">일본
-					</select>
-					<input type="text" class="form-control" id="title" name="title"
-						placeholder="title" onkeyup="checkLength(this)" required>
-					
-					<button type="button" class="btn btn-primary" id="temp-save" onclick="saveTempArticle()">임시저장</button>
-					<button type="button" class="btn btn-primary" id="temp-load" onclick="loadTempArticleList()">불러오기</button>
+
+	<th:block th:replace="common/html/navBar.html"></th:block>
+
+	<div class="container">
+		<div class="row mt-5">
+			<div class="col-12">
+				<div class="title text-center">
+					<h1 th:if="${article.status} neq 'PERMANENT'">Write Form</h1>
+					<h1 th:unless="${article.status} neq 'PERMANENT'">Update Form</h1>
 				</div>
-				<div class="form-group">
-					<textarea class="form-control" id="content" name="content"
-						placeholder="content" maxlength="140" rows="7"></textarea>
-				</div>
-				<button type="submit" id="submit" name="submit"
-					class="btn btn-primary pull-right">등록</button>
-			</form>
+			</div>
 		</div>
 	</div>
-	
+
+	<div class="container mt-5">
+		<form class="needs-validation" th:action="@{''}"
+			th:object="${article}" method="post">
+			<div class="form-row">
+				<div class="col-sm-2">
+					<div class="form-group">
+						<input type="hidden" class="form-control" id="articleId" th:value="${article.id}">
+						<div class="input-group mb-3">
+							<div class="input-group-prepended">
+								<label class="input-group-text" for="nation">국가</label>
+							</div>
+							<select class="custom-select" th:field="*{nation}">
+								<option value="대만">대만
+								<option value="라오스">라오스
+								<option value="말레이시아">말레이시아
+								<option value="베트남">베트남
+								<option value="싱가폴">싱가폴
+								<option value="일본">일본
+								<option value="중국">중국
+								<option value="태국">태국
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-9"></div>
+				<div class="col-9">
+					<div class="input-group">
+					<div class="input-group-prepended">
+						<label class="input-group-text" for="title">제목</label>
+					</div>
+						<input type="text" class="form-control" th:field="*{title}"
+							placeholder="ex) [베이터우] 디러구 " onkeyup="checkLength(this)" required>
+					</div>
+				</div>
+				
+				<div class="col-3 text-right mb-5">
+					<button th:if="${article.status} neq 'PERMANENT'" type="button" class="btn btn-outline-dark" id="temp-save"
+						onclick="saveTempArticle()">임시저장</button>
+					<button type="button" class="btn btn-outline-dark" id="temp-load"
+						onclick="loadTempArticleList()">불러오기</button>
+				</div>
+				<div class="col-12">
+					<div class="form-group">
+						<textarea class="form-control" th:field="*{content}"
+							maxlength="140" rows="7" required></textarea>
+					</div>
+				</div>
+				<div class="col-12 text-right">
+					<button type="submit" id="submit" name="submit"
+						class="btn btn-primary" onclick="checkValid()" th:text="${article.status} neq 'PERMANENT' ? '등록' : '수정' "></button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+
+
 	<!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="tempArticleModal" tabindex="-1" role="dialog" aria-labelledby="tempArticleModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
             <div class="modal-content">
                 <div class="modal-header">
+                    <h2 class="modal-title" id="tempArticleModalTitle">임시 저장글</h2>
+                    <small class="modal-title mt-4" id="articleCount"></small>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h2 class="modal-title" id="exampleModalLabel">임시 저장글</h2>
-                    <h5 class="modal-title" id="articleCount"></h5>
+			        	<span aria-hidden="true">&times;</span>
+			        </button>
                 </div>
-                <div class="article">
+                <div class="modal-body mb-0">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                    <button type="button" class="btn btn-primary" id="submit-report"data-dismiss="modal">신고하기</button>
                 </div>
             </div>
         </div>
@@ -142,6 +147,7 @@
 				minHeight : null,
 				maxHeight : null,
 				focus : true,
+				placeholder : "내용을 입력해주세요.",
 				callbacks : {
 					onImageUpload : function(files, editor, welEditable) {
 						for (var i = 0; i < files.length; i++) {
@@ -150,6 +156,7 @@
 					}
 				}
 			});
+			
 		});
 
 		function sendFile(file, el) {
@@ -237,7 +244,7 @@
 		}
 		function loadTempArticle(index){
 			var article = tempArticles[index];
-			$("#exampleModal").modal('toggle');
+			$("#tempArticleModal").modal('toggle');
 			$("#articleId").val(article.id);
 			$("#nation").val(article.nation);
 			$("#title").val(article.title);
@@ -246,9 +253,8 @@
 		
 		function loadTempArticleList(){
 			getTempArticleList();
-			$("#exampleModal").modal('toggle');
+			$("#tempArticleModal").modal('toggle');
 		}
-		
 		
 		function getTempArticleList(){
 			$.ajax({
@@ -258,28 +264,40 @@
 				success : function(articles){
 					tempArticles = articles;
 					$("#articleCount").html(`총 ${articles.length}개`);
-					var html = `<ul class="list">`;
+					var html = `<div class="container-fluid"><div class="list-group list-group-flush row">`;
 					for(var i=0;i<articles.length;i++){
-						html += `<li class="item">
-							<a class="article-button" role="button" onclick="loadTempArticle(${i})">
-								<input type="hidden" id="index" value=${i}></span>
-								<span class="item-nation">[${articles[i].nation}]</span>
-								<span class="item-title">${articles[i].title} </span>
-								<span class="item-date">${articles[i].updateDate > articles[i].registerDate ? articles[i].updateDate : articles[i].registerDate}</span>
-								<button type="button" title="삭제" class="delete-button" onclick="deleteTempArticle(${i})">삭제</button>
-							</a>
-							</li>`
+						html += `
+										<a class="list-group-item list-group-item-action col-12">
+											<div class="list-group-item-action" onclick="loadTempArticle(${i})">
+												<input type="hidden" id="index" value=${i}></span>
+												<span class="item-nation">[${articles[i].nation}]</span>
+												<span class="item-title">${articles[i].title} </span>
+												<span class="item-date">${articles[i].updateDate > new Date(articles[i].registerDate).toLocaleString('ko-KR') ? (articles[i].updateDate) : new Date(articles[i].registerDate).toLocaleString('ko-KR')}</span>
+											</div>
+											<span class="delete-button" data-dismiss="modal" onclick="deleteTempArticle(${i})"><i class="far fa-trash-alt"></i></span>
+										</a>
+											`
 					}
-					html += '</ul>';
-					$(".article").html(html);
+					html += `</div></div>`;
+					$(".modal-body").html(html);
 				},
 				complete : function(response){
 					if(response.status == 302){
 						window.location.href=response.responseText;
 					}
-				}
+				}	
 			})
 		}
+		
+		function checkValid(){
+			var title = $("#title").val();
+			var content = $("#content").val();
+			
+			if(title.length <=0 || content.length <=0){
+				alert("제목과 내용을 입력해주세요.");
+			}
+		}
+		
 		
 	</script>
 </body>

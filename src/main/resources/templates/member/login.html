@@ -31,7 +31,7 @@
 				<input type="password" class="form-control" th:field="*{password}">
 			</div>
 			<div class="form-group">
-				<small id="error" th:if="${#fields.hasErrors('*')}" th:errors="*{password}">Incorrect date</small>
+				<small class="form-text text-muted" th:if="${#fields.hasErrors('*')}" th:errors="*{password}">Incorrect date</small>
 			</div>
 			<button type="submit" class="btn btn-primary">로그인</button>
 		</form>

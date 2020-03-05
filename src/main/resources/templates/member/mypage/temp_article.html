@@ -2,34 +2,52 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Mypage-TempArticle</title>
+<th:block th:replace="common/html/head.html"></th:block>
+
+<style>
+.article-nation{
+	color: red;
+}
+</style>
 </head>
 <body>
+	
+	
+	<th:block th:replace="common/html/mypage_nav_bar"></th:block>
 
-	<a href="/mypage/member">회원 정보</a>
-	<a href="/mypage/temp_article">임시 저장글</a>
-	<a href="/mypage/article">작성글</a>
-	<a href="/mypage/comment">작성댓글</a>
-	<a href="/mypage/bookmark">즐겨찾기 목록</a>
-
-	<table>
-
-		<thead>
-			<tr>
-				<td>번호</td>
-				<td>제목</td>
-				<td>날짜</td>
+	<div class="row mt-4 text-center">
+	    <div class="col">
+	      <h1>임시저장 글</h1>
+	    </div>
+	  </div>
+	
+	<div class="container mt-3">		
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">번호</th>
+					<th scope="col">제목</th>
+					<th scope="col">날짜</th>
+				</tr>
+			</thead>
+			<tr th:each="article,iterStat : ${page.list}">
+				<th scope="row" th:text="${iterStat.count} + ${page.currentPageNo-1}*${page.recordsPerPage}"></th>
+				<td><a th:href="@{/article/write}">
+					<span class="article-nation" th:utext="|[${article.nation}]|"></span>
+					<span th:utext="|${article.title}|"></span>
+				</a></td>
+				<td th:text="${#temporals.format(article.registerDate, 'yyyy-MM-dd HH:mm')}"></td>
 			</tr>
-		</thead>
-		<tr th:each="article,iterStat : ${page.list}">
-			<td th:text="${iterStat.count}+${page.currentPageNo - 1}*${page.recordsPerPage}"></td>
-			<td><a th:text="|[${article.nation}] ${article.title}|"></a></td>
-			<td th:text="${article.registerDate}"></td>
-		</tr>
+		</table>
+		<div class="row">
+			<div class="col-4 float-left mt-2">
+				<h5 th:text="|Total : ${page.numberOfRecords}|"></h5>
+			</div>
+		</div>
+	</div>
+	
 
-	</table>
-
-<h1 th:text="|Total : ${page.numberOfRecords}|"></h1>
 
 </body>
 </html>

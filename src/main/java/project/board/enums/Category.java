@@ -13,6 +13,6 @@ public enum Category {
 	private String krValue;
 	
 	private Category(String krValue) {
-		this.krValue =krValue;
+		this.krValue = krValue;
 	}
 }
