@@ -12,12 +12,23 @@ import project.board.domain.Comment;
 public class CommentDto extends Comment
 {
 	private String writer;
+	private Boolean isGood;
 	
 	private List<ReplyDto> replies = new ArrayList<ReplyDto>();
 	
 	public boolean replyEmpty()
 	{
 		if(replies.isEmpty())
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isDelete()
+	{
+		if(replyEmpty())
 		{
 			return true;
 		}

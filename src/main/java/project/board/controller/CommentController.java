@@ -51,7 +51,7 @@ public class CommentController {
 		HttpSession session
 	)
 	{
-		List<CommentDto> comments = commentService.getByArticleId(articleId);
+		List<CommentDto> comments = commentService.getByArticleId(utils.memberIdConvert(session), articleId);
 		
 		return ResponseEntity.ok().body(comments);
 	}

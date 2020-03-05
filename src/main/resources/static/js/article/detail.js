@@ -16,20 +16,21 @@ $(document).ready(function(){
 		var parent = current.parentElement;
 		var commentId = parent.getAttribute("name");
 		
+		console.log(current);
+		
 		if(current.innerText == '삭제')
 		{
+			console.log(current.innerText);
 			commentDelete(commentId);
 		}	
 		else if(current.innerText == '등록')
 		{
 			commentInsert(articleId, parent.parentElement.getElementsByTagName("textarea")[0].value, commentId);
 		}	
-		else if(current.innerText == '좋아요')
+		else if(parent.getAttribute("name") == 'comment-like')
 		{
-			console.log(current.innerText);
-
-			console.log(parent.parentElement.parentElement);
-			commentLikeInsert(parent.parentElement.parentElement.getAttribute("name"));
+			//console.log(parent.parentElement.getAttribute("name"));
+			commentLikeInsert(parent.parentElement.getAttribute("name"));
 		}
 		else if(current.innerText == '댓글달기')
 		{
@@ -77,7 +78,6 @@ $(document).ready(function(){
 			success: function(data){
 				email = data;
 			},
-			
 			complete : function(response){
 				if(response.status == 302){
 //					alert("로그인이 필요한 작업입니다.");
@@ -98,9 +98,14 @@ $(document).ready(function(){
 	        	'commentId': commentId
 	        },
 	        success : function(data){
-	        	console.log(data);
 	        	getCommentList(articleId);
-	        }
+	        }, 
+	        complete : function(response){
+				if(response.status == 302){
+					alert("로그인이 필요한 작업입니다.");
+					window.location.href=response.responseText;
+				}
+			}
 		});
 	}
 	
@@ -116,7 +121,13 @@ $(document).ready(function(){
 	        success : function(data){
 	        	getCommentList(articleId);
 	        	document.getElementById('commentContent').value = ''
-	        }
+	        }, 
+	        complete : function(response){
+				if(response.status == 302){
+					alert("로그인이 필요한 작업입니다.");
+					window.location.href=response.responseText;
+				}
+			}
 		});
 	}
 	
@@ -126,7 +137,13 @@ $(document).ready(function(){
 	        type : 'post',
 	        success : function(data){
 	        	getCommentList(articleId);
-	        }
+	        }, 
+	        complete : function(response){
+				if(response.status == 302){
+					alert("로그인이 필요한 작업입니다.");
+					window.location.href=response.responseText;
+				}
+			}
 	    });
 	}
 	
@@ -138,6 +155,7 @@ $(document).ready(function(){
 	        	'articleId': articleId
 	        },
 	        success : function(data){
+	        	console.log(data);
 	            var html = "";
 	            
 	            if(data.length > 0){
@@ -150,16 +168,17 @@ $(document).ready(function(){
 	                					<strong> ${data[i].writer} </strong>&nbsp ${data[i].registerDate}
 	                					${data[i].writer == article_writer ? `&nbsp[글쓴이]` : ''}
 	                				</h6>
-	                				${data[i].content}
+	                				${data[i].updateDate == null ? `${data[i].content}` : '삭제된 댓글입니다'}
 	                			</div>
-	                			<div class='col' name='${data[i].id}' >
-	                				<button class='icon' id='icon-like-comment'>
-	                					<img src='/img/imgs/like2.png'>
-	                				</button>
-	                				&nbsp<a href='#'>댓글달기</a>
+	                			<div class='col' name='${data[i].id}'>
+	                				<button class="icon" name='comment-like'>
+                						${data[i].isGood ? `<img src="/img/imgs/like2.png">`: `<img src="/img/imgs/like1.png">`}
+                					</button>
+                					
+	                				${data[i].updateDate == null ? `&nbsp<a href='#'>댓글달기</a>` : ''}
 
-	                				${data[i].writer == email ? `&nbsp<button type='button' class='btn btn-info'>삭제</button>` : ''}
-	                				${data[i].writer == email ? '':`<button class='icon' id='icon-report-comment' onclick='$('#exampleModal').modal('show')'><img class='report' src='/img/imgs/report.png'></button>`}
+	                				${data[i].writer == email ? `&nbsp<a href='#'>삭제</a>` : ''}
+	                				${data[i].writer == email ? '':`${data[i].writer == email ? '':`<a class='icon' onclick='$('#exampleModal').modal('show')'>신고</a>`}`}
 	                				
 	                				<!--
 			                		<button type="button" class="btn btn-default" aria-label="Left Align">
@@ -173,7 +192,6 @@ $(document).ready(function(){
 			                		</button>
 			                		-->
 		                		
-		                		
 	                			${data[i].replies.map(reply =>
 	                				`
                 					<div class='container'>
@@ -182,8 +200,11 @@ $(document).ready(function(){
 		                					${reply.writer == article_writer ? `&nbsp[글쓴이]` : ''}
 		                				</h6>
 		                				${reply.content}
-		                				<div>
-		                					<a href="#">좋아요</a>
+		                				<div class='col' name='${reply.id}'>
+		                					<button class="icon" name='comment-like'>
+		                						${reply.isGood ? `<img src="/img/imgs/like2.png">`: `<img src="/img/imgs/like1.png">`}
+		                					</button>
+		                					${reply.writer == email ? `&nbsp<a href='#'>삭제</a>` : ''}
 		                					<a href="#">신고</a>
 		                				</div>
 		                			</div>

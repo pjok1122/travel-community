@@ -9,6 +9,11 @@ public class CommonUtils
 {
 	public Long memberIdConvert(HttpSession session)
 	{
-		return Long.valueOf(String.valueOf(session.getAttribute("memberId")));
+		if(session.getAttribute("memberId") != null)
+		{
+			return Long.valueOf(String.valueOf(session.getAttribute("memberId")));
+		}
+		
+		return null;
 	}
 }

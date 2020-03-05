@@ -40,9 +40,9 @@ public class CommentService {
 		return commentRepository.selectCommentByIdAndMemberId(id, memberId);
 	}
 	
-	public List<CommentDto> getByArticleId(Long articleId)
+	public List<CommentDto> getByArticleId(Long memberId, Long articleId)
 	{
-		List<CommentDto> list = commentRepository.selectCommentByArticleId(articleId);
+		List<CommentDto> list = commentRepository.selectCommentByArticleId(memberId, articleId);
 		System.out.println();
 		return list;
 	}
@@ -66,13 +66,13 @@ public class CommentService {
 	{
 		CommentDto comment = getById(commentId, memberId);
 		
-		if(comment.replyEmpty())
+		if(comment.isDelete())
 		{
 			deleteCommentById(commentId);
 		}
 		else
 		{
-			updateCommentContentById(commentId, "삭제된 댓글입니다.");
+			updateCommentContentById(commentId);
 		}
 	}
 	
@@ -81,9 +81,9 @@ public class CommentService {
 		commentRepository.deleteCommentById(id);
 	}
 	
-	public void updateCommentContentById(Long id, String content)
+	public void updateCommentContentById(Long id)
 	{
-		commentRepository.updateCommentContentById(id, content);
+		commentRepository.updateCommentContentById(id);
 	}
 	
 	public boolean selectCommentLikeByMemberIdAndCommentId(Long memberId, Long commentId)
