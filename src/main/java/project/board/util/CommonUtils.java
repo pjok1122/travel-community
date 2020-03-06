@@ -16,4 +16,16 @@ public class CommonUtils
 		
 		return null;
 	}
+	
+	public Long memberIdConvertThrow(HttpSession session) throws Exception
+	{
+		Long id = memberIdConvert(session);
+		
+		if(id == null)
+		{
+			throw new Exception("forbidden");
+		}
+		
+		return id;
+	}
 }

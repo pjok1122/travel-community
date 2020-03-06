@@ -37,9 +37,10 @@ public class CommentController {
 		@RequestParam String content, 
 		@RequestParam Long parentCommentId, 
 		HttpSession session
-	)
+	) throws Exception
 	{
-		commentService.create(articleId, utils.memberIdConvert(session), parentCommentId, content);
+		
+		commentService.create(articleId, utils.memberIdConvertThrow(session), parentCommentId, content);
 		
 		return ResponseEntity.ok().build();
 	}
@@ -61,7 +62,7 @@ public class CommentController {
 	(
 		@PathVariable Long commentId, 
 		HttpSession session
-	)
+	) 
 	{
 		commentService.delete(commentId, utils.memberIdConvert(session));
 		

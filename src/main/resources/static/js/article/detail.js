@@ -7,6 +7,11 @@ $(document).ready(function(){
 	
 	getCommentList(articleId);
 	
+	if(email == null)
+	{
+		document.getElementById('commentInsert').style.display = 'none';
+	}	
+	
 	$("#comment-insert").on("click", function(){
 		commentInsert(articleId, $("#commentContent").val(), '');
 	});
@@ -34,6 +39,13 @@ $(document).ready(function(){
 		}
 		else if(current.innerText == '댓글달기')
 		{
+			if(email == null)
+			{
+				alert("로그인이 필요한 작업입니다.");
+				window.location.href='http://localhost:8080/login';
+				return;
+			}	
+			
 			var reply = document.getElementById('comment-reply')
 			
 			var html =
@@ -155,7 +167,7 @@ $(document).ready(function(){
 	        	'articleId': articleId
 	        },
 	        success : function(data){
-	        	console.log(data);
+//	        	console.log(data);
 	        	$(".commentCount").html(data.length);
 	            var html = "";
 	            
