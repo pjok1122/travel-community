@@ -210,14 +210,14 @@
 		
 		function saveTempArticle(){
 			var title = $("#title").val();
+			var categoryId = $("#categoryId").val();
 			var content = $("#content").val();
-			var category = window.location.pathname.split("/")[1];
 			var nation = $("#nation").val();
 			if(title.length <= 0 || content.length <=0){
 				alert("제목과 내용을 입력해주세요.");
 			}
 			else{
-				var data = {'title':title, 'content':content,'category':category, 'nation':nation};
+				var data = {'title':title, 'content':content,'categoryId':categoryId, 'nation':nation};
 				ajaxTempWrite(data);
 			}
 		}
@@ -265,6 +265,7 @@
 			var article = tempArticles[index];
 			$("#tempArticleModal").modal('toggle');
 			$("#articleId").val(article.id);
+			$("#categoryId").val(article.categoryId);
 			$("#nation").val(article.nation);
 			$("#title").val(article.title);
 			$("#content").summernote("code", article.content);

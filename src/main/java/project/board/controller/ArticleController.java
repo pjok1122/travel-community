@@ -176,7 +176,6 @@ public class ArticleController {
 	@PostMapping("/ajax/temp/write")
 	@AjaxLoginAuth
 	public ResponseEntity<?> processTempArticleWirte(
-			@RequestParam("category") Category category,
 			@ModelAttribute @Valid Article article,
 			BindingResult result,
 			HttpSession session)
@@ -184,10 +183,11 @@ public class ArticleController {
 		Long memberId = sessionUtils.getMemberId(session);
 
 		if(result.hasErrors() || !articleService.checkTempArticleWritable(memberId)) {
+			result.getAllErrors().forEach(System.out::println);
 			return ResponseEntity.badRequest().build();
 		}
 		
-		Long id = articleService.createTempArticle(article, category, memberId);
+		Long id = articleService.createTempArticle(article, memberId);
 		return ResponseEntity.ok().body(id);
 	}
 	

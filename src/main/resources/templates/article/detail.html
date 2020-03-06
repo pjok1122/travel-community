@@ -3,15 +3,12 @@
 <head xmlns:th="http://www.thymeleaf.org">
 <meta charset="UTF-8">
 <title>Detail</title>
-<!-- include libraries(jQuery, bootstrap) -->
-<link
-	href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css"
-	rel="stylesheet">
+
 <script
 	src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
-<script
-	src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
 <script src="/js/article/detail.js"></script>
+
+<th:block th:replace="common/html/head.html"></th:block>
 
 </head>
 <style>
@@ -52,7 +49,7 @@ footer{
 	margin-left: 10px;
 }
 
-#len-count{
+.len-count{
 	display:none;
 }
 
@@ -75,42 +72,38 @@ footer{
 
 <body>
 
-<div>
-<a href="/accomadation/all">숙박정보</a>
-<a href="/restaurant/all">맛집</a>
-<a href="/festival/all">축제 정보</a>
-<a href="/attractions/all">관광지</a>
-</div>
+<th:block th:replace="common/html/navBar.html"></th:block>
 
 	<div class="container">
-		<div class="row marketing">
+		<div class="row">
 			<div class="col-lg-12">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h3 class="panel-title">
-							<div style="font-size:12px;color:red;" th:text="|[${article.nation}]|"></div>
-                     		<div><a th:utext="${article.title}" href="#"></a></div>
-                     
-                     		<div class="meta-info">
-                     			<span style="display:none" id="articleId" th:text="${article.id}" ></span>
-                     			<span id="email" th:text="${article.email}" ></span>
-                        		<span th:utext="${article.registerDate}" class="pull-right text-right"></span>
-                        <span th:if="${article.updateDate}!=null" th:utext="|마지막 수정일자 : ${article.updateDate}|"></span>
-                        <label>조회 : </label>
-                        <span th:text="${article.hit}"></span>
-                        <label>댓글 : </label>
-                        <span th:text="${article.commentCnt}"></span>
-                        <label>좋아요  : </label>
-                        <span class="likeCount" th:text="${article.good}"></span>
-                     </div>
-						</h3>
+				<div class="card">
+					<div class="card-header">
+						<div class="article-nation" th:text="|[${article.nation}]|"></div>
+                     	<div class="card-title" th:utext="${article.title}"></div>
+                     	<div class="meta-info row">
+                     		<div class="col">
+	                    		<span style="display:none" id="articleId" th:text="${article.id}" ></span>
+	                    		<span id="email" th:text="${article.email}" ></span>
+	                       		<small th:utext="${#temporals.format(article.registerDate, 'yyyy-MM-dd HH:mm')}"></small>
+	                       		<small th:if="${article.updateDate}!=null" th:utext="|마지막 수정일자 : ${article.updateDate}|"></small>
+	                        </div>
+	                        <div class="col text-right">
+		                        <small class="card-text">조회 : </small>
+		                        <small class="card-text" th:text="${article.hit}"></small>
+		                        <small class="card-text">댓글 : </small>
+		                        <small class="card-text commentCount" th:text="${article.commentCnt}"></small>
+		                        <small class="card-text">좋아요  : </small>
+		                        <small class="card-text likeCount" th:text="${article.good}"></small>
+                     		</div>
+                    	</div>
 					</div>
-					<div th:utext="${article.content}" class="panel-body"></div>
+					<div class="card-body" th:utext="${article.content}"></div>
 				</div>
 			</div>
 		</div>
-		<div class="row mt-5">
-			<div class="col-lg-4">
+		<div class="row mt-1">
+			<div class="col">
 				<button class="icon" id="icon-like">
 					<img th:if="${liked} eq 1" id="like" th:name="${liked}" src="/img/imgs/like2.png">
 					<img th:unless="${liked} eq 1" id="like" th:name="${liked}" th:src="@{/img/imgs/like1.png}">
@@ -123,20 +116,21 @@ footer{
 				<button class="icon" id="icon-report">
 					<img id="report" src="/img/imgs/report.png">
 				</button>
-				
+			</div>
+			<div class="col">
 				<span class="control-button">
-				<button class="primary-btn btn"
-						th:if="${session.memberId} == ${article.memberId}"
-						th:onclick="|window.location.href='/article/update/${article.id}'|">수정하기</button>
-				<button class="primary-btn btn"
-						th:if="${session.memberId} == ${article.memberId}"
-						th:onclick="|window.location.href='/article/delete/${article.id}'|">삭제하기</button>
+					<button class="btn btn-primary"
+							th:if="${session.memberId} == ${article.memberId}"
+							th:onclick="|window.location.href='/article/update/${article.id}'|">수정하기</button>
+					<button class="btn btn-danger"
+							th:if="${session.memberId} == ${article.memberId}"
+							th:onclick="|window.location.href='/article/delete/${article.id}'|">삭제하기</button>
 				</span>
 			</div>
 		</div>
 	</div>
 	
-	<div class="container">
+	<div class="container mt-4">
         <div class="commentList" id="commentList"></div>
     </div>
 
@@ -146,8 +140,9 @@ footer{
 	            <div class="panel panel-default">
 	                <div class="panel-body">
 	                	<span><strong id="writer"></strong></span>
-	                    <textarea placeholder="댓글을 입력해주세요" class="pb-cmnt-textarea" id="commentContent" name="commentContent"></textarea>
-                    	<span> 0 / 300</span>
+	                    <textarea placeholder="댓글을 입력해주세요" class="pb-cmnt-textarea" id="commentContent" name="commentContent"
+	                    onkeyup="checkLength(this,$('#comment-len-count'), 300)"></textarea>
+                    	<span id="comment-len-count"> 0 / 300 자</span>
                         <button class="btn btn-primary pull-right" type="button" id="comment-insert">등록</button>
 	                </div>
 	            </div>
@@ -174,8 +169,8 @@ footer{
 	                    <li><input type="radio" name="checkInfo" id="rdo-libel" value="3">명예훼손/사생활 침해 등 저작권침해 행위</li>
 	                    <li><input type="radio" name="checkInfo" id="rdo-etc" value="4">기타</li>
                     </ul>
-                    	<textarea id="rdo-text-area" name="reportDesc" cols="50" rows="5" placeholder="해당 신고는 커뮤니티 운영자에게 전달되며, 부적절한 내용으로 판단될 경우 해당 게시물은 삭제됩니다." onkeyup="checkLength(this)"></textarea>
-                    	<span id="len-count">0 / 200 자</span>
+                    	<textarea id="rdo-text-area" name="reportDesc" cols="50" rows="5" placeholder="해당 신고는 커뮤니티 운영자에게 전달되며, 부적절한 내용으로 판단될 경우 해당 게시물은 삭제됩니다." onkeyup="checkLength(this,$('#report-len-count'), 200)"></textarea>
+                    	<span id="report-len-count" class="len-count">0 / 200 자</span>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
@@ -266,10 +261,10 @@ footer{
 			$("input:radio[name=checkInfo]").on("click", function(){
 				if($("input[name=checkInfo]:checked").val() == 4){
 					$("#rdo-text-area").css("display", "block");
-					$("#len-count").css("display", "block");
+					$("#report-len-count").css("display", "block");
 				} else{
 					$("#rdo-text-area").css("display", "none");
-					$("#len-count").css("display", "none");
+					$("#report-len-count").css("display", "none");
 				}
 			})
 			
@@ -291,13 +286,13 @@ footer{
 			});
 		});
 		
-		function checkLength(obj){
+		function checkLength(obj, target, length){
 			var content = $(obj).val();
-			$('#len-count').html("("+ content.length + " / 200 자)");
+			target.html(`(${content.length} / ${length} 자)`);
 			
-			if(content.length > 200){
-				$(obj).val(content.substring(0,200));
-				$('#len-count').html("(200 / 200 자)");
+			if(content.length > length){
+				$(obj).val(content.substring(0,length-1));
+				target.html(`(${length} / ${length} 자)`);
 			}
 		}
 	</script>

@@ -156,63 +156,57 @@ $(document).ready(function(){
 	        },
 	        success : function(data){
 	        	console.log(data);
+	        	$(".commentCount").html(data.length);
 	            var html = "";
 	            
 	            if(data.length > 0){
 	                for(i=0; i<data.length; i++){
 	                	html +=
 	                		`
-	                		<div>
-	                			<div>
-	                				<h6>
-	                					<strong> ${data[i].writer} </strong>&nbsp ${data[i].registerDate}
-	                					${data[i].writer == article_writer ? `&nbsp[글쓴이]` : ''}
+	                		<div class="media">
+              					<i class="mr-3 fas fa-user fa-2x"></i>
+	                			<div class="media-body">
+		                			<h6 class="mt-0">
+		                			<strong> ${data[i].writer} </strong>&nbsp ${data[i].registerDate}
+		                					${data[i].writer == article_writer ? `&nbsp[글쓴이]` : ''}
 	                				</h6>
 	                				${data[i].updateDate == null ? `${data[i].content}` : '삭제된 댓글입니다'}
-	                			</div>
-	                			<div class='col' name='${data[i].id}'>
-	                				<button class="icon" name='comment-like'>
-                						${data[i].isGood ? `<img src="/img/imgs/like2.png">`: `<img src="/img/imgs/like1.png">`}
-                					</button>
-                					
-	                				${data[i].updateDate == null ? `&nbsp<a href='#'>댓글달기</a>` : ''}
-
-	                				${data[i].writer == email ? `&nbsp<a href='#'>삭제</a>` : ''}
-	                				${data[i].writer == email ? '':`${data[i].writer == email ? '':`<a class='icon' onclick='$('#exampleModal').modal('show')'>신고</a>`}`}
 	                				
-	                				<!--
-			                		<button type="button" class="btn btn-default" aria-label="Left Align">
-			                			<span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
-			                		</button>
-			                		<button type="button" class="btn btn-default" aria-label="Left Align">
-			                			<span class="glyphicon glyphicon-comment"></span>
-			                		</button>
-			                		<button type="button" class="btn btn-default" aria-label="Left Align">
-			                			<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-			                		</button>
-			                		-->
-		                		
+	                				<div name='${data[i].id}'>
+		                				<button class="icon" name='comment-like'>
+	                						${data[i].isGood ? `<img src="/img/imgs/like2.png">`: `<img src="/img/imgs/like1.png">`}
+	                					</button>
+	                					
+		                				${data[i].updateDate == null ? `&nbsp<a href='#'>댓글달기</a>` : ''}
+	
+		                				${data[i].writer == email ? `&nbsp<a href='#'>삭제</a>` : ''}
+		                				${data[i].writer == email ? '': `<a class='icon' onclick='$('#exampleModal').modal('show')'>신고</a>`}
+	                				</div>
+	                			
 	                			${data[i].replies.map(reply =>
 	                				`
-                					<div class='container'>
-		                				<h6>
-		                					<strong> ${reply.writer} </strong>&nbsp ${reply.registerDate}
-		                					${reply.writer == article_writer ? `&nbsp[글쓴이]` : ''}
-		                				</h6>
-		                				${reply.content}
-		                				<div class='col' name='${reply.id}'>
-		                					<button class="icon" name='comment-like'>
-		                						${reply.isGood ? `<img src="/img/imgs/like2.png">`: `<img src="/img/imgs/like1.png">`}
-		                					</button>
-		                					${reply.writer == email ? `&nbsp<a href='#'>삭제</a>` : ''}
-		                					<a href="#">신고</a>
+                					<div class='media mt-3'>
+                						<i class="mr-3 fas fa-user fa-2x"></i>
+                						<div class="media-body">
+			                				<h6 class="mt-0">
+			                					<strong> ${reply.writer} </strong>&nbsp ${reply.registerDate}
+			                					${reply.writer == article_writer ? `&nbsp[글쓴이]` : ''}
+			                				</h6>
+		                					${reply.content}
+			                				<div class='col' name='${reply.id}'>
+			                					<button class="icon" name='comment-like'>
+			                						${reply.isGood ? `<img src="/img/imgs/like2.png">`: `<img src="/img/imgs/like1.png">`}
+			                					</button>
+			                					${reply.writer == email ? `&nbsp<a href='#'>삭제</a>` : ''}
+			                					${reply.writer == email ? '': "<a class='icon' onclick='$('#exampleModal').modal('show')'>신고</a>"}
+			                				</div>
 		                				</div>
 		                			</div>
 	                				`
 	                			).join("")}
-	                			</div>
 	                			<div style='border-bottom: 1px dotted #ccc'></div>
                 			</div>
+                		</div>
 	                		`
 	                }
 	            } else {

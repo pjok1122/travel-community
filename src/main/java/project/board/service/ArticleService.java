@@ -98,10 +98,8 @@ public class ArticleService {
 		}
 	}
 	
-	public Long createTempArticle(Article article, Category category, Long memberId) {		
-		Long categoryId = categoryRepository.selectIdByTitle(category.getKrValue());
+	public Long createTempArticle(Article article,Long memberId) {		
 		article.setMemberId(memberId);
-		article.setCategoryId(categoryId);
 		article.setTitle((scriptEscaper.scriptEscape(article.getTitle())));
 		articleRepository.insertTempArticle(article);
 		return article.getId();
