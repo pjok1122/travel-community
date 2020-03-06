@@ -67,7 +67,7 @@
 			<div class="form-row">
 				<div class="col-sm-3">
 					<div class="form-group">
-						<input type="hidden" class="form-control" id="articleId" th:value="${article.id}">
+						<input type="hidden" class="form-control" th:field="*{id}">
 						<div class="input-group mb-3">
 							<div class="input-group-prepended">
 								<label class="input-group-text" for="categoryId">카테고리</label>
@@ -229,7 +229,7 @@
 				data : {'articleId':articleId},
 				type : 'POST',
 				success : function(data){
-					$("#articleId").val(null);
+					$("#id").val(null);
 				},
 				complete : function(response){
 					if(response.status == 302){
@@ -240,7 +240,7 @@
 		}
 		
 		function ajaxTempWrite(data){
-			var articleId = $("#articleId").val();
+			var articleId = $("#id").val();
 			var url = '/ajax/temp/';
 			url += (articleId==="" ? 'write' : 'update');
 			if(articleId){
@@ -252,7 +252,7 @@
 				type : 'POST',
 				success : function(id){
 					alert("임시저장이 완료되었습니다.");
-					$("#articleId").val(id);
+					$("#id").val(id);
 				},
 				complete : function(response){
 					if(response.status==400){
@@ -264,7 +264,7 @@
 		function loadTempArticle(index){
 			var article = tempArticles[index];
 			$("#tempArticleModal").modal('toggle');
-			$("#articleId").val(article.id);
+			$("#id").val(article.id);
 			$("#categoryId").val(article.categoryId);
 			$("#nation").val(article.nation);
 			$("#title").val(article.title);
@@ -291,7 +291,7 @@
 											<div class="list-group-item-action" onclick="loadTempArticle(${i})">
 												<input type="hidden" id="index" value=${i}></span>
 												<span class="item-nation">[${articles[i].nation}]</span>
-												<span class="item-title">${articles[i].title} </span>
+												<span class="item-title">${(articles[i].title).length >= 20 ? `${articles[i].title.substr(0,20)} ... ` : `articles[i].title`} </span>
 												<span class="item-date">${articles[i].updateDate > new Date(articles[i].registerDate).toLocaleString('ko-KR') ? (articles[i].updateDate) : new Date(articles[i].registerDate).toLocaleString('ko-KR')}</span>
 											</div>
 											<span class="delete-button" data-dismiss="modal" onclick="deleteTempArticle(${i})"><i class="far fa-trash-alt"></i></span>

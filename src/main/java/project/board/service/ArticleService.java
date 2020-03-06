@@ -81,6 +81,7 @@ public class ArticleService {
 		article.setMemberId(memberId);
 		article.setTitle((scriptEscaper.scriptEscape(article.getTitle())));
 		
+		System.out.println(article.getId());
 		if(article.getId()!=null) {
 			articleRepository.updateTempToPermanent(article);
 		}
