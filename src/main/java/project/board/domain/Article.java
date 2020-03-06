@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.apache.ibatis.type.Alias;
 import org.hibernate.validator.constraints.Length;
@@ -23,6 +24,8 @@ import lombok.NoArgsConstructor;
 //	private Long id;
 public class Article extends CommonDomain{
 	private Long memberId;
+	
+	@NotNull
 	private Long categoryId;
 	
 	@NotBlank

@@ -43,7 +43,10 @@ public class ArticleService {
 	@Autowired
 	ScriptEscapeUtils scriptEscaper;
 	
-	private final int TEMP_ARTICLE_MAX_SIZE = 10;
+	private static final int TEMP_ARTICLE_MAX_SIZE = 10;
+	private static final int MAIN_ARTICLE_NUM = 5;
+	private static final String NEWEST = "NEWEST";
+	private static final String POPULAR = "POPULAR";
 	
 	public List<ArticleDto> getArticleByMemberId(Long id, Page paging) {
 		return articleRepository.selectArticleListByMemberId(id, paging.getOffset(), paging.getRecordsPerPage(), "PERMANENT");
@@ -70,15 +73,12 @@ public class ArticleService {
 		Page paging = new Page(page);
 		paging.setNumberOfRecordsAndMakePageInfo(articleRepository.getArticleCnt(category.getKrValue(), nation.getKrValue(), search));
 		paging.setList(articleRepository.selectArticleList(category.getKrValue(), nation.getKrValue(), search, sort.toString(), paging.getOffset(), paging.getRecordsPerPage()));
-		
 		map.put("page", paging);
 		return map;
 	}
 
-	public Long createArticle(Article article, Category category, Long memberId) {
-		Long categoryId = categoryRepository.selectIdByTitle(category.getKrValue());
+	public Long createArticle(Article article, Long memberId) {
 		article.setMemberId(memberId);
-		article.setCategoryId(categoryId);
 		article.setTitle((scriptEscaper.scriptEscape(article.getTitle())));
 		
 		if(article.getId()!=null) {
@@ -176,6 +176,17 @@ public class ArticleService {
 			return true;
 		}
 		return false;
+	}
+
+	public Map<String,Object> getMainArticle() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<ArticleDto> newArticles = articleRepository.selectArticleList(null, null, null, NEWEST, 0, MAIN_ARTICLE_NUM);
+		List<ArticleDto> popularArticles = articleRepository.selectArticleList(null, null, null, POPULAR, 0, MAIN_ARTICLE_NUM);
+		map.put("newest", newArticles);
+		map.put("popular", popularArticles);
+		
+		return map;
+		
 	}
 
 

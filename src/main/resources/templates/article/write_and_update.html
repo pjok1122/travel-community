@@ -65,9 +65,22 @@
 		<form class="needs-validation" th:action="@{''}"
 			th:object="${article}" method="post">
 			<div class="form-row">
-				<div class="col-sm-2">
+				<div class="col-sm-3">
 					<div class="form-group">
 						<input type="hidden" class="form-control" id="articleId" th:value="${article.id}">
+						<div class="input-group mb-3">
+							<div class="input-group-prepended">
+								<label class="input-group-text" for="categoryId">카테고리</label>
+							</div>
+							<select class="custom-select" th:field="*{categoryId}">
+								<option value="1">숙박 정보
+								<option value="2">맛집
+								<option value="3">축제정보
+								<option value="4">관광지
+							</select>
+							<small class="form-text text-muted" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}">Incorrect date</small>
+						</div>
+					
 						<div class="input-group mb-3">
 							<div class="input-group-prepended">
 								<label class="input-group-text" for="nation">국가</label>
@@ -82,9 +95,12 @@
 								<option value="중국">중국
 								<option value="태국">태국
 							</select>
+							<small class="form-text text-muted" th:if="${#fields.hasErrors('nation')}" th:errors="*{nation}">Incorrect date</small>
+							
 						</div>
 					</div>
 				</div>
+				
 				<div class="col-md-9"></div>
 				<div class="col-9">
 					<div class="input-group">
@@ -94,6 +110,7 @@
 						<input type="text" class="form-control" th:field="*{title}"
 							placeholder="ex) [베이터우] 디러구 " onkeyup="checkLength(this)" required>
 					</div>
+						<small class="form-text text-muted" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Incorrect date</small>
 				</div>
 				
 				<div class="col-3 text-right mb-5">
@@ -107,6 +124,8 @@
 						<textarea class="form-control" th:field="*{content}"
 							maxlength="140" rows="7" required></textarea>
 					</div>
+					<small class="form-text text-muted" th:if="${#fields.hasErrors('content')}" th:errors="*{content}">Incorrect date</small>
+					
 				</div>
 				<div class="col-12 text-right">
 					<button type="submit" id="submit" name="submit"

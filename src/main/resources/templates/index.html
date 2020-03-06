@@ -2,11 +2,67 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Main page</title>
 
-	<th:block th:include="common/html/head.html">
+<style type="text/css">
+.article-nation{
+	color:red;
+}
+
+.article-commentCnt{
+	color:gray;
+}
+
+.article-index{
+	font-size: 16px;
+	font-weight: bold;
+}
+</style>
+
+<th:block th:replace="common/html/head.html">
+
+
 </head>
 <body>
-	<th:block th:include="common/html/navBar.html"></th:block>
+	<th:block th:replace="common/html/navBar.html"></th:block>
+
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-sm-6">
+				<h1>최신순</h1>
+			</div>
+			<div class="col-sm-6">
+				<h1>인기순</h1>
+			</div>
+		
+			<div class="col-sm-6 mt-3">
+				<div class="card">
+					<div class="list-group list-group-flush">
+						<a th:href="@{/article/{id}(id=${article.id})}" class="list-group-item list-group-item-action" th:each="article,iterStat : ${newest}">
+							<span class="article-index" th:text="${iterStat.count}"></span>
+							<span class="article-nation" th:text="|[${article.nation}]|"></span>
+							<span th:utext="${#strings.abbreviate(article.title, 25)}"></span>
+							<span class="article-commentCnt" th:text="|[${article.commentCnt}]|"></span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-6 mt-3">
+				<div class="card">
+					<div class="list-group list-group-flush">
+						<a th:href="@{/article/{id}(id=${article.id})}" class="list-group-item list-group-item-action" th:each="article,iterStat : ${popular}">
+							<span class="article-index" th:text="|${iterStat.count} |"></span>
+							<span class="article-nation" th:text="|[${article.nation}]|"></span>
+							<span th:utext="${article.title}"></span>
+							<span class="article-commentCnt" th:text="|[${article.commentCnt}]|"></span>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
 </body>
 </html>

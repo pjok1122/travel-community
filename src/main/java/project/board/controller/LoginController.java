@@ -101,7 +101,7 @@ public class LoginController {
 	@LoginAuth
 	public String processLogout(HttpSession session) {
 		session.invalidate();
-		return "index";
+		return "redirect:/";
 	}
 	
 	@GetMapping("/ajax/login_check")
