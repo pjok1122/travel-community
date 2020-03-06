@@ -1,139 +1,140 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Insert title here</title>
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
 
-    <!-- include libraries(jQuery, bootstrap) -->
-    <link
-      href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css"
-      rel="stylesheet"
-    />
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
-    <!-- include summernote css/js-->
-    <link
-      href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css"
-      rel="stylesheet"
-    />
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
-  </head>
-  <body>
-    <a th:if="${session.memberId ==null}" href="/login">Login</a>
-    <a th:if="${session.memberId ==null}" href="/register">Register</a>
+<!-- include libraries(jQuery, bootstrap) -->
+<th:block th:replace="/common/html/head.html"></th:block>
 
-    <a th:unless="${session.memberId ==null}" href="/logout">Logout</a>
-    <a th:unless="${session.memberId ==null}" href="/mypage/member">Mypage</a>
 
-    <div>
-      <a href="/accomadation/all">숙박정보</a>
-      <a href="/restaurant/all">맛집</a>
-      <a href="/festival/all">축제 정보</a>
-      <a href="/attractions/all">관광지</a>
-    </div>
-    <br />
-    <div>
-      <a href="./all">전체</a>
-      <a href="./tw">대만</a>
-      <a href="./jp">일본</a>
-      <a href="./cn">중국</a>
-      <a href="./th">태국</a>
-      <a href="./vn">베트남</a>
-    </div>
+<style>
+#search{
+	width:80%;
+	display:inline;
+}
+</style>
 
-    <h3>정렬</h3>
-    <div>
-      <a href="" id="newest">최신순</a>
-      <a href="" id="popular">인기순</a>
-    </div>
+</head>
+<body>
+	
+	<th:block th:replace="/common/html/navBar.html"></th:block>
 
-    <div>
-      <input type="text" id="search" />
-      <span class="glyphicon glyphicon-search" id="search-icon"></span>
-    </div>
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-12">
+				<ul id="nation-nav" class="nav nav-tabs justify-content-center">
+					<li class="nav-item"><a class="nav-link" href="./all">전체</a></li>
+					<li class="nav-item"><a class="nav-link" href="./tw">대만</a></li>
+					<li class="nav-item"><a class="nav-link" href="./la">라오스</a></li>
+					<li class="nav-item"><a class="nav-link" href="./my">말레이시아</a></li>
+					<li class="nav-item"><a class="nav-link" href="./vn">베트남</a></li>
+					<li class="nav-item"><a class="nav-link" href="./sg">싱가폴</a></li>
+					<li class="nav-item"><a class="nav-link" href="./jp">일본</a></li>
+					<li class="nav-item"><a class="nav-link" href="./cn">중국</a></li>
+					<li class="nav-item"><a class="nav-link" href="./th">태국</a></li>
+				</ul>
+			</div>
+		</div>
+	  <div class="row mt-4">
+	  	<div class="col text-center">
+	      <h1>글목록</h1>
+	    </div>
+	  </div>
+		<div class="row">
+			<div class="col">
+				<div id="sort-group" class="btn-group" role="group">
+					<a type="button" class="btn btn-secondary" id="newest">최신순</a>
+					<a type="button" class="btn btn-secondary" id="popular">인기순</a>
+				</div>
+			</div>
+			<div class="justify-content-right">
+				<div class="search-group">
+					<input class="form-control" type="text" id="search" placeholder="제목 검색"/>
+					<i class="fas fa-search" id="search-icon"></i>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <div>
-      <table>
-        <thead>
-          <tr>
-            <td>번호</td>
-            <td>제목</td>
-            <td>날짜</td>
-            <td>조회수</td>
-          </tr>
-        </thead>
-        <tr th:each="article,iterStat : ${page.list}">
-          <td th:text="${iterStat.count}"></td>
-          <td>
-            <a
-              th:href="@{/article/{id}(id=${article.id})}"
-              th:utext="|[${article.nation}] ${article.title} [${article.commentCnt}]|"
-            ></a>
-          </td>
-          <td th:text="${article.registerDate}"></td>
-          <td th:text="${article.hit}"></td>
-        </tr>
-      </table>
-    </div>
+	
+	<th:block th:replace="common/html/article_list.html"></th:block>	
+	
+	<th:block th:replace="common/html/pagination.html"></th:block>
+	
+	<script th:src="@{/common/js/urlParser.js}"></script>
+	<script>
+		$(function() {
+			var url = location.pathname;
+			var queryString = location.search;
+			var paramMap = queryStringToObject(queryString);
+			
+			sortHref($("#newest"), url, paramMap);
+			sortHref($("#popular"), url, paramMap);
+			makePageLink(url, paramMap);
+			makeNationActive(url);
+			makeSortActive(paramMap);
+						
+			$("#search-icon").on("click", function() {
+				search(url, paramMap);
+			});
+			
+			$("#search").keyup(function(e){
+				if(e.keyCode == 13) search(url, paramMap);
+			})
+		});
+		
+		function makeSortActive(paramMap){
+			var sortButtons = $("#sort-group").children('a');
+			var curSort = paramMap['sort'] ? paramMap['sort'] : "newest";
+			for(sortButton of sortButtons){
+				var sortVal = sortButton.getAttribute("id");
+				if(curSort === sortVal){
+					sortButton.setAttribute('class', sortButton.getAttribute('class') + ' active');
+				}
+				
+			}
+		} 
+		
+		function makeNationActive(url){
+			var navLinks = $("#nation-nav > li.nav-item").children('a.nav-link');
+			var curNation = url.slice(url.lastIndexOf('/')+1);	
+			for(navLink of navLinks){
+				nation = navLink.getAttribute("href").slice(2);
+				if(curNation === nation){
+					navLink.setAttribute("class", navLink.getAttribute("class")+ " active");
+				}
+			}
+		}
+		
+		function makePageLink(url, paramMap){
+			var pageLinks = $(".page-link");
+			for(pageLink of pageLinks){
+				var pageNo = pageLink.getAttribute("href");
+				paramMap['page'] = pageNo;
+				var qs = objectToQueryString(paramMap);
+				pageLink.setAttribute("href", url+qs);
+			}
+		}
 
-    <h1 th:text="|Total : ${page.numberOfRecords}|"></h1>
+		function sortHref(obj, url, params) {
+			const params_copy = {...params};
+			params_copy["sort"] = obj.attr("id");
+			var qs = objectToQueryString(params_copy);
+			obj.attr("href", url + qs);
+		}
+		
+		function search(url, paramMap) {
+			var search = $("#search").val().trim();
 
-    <button onclick="window.location.href='./write'">글쓰기</button>
+			if (search == "") {
+				alert("검색할 내용을 넣어주세요.");
+			} else {
+				paramMap["search"] = search;
+				window.location.href = url + objectToQueryString(paramMap);
+			}
+		}
 
-    <script>
-      $(function() {
-        var url = location.pathname;
-        var queryString = location.search;
-        var paramMap = queryStringToObject(queryString);
-
-        sortHref($("#newest"), url, paramMap);
-        sortHref($("#popular"), url, paramMap);
-
-        $("#search-icon").on("click", function() {
-          search(url, paramMap);
-        });
-      });
-
-      function search(url, paramMap) {
-        var search = $("#search")
-          .val()
-          .trim();
-
-        if (search == "") {
-          alert("검색할 내용을 넣어주세요.");
-        } else {
-          paramMap["search"] = search;
-          window.location.href = url + objectToQueryString(paramMap);
-        }
-      }
-
-      function sortHref(obj, url, params) {
-        params["sort"] = obj.attr("id");
-        var qs = objectToQueryString(params);
-        obj.attr("href", url + qs);
-      }
-
-      function objectToQueryString(obj) {
-        var qs = "?";
-        for (var prop in obj) {
-          qs += prop + "=" + obj[prop] + "&";
-        }
-
-        return qs.slice(0, -1);
-      }
-
-      function queryStringToObject(queryString) {
-        if (queryString.length == 0) {
-          return {};
-        }
-        var paramObj = {};
-        var params = queryString.substr(1).split("&");
-        params.forEach(function(param) {
-          i = param.indexOf("=");
-          paramObj[param.substr(0, i)] = param.substr(i + 1);
-        });
-        return paramObj;
-      }
-    </script>
-  </body>
+	</script>
+</body>
 </html>

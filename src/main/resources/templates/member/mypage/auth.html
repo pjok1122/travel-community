@@ -2,26 +2,41 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Second Auth</title>
+<th:block th:replace="common/html/head.html"></th:block>
 </head>
 <body>
 	
-	<h1> 회원 정보 변경 및 수정</h1>
-	<form method="POST" action="/mypage/auth">
-		<div>
-			<label for="email">이메일 : </label>
-			<input type="email" name="email"
-				id="email" th:value="${session.email}">
-			<!-- <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</p> -->
+	<th:block th:replace="common/html/mypage_nav_bar"></th:block>
+	
+	<div class="container">
+		<div class="row mt-5 justify-content-center">
+			<div class="col-8 text-center">
+				<h1>회원 정보 변경 및 수정</h1>
+			</div>
 		</div>
-		<div>
-			<label for="password">비밀번호 : </label> <input type="password"
-				name="password" id="password" placeholder="password">
-			<!-- <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password Error</p> -->
+	</div>
+	
+	<div class="container">
+		<div class="row mt-5 justify-content-center">
+			<div class="col-8">
+				<form th:action="@{/mypage/auth}" th:object="${memberDto}" method="post">
+					<div class="form-group">
+						<label for="email">이메일 </label>
+						<input type="email" class="form-control" th:field="*{email}" aria-describedby="emailHelp" readonly>
+					</div>
+					<div class="form-group">
+						<label for="password">비밀번호 </label>
+						<input type="password" class="form-control" th:field="*{password}">
+					</div>
+					<div class="form-group">
+						<small class="form-text text-muted" th:if="${#fields.hasErrors('*')}" th:errors="*{password}">Incorrect date</small>
+					</div>
+					<button type="submit" class="btn btn-primary">인증</button>
+				</form>
+			</div>
 		</div>
-		<div th:text="${error}"></div>
-		<input type="submit">
-	</form>
+	</div>
 
 
 

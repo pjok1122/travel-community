@@ -39,7 +39,7 @@
 		LEFT JOIN comment c
 		ON a.id = c.article_id
 		<where>
-			<if test='category neq "전체".toString()'>
+			<if test='category!=null and category neq "전체".toString()'>
 				a.category_id = (SELECT id FROM category WHERE title = #{category})
 			</if>			
 			<if test='nation!=null and (nation neq "전체".toString())'>

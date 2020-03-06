@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.catalina.manager.util.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import project.board.annotation.LoginAuth;
+import project.board.common.MemberRegisterValidator;
+import project.board.common.MemberUpdateValidator;
 import project.board.domain.Article;
 import project.board.domain.Comment;
 import project.board.domain.Member;
@@ -27,6 +30,7 @@ import project.board.service.ArticleService;
 import project.board.service.BookmarkService;
 import project.board.service.CommentService;
 import project.board.service.MemberService;
+import project.board.util.MySessionUtils;
 
 @Controller
 @RequestMapping("/mypage")
@@ -46,6 +50,12 @@ public class MemberController {
 	@Autowired
 	CommentService commentService;
 	
+	@Autowired
+	MySessionUtils sessionUtils;
+	
+	@Autowired
+	MemberUpdateValidator memberValidator;
+	
 	@GetMapping("/{info}")
 	@LoginAuth
 	public String getMypage(
@@ -62,26 +72,24 @@ public class MemberController {
 	@GetMapping("/auth")
 	@LoginAuth
 	public String getAuthForm(HttpSession session, Model model) {
+		model.addAttribute(MemberDto.builder().email(sessionUtils.getMemberEmail(session)).build());
 		return BASE_VIEW_NAME + "auth";
 	}
 	
 	@PostMapping("/auth")
 	@LoginAuth
 	public String isOwner(
-			@ModelAttribute @Valid MemberDto memberDto, 
+			@ModelAttribute("memberDto") @Valid MemberDto memberDto, 
 			BindingResult result, 
 			Model model, 
 			HttpSession session)
 	{
 		if(result.hasErrors()) {
-			model.addAttribute("error", "Not Empty");
 			return BASE_VIEW_NAME + "auth";
 		}
 		
-		Member member = memberService.login(memberDto);
-		
-		if(member == null) {
-			model.addAttribute("error", "비밀번호가 일치하지 않습니다.");
+		if(memberService.login(memberDto) == null) {
+			result.rejectValue("rePassword", "dismatch your info", "비밀번호가 일치하지 않습니다.");
 			return BASE_VIEW_NAME + "auth";
 		}
 		
@@ -93,9 +101,11 @@ public class MemberController {
 	@LoginAuth
 	public String getUpdateMypageForm(
 			HttpServletRequest request,
+			Model model,
 			HttpSession session)
 	{
 		session.setAttribute("prevPage", request.getRequestURI());
+		model.addAttribute(MemberDto.builder().email(sessionUtils.getMemberEmail(session)).build());
 		
 		if(session.getAttribute("isOwner") == null) {
 			return BASE_VIEW_NAME + "auth";
@@ -113,16 +123,13 @@ public class MemberController {
 			HttpSession session,
 			Model model) {
 		if(session.getAttribute("isOwner")== null) {
+			model.addAttribute(MemberDto.builder().email(sessionUtils.getMemberEmail(session)).build());
 			return BASE_VIEW_NAME +"auth";
 		}
 		
+		memberValidator.validate(memberDto, result);
 		if(result.hasErrors()) {
-			model.addAttribute("error", "Not Empty");
-			return BASE_VIEW_NAME + "update";
-		}
-		
-		if(!memberService.equalPassword(memberDto)) {
-			model.addAttribute("error", "비밀번호가 일치하지 않습니다.");
+			model.addAttribute(memberDto);
 			return BASE_VIEW_NAME + "update";
 		}
 		
@@ -135,13 +142,15 @@ public class MemberController {
 	@LoginAuth
 	public String deleteMember(
 			HttpServletRequest request,
+			Model model,
 			HttpSession session) 
 	{
 		if(session.getAttribute("isOwner")==null) {
 			session.setAttribute("prevPage", request.getRequestURI());
+			model.addAttribute(MemberDto.builder().email(sessionUtils.getMemberEmail(session)).build());
 			return BASE_VIEW_NAME +"auth";
 		} else {
-			memberService.delete((Long)session.getAttribute("memberId"));
+			memberService.delete(sessionUtils.getMemberId(session));
 			session.invalidate();
 			return "redirect:/";
 		}

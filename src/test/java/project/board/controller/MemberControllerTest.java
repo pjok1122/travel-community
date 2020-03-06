@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import project.board.converter.StringToMyInfoConverter;
+import project.board.common.StringToMyInfoConverter;
 import project.board.domain.Comment;
 import project.board.domain.Member;
 import project.board.domain.dto.MemberDto;

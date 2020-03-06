@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+	<head xmlns:th="http://www.thymeleaf.org">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width" />
+	<title>Article Write</title>
+	
+	<th:block th:replace="common/html/head.html"></th:block>
+    <th:block th:replace="common/html/summernote_head.html"></th:block>
+     
+<style type="text/css">
+
+.item-nation, .item-title{
+    display: inline;
+    overflow: hidden;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    color: #444;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.item-date{
+	display : block;
+    margin-top: 3px;
+    font-size: 12px;
+    line-height: 1.67;
+    color: #999;
+}
+
+.delete-button{
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    z-index:100;
+    /* padding: 15px; */
+    transform: translate(0,-50%);
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+	<th:block th:replace="common/html/navBar.html"></th:block>
+
+	<div class="container">
+		<div class="row mt-5">
+			<div class="col-12">
+				<div class="title text-center">
+					<h1 th:if="${article.status} neq 'PERMANENT'">Write Form</h1>
+					<h1 th:unless="${article.status} neq 'PERMANENT'">Update Form</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container mt-5">
+		<form class="needs-validation" th:action="@{''}"
+			th:object="${article}" method="post">
+			<div class="form-row">
+				<div class="col-sm-3">
+					<div class="form-group">
+						<input type="hidden" class="form-control" id="articleId" th:value="${article.id}">
+						<div class="input-group mb-3">
+							<div class="input-group-prepended">
+								<label class="input-group-text" for="categoryId">카테고리</label>
+							</div>
+							<select class="custom-select" th:field="*{categoryId}">
+								<option value="1">숙박 정보
+								<option value="2">맛집
+								<option value="3">축제정보
+								<option value="4">관광지
+							</select>
+							<small class="form-text text-muted" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}">Incorrect date</small>
+						</div>
+					
+						<div class="input-group mb-3">
+							<div class="input-group-prepended">
+								<label class="input-group-text" for="nation">국가</label>
+							</div>
+							<select class="custom-select" th:field="*{nation}">
+								<option value="대만">대만
+								<option value="라오스">라오스
+								<option value="말레이시아">말레이시아
+								<option value="베트남">베트남
+								<option value="싱가폴">싱가폴
+								<option value="일본">일본
+								<option value="중국">중국
+								<option value="태국">태국
+							</select>
+							<small class="form-text text-muted" th:if="${#fields.hasErrors('nation')}" th:errors="*{nation}">Incorrect date</small>
+							
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-md-9"></div>
+				<div class="col-9">
+					<div class="input-group">
+					<div class="input-group-prepended">
+						<label class="input-group-text" for="title">제목</label>
+					</div>
+						<input type="text" class="form-control" th:field="*{title}"
+							placeholder="ex) [베이터우] 디러구 " onkeyup="checkLength(this)" required>
+					</div>
+						<small class="form-text text-muted" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Incorrect date</small>
+				</div>
+				
+				<div class="col-3 text-right mb-5">
+					<button th:if="${article.status} neq 'PERMANENT'" type="button" class="btn btn-outline-dark" id="temp-save"
+						onclick="saveTempArticle()">임시저장</button>
+					<button type="button" class="btn btn-outline-dark" id="temp-load"
+						onclick="loadTempArticleList()">불러오기</button>
+				</div>
+				<div class="col-12">
+					<div class="form-group">
+						<textarea class="form-control" th:field="*{content}"
+							maxlength="140" rows="7" required></textarea>
+					</div>
+					<small class="form-text text-muted" th:if="${#fields.hasErrors('content')}" th:errors="*{content}">Incorrect date</small>
+					
+				</div>
+				<div class="col-12 text-right">
+					<button type="submit" id="submit" name="submit"
+						class="btn btn-primary" onclick="checkValid()" th:text="${article.status} neq 'PERMANENT' ? '등록' : '수정' "></button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+
+
+	<!-- Modal -->
+    <div class="modal fade" id="tempArticleModal" tabindex="-1" role="dialog" aria-labelledby="tempArticleModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tempArticleModalTitle">임시 저장글</h2>
+                    <small class="modal-title mt-4" id="articleCount"></small>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			        	<span aria-hidden="true">&times;</span>
+			        </button>
+                </div>
+                <div class="modal-body mb-0">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+       
+	<script>
+	var tempArticles = null;
+	
+		$(document).ready(function() {
+			$('#content').summernote({
+				height : 300,
+				minHeight : null,
+				maxHeight : null,
+				focus : true,
+				placeholder : "내용을 입력해주세요.",
+				callbacks : {
+					onImageUpload : function(files, editor, welEditable) {
+						for (var i = 0; i < files.length; i++) {
+							sendFile(files[i], this);
+						}
+					}
+				}
+			});
+			
+		});
+
+		function sendFile(file, el) {
+			var form_data = new FormData();
+			form_data.append('file', file);
+			$.ajax({
+				data : form_data,
+				type : "POST",
+				url : '/image',
+				cache : false,
+				contentType : false,
+				enctype : 'multipart/form-data',
+				processData : false,
+				success : function(url, xhr) {
+					console.log(xhr);
+					$(el).summernote('insertImage', url, function($image) {
+						$image.css('width', "50%");
+					});
+				},
+				error: function () {
+					alert("이미지 파일이 아닙니다.");
+				}
+			});
+		}
+		
+		function checkLength(obj){
+			var title = $(obj).val();
+			if(title.length > 50){
+				$(obj).val(title.substring(0,50));
+			}
+		}
+		
+		function saveTempArticle(){
+			var title = $("#title").val();
+			var content = $("#content").val();
+			var category = window.location.pathname.split("/")[1];
+			var nation = $("#nation").val();
+			if(title.length <= 0 || content.length <=0){
+				alert("제목과 내용을 입력해주세요.");
+			}
+			else{
+				var data = {'title':title, 'content':content,'category':category, 'nation':nation};
+				ajaxTempWrite(data);
+			}
+		}
+		
+		function deleteTempArticle(index){
+			articleId = tempArticles[index].id;
+			$.ajax({
+				url : '/ajax/temp/delete',
+				data : {'articleId':articleId},
+				type : 'POST',
+				success : function(data){
+					$("#articleId").val(null);
+				},
+				complete : function(response){
+					if(response.status == 302){
+						window.location.href=response.responseText;
+					}
+				}
+			});
+		}
+		
+		function ajaxTempWrite(data){
+			var articleId = $("#articleId").val();
+			var url = '/ajax/temp/';
+			url += (articleId==="" ? 'write' : 'update');
+			if(articleId){
+				data['articleId']=articleId;
+			}
+			$.ajax({
+				url : url,
+				data : data,
+				type : 'POST',
+				success : function(id){
+					alert("임시저장이 완료되었습니다.");
+					$("#articleId").val(id);
+				},
+				complete : function(response){
+					if(response.status==400){
+						alert("임시저장 글은 최대 10개까지만 저장이 가능합니다.");
+					}
+				}
+			});
+		}
+		function loadTempArticle(index){
+			var article = tempArticles[index];
+			$("#tempArticleModal").modal('toggle');
+			$("#articleId").val(article.id);
+			$("#nation").val(article.nation);
+			$("#title").val(article.title);
+			$("#content").summernote("code", article.content);
+		}
+		
+		function loadTempArticleList(){
+			getTempArticleList();
+			$("#tempArticleModal").modal('toggle');
+		}
+		
+		function getTempArticleList(){
+			$.ajax({
+				url: "/ajax/temp",
+				type: "GET",
+				async : false,
+				success : function(articles){
+					tempArticles = articles;
+					$("#articleCount").html(`총 ${articles.length}개`);
+					var html = `<div class="container-fluid"><div class="list-group list-group-flush row">`;
+					for(var i=0;i<articles.length;i++){
+						html += `
+										<a class="list-group-item list-group-item-action col-12">
+											<div class="list-group-item-action" onclick="loadTempArticle(${i})">
+												<input type="hidden" id="index" value=${i}></span>
+												<span class="item-nation">[${articles[i].nation}]</span>
+												<span class="item-title">${articles[i].title} </span>
+												<span class="item-date">${articles[i].updateDate > new Date(articles[i].registerDate).toLocaleString('ko-KR') ? (articles[i].updateDate) : new Date(articles[i].registerDate).toLocaleString('ko-KR')}</span>
+											</div>
+											<span class="delete-button" data-dismiss="modal" onclick="deleteTempArticle(${i})"><i class="far fa-trash-alt"></i></span>
+										</a>
+											`
+					}
+					html += `</div></div>`;
+					$(".modal-body").html(html);
+				},
+				complete : function(response){
+					if(response.status == 302){
+						window.location.href=response.responseText;
+					}
+				}	
+			})
+		}
+		
+		function checkValid(){
+			var title = $("#title").val();
+			var content = $("#content").val();
+			
+			if(title.length <=0 || content.length <=0){
+				alert("제목과 내용을 입력해주세요.");
+			}
+		}
+		
+		
+	</script>
+</body>
+</html>

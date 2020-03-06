@@ -13,4 +13,8 @@ public class MySessionUtils {
 	public Boolean isLogined(HttpSession session) {
 		return (session.getAttribute("memberId")!=null);
 	}
+	
+	public String getMemberEmail(HttpSession session) {
+		return (String) session.getAttribute("email");
+	}
 }
