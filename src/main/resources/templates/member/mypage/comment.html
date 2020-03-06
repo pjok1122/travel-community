@@ -27,8 +27,8 @@
 			</thead>
 			<tr th:each="comment,iterStat : ${page.list}">
 				<th scope="row" th:text="${iterStat.count} + ${page.currentPageNo-1}*${page.recordsPerPage}"></th>
-				<td th:text="${comment.content}"></td>
-				<td th:text="${#temporals.format(article.registerDate, 'yyyy-MM-dd HH:mm')}"></td>
+				<td><a th:href="@{/article/{id}(id=${comment.articleId})}" th:text="${#strings.abbreviate(comment.content, 57)}"></a></td>
+				<td th:text="${#temporals.format(comment.registerDate, 'yyyy-MM-dd HH:mm')}"></td>
 				<td th:text="${comment.good}"></td>
 			</tr>
 		</table>
