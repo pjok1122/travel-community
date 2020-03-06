@@ -135,12 +135,16 @@ footer{
     </div>
 
 	<div class="container pb-cmnt-container" id="commentInsert">
+	
+	<div class="container pb-cmnt-container">
 	    <div class="row" style="background-color:#F8F8F8">
 	        <div class="col-md-10 col-md-offset-1">
 	            <div class="panel panel-default">
 	                <div class="panel-body">
-	                	<span><strong id="writer"></strong></span>
-	                    <textarea placeholder="댓글을 입력해주세요" class="pb-cmnt-textarea" id="commentContent" name="commentContent"
+	                	<span th:if="${session.email != null}"><i class="mr-1 fas fa-user"></i><strong id="writer" th:text="${session.email}"></strong></span>
+	                    <textarea th:if="${session.email == null}" placeholder="로그인이 필요한 작업입니다." class="pb-cmnt-textarea" id="commentContent" name="commentContent"
+	                    onclick="window.location.href='/login'"></textarea>
+	                    <textarea th:unless="${session.email == null}" placeholder="댓글을 입력해주세요." class="pb-cmnt-textarea" id="commentContent" name="commentContent"
 	                    onkeyup="checkLength(this,$('#comment-len-count'), 300)"></textarea>
                     	<span id="comment-len-count"> 0 / 300 자</span>
                         <button class="btn btn-primary pull-right" type="button" id="comment-insert">등록</button>

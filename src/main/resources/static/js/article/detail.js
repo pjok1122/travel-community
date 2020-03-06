@@ -3,7 +3,6 @@ $(document).ready(function(){
 	
 	var article_writer = document.getElementById('email').innerText;
 	var articleId =  document.getElementById('articleId').innerText;
-	document.getElementById('writer').innerText = email;
 	
 	getCommentList(articleId);
 	

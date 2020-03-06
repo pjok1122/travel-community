@@ -31,6 +31,7 @@ public class CommentController {
 	private CommonUtils utils;
 	
 	@PostMapping("")
+	@AjaxLoginAuth
 	public ResponseEntity<?> create
 	(
 		@RequestParam Long articleId,
@@ -58,6 +59,7 @@ public class CommentController {
 	}
 	
 	@PostMapping("/delete/{commentId}")
+	@AjaxLoginAuth
 	public ResponseEntity<?> delete
 	(
 		@PathVariable Long commentId, 
@@ -70,7 +72,7 @@ public class CommentController {
 	}
 	
 	@PostMapping("/like")
-	//@AjaxLoginAuth
+	@AjaxLoginAuth
 	public ResponseEntity<?> processLikeArticle
 	(
 		@RequestParam("commentId") Long commentId,
