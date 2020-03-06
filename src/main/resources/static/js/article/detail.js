@@ -166,7 +166,7 @@ $(document).ready(function(){
 	        	'articleId': articleId
 	        },
 	        success : function(data){
-//	        	console.log(data);
+	        	console.log(data);
 	        	$(".commentCount").html(data.length);
 	            var html = "";
 	            
@@ -178,21 +178,23 @@ $(document).ready(function(){
               					<i class="mr-3 fas fa-user fa-2x"></i>
 	                			<div class="media-body">
 		                			<h6 class="mt-0">
-		                			<strong> ${data[i].writer} </strong>&nbsp ${data[i].registerDate}
-		                					${data[i].writer == article_writer ? `&nbsp[글쓴이]` : ''}
+		                				<strong>${data[i].updateDate != null ? `비공개</strong>` : `${data[i].writer} </strong>
+		                				&nbsp ${data[i].registerDate}
+		                				${data[i].writer == article_writer ? `&nbsp[글쓴이]` : ''}`
+		                				}
 	                				</h6>
-	                				${data[i].updateDate == null ? `${data[i].content}` : '삭제된 댓글입니다'}
-	                				
-	                				<div name='${data[i].id}'>
+	                				${data[i].updateDate != null ? '삭제된 댓글입니다' : `${data[i].content}
+	                				<div class="mt-2" name='${data[i].id}'>
 		                				<button class="icon" name='comment-like'>
 	                						${data[i].isGood ? `<img src="/img/imgs/like2.png">`: `<img src="/img/imgs/like1.png">`}
 	                					</button>
 	                					
-		                				${data[i].updateDate == null ? `&nbsp<a href='#'>댓글달기</a>` : ''}
+		                				${data[i].updateDate == null ? `&nbsp<span class="text-primary comment-event">댓글달기</span>` : ''}
 	
-		                				${data[i].writer == email ? `&nbsp<a href='#'>삭제</a>` : ''}
+		                				${data[i].writer == email ? `&nbsp<span class="text-danger comment-event">삭제</span>` : ''}
 		                				${data[i].writer == email ? '': `<a class='icon' onclick='$('#exampleModal').modal('show')'>신고</a>`}
 	                				</div>
+	                				`}
 	                			
 	                			${data[i].replies.map(reply =>
 	                				`
@@ -204,11 +206,11 @@ $(document).ready(function(){
 			                					${reply.writer == article_writer ? `&nbsp[글쓴이]` : ''}
 			                				</h6>
 		                					${reply.content}
-			                				<div class='col' name='${reply.id}'>
+			                				<div class='mt-2' name='${reply.id}'>
 			                					<button class="icon" name='comment-like'>
 			                						${reply.isGood ? `<img src="/img/imgs/like2.png">`: `<img src="/img/imgs/like1.png">`}
 			                					</button>
-			                					${reply.writer == email ? `&nbsp<a href='#'>삭제</a>` : ''}
+			                					${reply.writer == email ? `&nbsp<span class="text-danger comment-event">삭제</span>` : ''}
 			                					${reply.writer == email ? '': "<a class='icon' onclick='$('#exampleModal').modal('show')'>신고</a>"}
 			                				</div>
 		                				</div>
