@@ -78,10 +78,11 @@ public class ArticleService {
 	}
 
 	public Long createArticle(Article article, Long memberId) {
+		Long categoryId = categoryRepository.selectIdByTitle(article.getCategory().getKrValue());
 		article.setMemberId(memberId);
 		article.setTitle((scriptEscaper.scriptEscape(article.getTitle())));
-		
-		System.out.println(article.getId());
+		article.setCategoryId(categoryId);
+
 		if(article.getId()!=null) {
 			articleRepository.updateTempToPermanent(article);
 		}
@@ -111,8 +112,10 @@ public class ArticleService {
 	}
 
 	public void modifyArticle(Long articleId, @Valid Article article) {
+		Long categoryId = categoryRepository.selectIdByTitle(article.getCategory().getKrValue());
 		article.setId(articleId);
 		article.setTitle((scriptEscaper.scriptEscape(article.getTitle())));
+		article.setCategoryId(categoryId);
 		articleRepository.updateArticle(article);
 	}
 

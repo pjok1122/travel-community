@@ -10,5 +10,13 @@
 		 INTO `report`(member_id, target, target_id, info_id, process, register_date, content)
 		 VALUES(#{memberId}, #{target}, #{targetId}, #{infoId}, 0, NOW(), #{content})
 	</insert>
+	
+	<select id="selectReportByTargetIdAndMemberId" resultType="Report">
+		SELECT *
+		FROM `report`
+		WHERE member_id = #{memberId}
+		AND target_id = #{targetId}
+		AND target = #{target}
+	</select>
 
 </mapper>

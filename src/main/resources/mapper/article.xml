@@ -6,18 +6,13 @@
 <mapper namespace="project.board.repository.ArticleRepository">
 
 	<select id="selectArticleListByMemberId" resultType="articleDto">
-		SELECT act.*, count(c.id) as commentCnt
-		FROM (
-			SELECT a.*, ct.title as category
-			FROM `article` a
-			LEFT JOIN category ct
-			ON a.category_id = ct.id
-			WHERE a.member_id = #{id} AND a.status = #{status}
-		) act
+		SELECT a.*, count(c.id) as commentCnt
+		FROM `article` a
 		LEFT JOIN comment c
-		ON act.id = c.article_id
-		GROUP BY act.id
-		ORDER BY register_date DESC
+		ON a.id = c.article_id
+		WHERE a.member_id = #{id} AND a.status = #{status}
+		GROUP BY a.id
+		ORDER BY a.register_date DESC
 		LIMIT #{offset}, #{numOfRecords}
 	</select>
 	

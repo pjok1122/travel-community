@@ -5,11 +5,8 @@
 <title>Mypage-TempArticle</title>
 <th:block th:replace="common/html/head.html"></th:block>
 
-<style>
-.article-nation{
-	color: red;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="/css/article/article_list.css" />
+
 </head>
 <body>
 	
@@ -33,9 +30,9 @@
 			</thead>
 			<tr th:each="article,iterStat : ${page.list}">
 				<th scope="row" th:text="${iterStat.count} + ${page.currentPageNo-1}*${page.recordsPerPage}"></th>
-				<td><a th:href="@{/article/write}">
+				<td><a class="list-title" th:href="@{/article/write}">
 					<span class="article-nation" th:utext="|[${article.nation}]|"></span>
-					<span th:utext="|${article.title}|"></span>
+					<span th:utext="|${#strings.abbreviate(article.title,35)}|"></span>
 				</a></td>
 				<td th:text="${#temporals.format(article.registerDate, 'yyyy-MM-dd HH:mm')}"></td>
 			</tr>

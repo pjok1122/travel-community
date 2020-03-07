@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <th:block th:replace="common/html/head.html"></th:block>
+
+<link rel="stylesheet" type="text/css" href="/css/article/article_list.css" />
 </head>
 <body>
 	
@@ -27,7 +29,7 @@
 			</thead>
 			<tr th:each="comment,iterStat : ${page.list}">
 				<th scope="row" th:text="${iterStat.count} + ${page.currentPageNo-1}*${page.recordsPerPage}"></th>
-				<td><a th:href="@{/article/{id}(id=${comment.articleId})}" th:text="${#strings.abbreviate(comment.content, 57)}"></a></td>
+				<td><a class="list-title" th:href="@{/article/{id}(id=${comment.articleId})}" th:text="${#strings.abbreviate(comment.content, 57)}"></a></td>
 				<td th:text="${#temporals.format(comment.registerDate, 'yyyy-MM-dd HH:mm')}"></td>
 				<td th:text="${comment.good}"></td>
 			</tr>

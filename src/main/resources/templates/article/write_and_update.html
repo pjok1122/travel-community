@@ -72,11 +72,11 @@
 							<div class="input-group-prepended">
 								<label class="input-group-text" for="categoryId">카테고리</label>
 							</div>
-							<select class="custom-select" th:field="*{categoryId}">
-								<option value="1">숙박 정보
-								<option value="2">맛집
-								<option value="3">축제정보
-								<option value="4">관광지
+							<select class="custom-select" th:field="*{category}">
+								<option value="accomodation">숙박 정보
+								<option value="restaurant">맛집
+								<option value="festival">축제정보
+								<option value="attractions">관광지
 							</select>
 							<small class="form-text text-muted" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}">Incorrect date</small>
 						</div>

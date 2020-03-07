@@ -79,7 +79,7 @@ public class CommentController {
 		HttpSession session
 	)
 	{
-		Boolean like = commentService.like(utils.memberIdConvert(session), commentId);
-		return ResponseEntity.ok().body(like);
+		int likeCount = commentService.like(utils.memberIdConvert(session), commentId);
+		return ResponseEntity.ok().body(likeCount);
 	}
 }

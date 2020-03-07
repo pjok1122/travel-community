@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import project.board.domain.Comment;
 import project.board.domain.dto.CommentDto;
@@ -21,7 +22,7 @@ public class CommentService {
 	private CommentLikeRepository commentLikeRepository;
 	
 	public List<Comment> getCommentByMemberId(Long memberId, Page paging) {
-		return commentRepository.findByMemberId(memberId, paging.getOffset(), paging.getRecordsPerPage());
+		return commentRepository.selectByMemberId(memberId, paging.getOffset(), paging.getRecordsPerPage());
 	}
 	
 	public int getCommentCntByMemberId(Long memberId) {
@@ -99,23 +100,35 @@ public class CommentService {
 	public void insertCommentLikeByMemberIdAndCommentId(Long memberId, Long commentId)
 	{
 		commentLikeRepository.insertCommentLikeByMemberIdAndCommentId(memberId, commentId);
-	}	
+	}
 	
-	public boolean like(Long memberId, Long commentId)
+	public void GoodDown(Long commentId) {
+		commentRepository.updateGoodDown(commentId);
+	}
+	
+	public void GoodUp(Long commentId) {
+		commentRepository.updateGoodUp(commentId);
+	}
+	public int selectCommentGoodById(Long commentId) {
+		return commentRepository.selectCommentById(commentId).getGood();
+	}
+	
+	@Transactional
+	public int like(Long memberId, Long commentId)
 	{
 		Boolean isAlreayLike = selectCommentLikeByMemberIdAndCommentId(memberId, commentId);
-		
 		if(isAlreayLike)
 		{
 			deleteCommentLikeByMemberIdAndCommentId(memberId, commentId);
+			GoodDown(commentId);
 			
-			return false;
 		}
 		else
 		{
 			insertCommentLikeByMemberIdAndCommentId(memberId, commentId);
-			
-			return true;
+			GoodUp(commentId);
 		}
+		
+		return selectCommentGoodById(commentId);
 	}
 }

@@ -11,7 +11,7 @@ import project.board.domain.dto.ArticleDto;
 @Mapper
 public interface BookmarkRepository {
 
-	List<ArticleDto> findArticleByMemberId(Long memberId, int offset, int numOfRecords);
+	List<ArticleDto> selectArticleByMemberId(Long memberId, int offset, int numOfRecords);
 
 	Integer getArticleCntByMemberId(Long memberId);
 

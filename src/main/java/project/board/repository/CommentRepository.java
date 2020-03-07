@@ -11,7 +11,7 @@ import project.board.domain.dto.CommentDto;
 @Mapper
 public interface CommentRepository {
 
-	List<Comment> findByMemberId(Long memberId, int offset, int numOfRecords);
+	List<Comment> selectByMemberId(Long memberId, int offset, int numOfRecords);
 	Integer getCommentCntByMemberId(Long memberId);
 	
 	void insertComment(@Param("articleId") Long articleId, @Param("memberId") Long memberId, @Param("parentCommentId") Long parentCommentId, @Param("content") String content);
@@ -20,4 +20,6 @@ public interface CommentRepository {
 	List<CommentDto> selectCommentByArticleId(@Param("memberId") Long memberId, @Param("articleId") Long articleId);
 	void deleteCommentById(@Param("id") Long id);
 	void updateCommentContentById(@Param("id") Long id);
+	void updateGoodUp(Long id);
+	void updateGoodDown(Long id);
 }

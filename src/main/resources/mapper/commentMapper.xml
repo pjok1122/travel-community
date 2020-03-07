@@ -23,7 +23,7 @@
 		</collection>
 	</resultMap>
 	
-	<select id="findByMemberId" resultType="comment">
+	<select id="selectByMemberId" resultType="comment">
 		SELECT *
 		FROM comment
 		WHERE member_id = #{memberId}
@@ -66,7 +66,7 @@
 		FROM comment c1 
 		LEFT JOIN comment c2
 		ON c1.id = c2.parent_comment_id
-		LEFT JOIN member m2 
+		LEFT JOIN `member` m2 
 		ON c2.member_id = m2.id 
 		WHERE c1.id = #{id}
 		AND c1.member_id = #{memberId}
@@ -80,7 +80,7 @@
 			c1.update_date update_date, 
 			c1.good good, 
 			m1.email writer, 
-			IF(cl1.member_id = 4, 1, 0) AS `is_good`, 
+			IF(cl1.member_id = #{memberId}, 1, 0) AS `is_good`, 
 			CASE 
 				WHEN c1.parent_comment_id IS NULL THEN c2.content 
 				ELSE c2.content 
@@ -89,13 +89,13 @@
 			c2.register_date reply_register_date, 
 			c2.good reply_good, 
 			c2.id reply_id, 
-			IF(cl2.member_id = 4, 1, NULL) AS `reply_is_good`
+			IF(cl2.member_id = #{memberId}, 1, NULL) AS `reply_is_good`
 		FROM comment c1  
 		LEFT JOIN comment c2 
 		ON c1.id = c2.parent_comment_id 
-		INNER JOIN member m1 
+		INNER JOIN `member` m1 
 		ON c1.member_id = m1.id 
-		LEFT JOIN member m2 
+		LEFT JOIN `member` m2 
 		ON c2.member_id = m2.id 
 		LEFT JOIN comment_like cl1 
 		ON c1.id = cl1.comment_id 
@@ -116,6 +116,18 @@
 		UPDATE comment 
 		SET update_date = NOW()
 		WHERE id = #{id}
+	</update>
+	
+	<update id="updateGoodUp">
+		UPDATE comment
+		SET good = good + 1
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateGoodDown">
+		UPDATE comment
+		SET good = good - 1
+		WHERE id= #{id}
 	</update>
 
 </mapper>

@@ -1,3 +1,23 @@
+function getModalForm(obj){
+	$.ajax({
+		url : '/ajax/login_check',
+		type : 'GET',
+		success: function(data){
+			var writer = $(obj).parents('.media-body').children('h6.mt-0').children('.comment-writer').html();
+			var content = $(obj).parents('.media-body').children('.comment-content').html();
+			$('#commentReportWriter').html(`작성자 : ${writer}`);
+			$('#commentReportContent').html(`내용 : ${content.length <= 100 ? `${content.length}` : `${content.substr(0,100)} ...`}`);
+			$('#commentReportModal').modal('show');				
+		},
+		complete : function(response){
+			if(response.status == 302){
+				alert("로그인이 필요한 작업입니다.");
+				window.location.href=response.responseText;
+			}
+		}
+	});
+}
+
 $(document).ready(function(){
 	var email = getSessionEmail();
 	
@@ -19,17 +39,23 @@ $(document).ready(function(){
 		var current = event.target;
 		var parent = current.parentElement;
 		var commentId = parent.getAttribute("name");
-		
-		console.log(current);
-		
+
 		if(current.innerText == '삭제')
 		{
-			console.log(current.innerText);
+//			console.log(current.innerText);
 			commentDelete(commentId);
 		}	
 		else if(current.innerText == '등록')
 		{
-			commentInsert(articleId, parent.parentElement.getElementsByTagName("textarea")[0].value, commentId);
+			//글자수 0이면 거절 하기.
+			var content = parent.parentElement.getElementsByTagName("textarea")[0].value;
+			console.log(content);
+			if(content.length <= 0){
+				alert("내용을 입력해주세요.");
+			}
+			else{
+				commentInsert(articleId, content , commentId);
+			}
 		}	
 		else if(parent.getAttribute("name") == 'comment-like')
 		{
@@ -54,9 +80,11 @@ $(document).ready(function(){
 				        <div class="col-md-10 col-md-offset-1">
 				            <div class="panel panel-default">
 				                <div class="panel-body" name='${commentId}'>
-									<span><strong>${email}</strong></span>
-				                    <textarea placeholder="댓글을 입력해주세요" class="pb-cmnt-textarea" name="commentReplyContent"></textarea>
-			                        <button class="btn btn-primary pull-right" type="button">등록</button>
+									<span><i class="mr-1 fas fa-user"></i><strong>${email}</strong></span>
+				                    <textarea placeholder="댓글을 입력해주세요." class="pb-cmnt-textarea" id="commentContent" name="commentContent"
+				                    onkeyup="checkLength(this,$('#reply-len-count'), 300)"></textarea>
+			                    	<span id="reply-len-count">(0 / 300 자)</span>
+			                        <button class="btn btn-primary pull-right" type="button" id="comment-insert">등록</button>
 				                </div>
 				            </div>
 				        </div>
@@ -77,6 +105,13 @@ $(document).ready(function(){
 			}	
 		}	
 	};
+	
+	
+	function commentReportForm(content, writer){
+		$("#commentReportContent").html(`내용 : ${content.substr(0,4)}`);
+		$("#commentReportWriter").html(`작성자 : ${writer}`);
+		$("#commentReportModal").modal('show');
+	}
 	
 	function getSessionEmail()
 	{
@@ -108,8 +143,11 @@ $(document).ready(function(){
 			data : {
 	        	'commentId': commentId
 	        },
-	        success : function(data){
-	        	getCommentList(articleId);
+	        success : function(likeCount){
+//	        	getCommentList(articleId);
+//	        	getCommentGood();
+	        	$(`[name=comment-like-count${commentId}]`).html(likeCount);
+	        	likeImageToggle($(`[name=comment-like-img${commentId}]`));
 	        }, 
 	        complete : function(response){
 				if(response.status == 302){
@@ -118,6 +156,14 @@ $(document).ready(function(){
 				}
 			}
 		});
+	}
+	
+	function likeImageToggle(obj){
+		if( obj.prop("src").indexOf("like2.png") > 0){
+			obj.prop("src", "/img/imgs/like1.png");
+		} else{
+			obj.prop("src", "/img/imgs/like2.png");
+		}
 	}
 	
 	function commentInsert(articleId, content, parentCommentId){
@@ -158,6 +204,8 @@ $(document).ready(function(){
 	    });
 	}
 	
+
+	
 	function getCommentList(articleId){
 	    $.ajax({
 	        type:'GET',
@@ -166,7 +214,6 @@ $(document).ready(function(){
 	        	'articleId': articleId
 	        },
 	        success : function(data){
-	        	console.log(data);
 	        	$(".commentCount").html(data.length);
 	            var html = "";
 	            
@@ -178,21 +225,24 @@ $(document).ready(function(){
               					<i class="mr-3 fas fa-user fa-2x"></i>
 	                			<div class="media-body">
 		                			<h6 class="mt-0">
-		                				<strong>${data[i].updateDate != null ? `비공개</strong>` : `${data[i].writer} </strong>
+		                				<strong class="comment-writer">${data[i].updateDate != null ? `비공개</strong>` : `${data[i].writer} </strong>
 		                				&nbsp ${data[i].registerDate}
 		                				${data[i].writer == article_writer ? `&nbsp[글쓴이]` : ''}`
 		                				}
 	                				</h6>
-	                				${data[i].updateDate != null ? '삭제된 댓글입니다' : `${data[i].content}
+	                				<span class="comment-content">${data[i].updateDate != null ? '삭제된 댓글입니다' : `${data[i].content}`}</span>
+	                				${data[i].udpateDate != null ? '' : 
+	                				`
 	                				<div class="mt-2" name='${data[i].id}'>
 		                				<button class="icon" name='comment-like'>
-	                						${data[i].isGood ? `<img src="/img/imgs/like2.png">`: `<img src="/img/imgs/like1.png">`}
+	                						<img name="comment-like-img${data[i].id}" ${data[i].isGood ? `" src="/img/imgs/like2.png">`: `src="/img/imgs/like1.png">`}
 	                					</button>
+	                					<span class="comment-like-count" name="comment-like-count${data[i].id}">${data[i].good}</span>
 	                					
 		                				${data[i].updateDate == null ? `&nbsp<span class="text-primary comment-event">댓글달기</span>` : ''}
 	
 		                				${data[i].writer == email ? `&nbsp<span class="text-danger comment-event">삭제</span>` : ''}
-		                				${data[i].writer == email ? '': `<a class='icon' onclick='$('#exampleModal').modal('show')'>신고</a>`}
+		                				${data[i].writer == email ? '': `<button class="icon icon-comment-report" onclick="getModalForm(this)"><img class="report" src="/img/imgs/report.png">`}
 	                				</div>
 	                				`}
 	                			
@@ -202,16 +252,17 @@ $(document).ready(function(){
                 						<i class="mr-3 fas fa-user fa-2x"></i>
                 						<div class="media-body">
 			                				<h6 class="mt-0">
-			                					<strong> ${reply.writer} </strong>&nbsp ${reply.registerDate}
+			                					<strong class="comment-writer"> ${reply.writer} </strong>&nbsp ${reply.registerDate}
 			                					${reply.writer == article_writer ? `&nbsp[글쓴이]` : ''}
 			                				</h6>
-		                					${reply.content}
+		                					<span class="comment-content">${reply.content}</span>
 			                				<div class='mt-2' name='${reply.id}'>
 			                					<button class="icon" name='comment-like'>
-			                						${reply.isGood ? `<img src="/img/imgs/like2.png">`: `<img src="/img/imgs/like1.png">`}
+			                						<img name="comment-like-img${reply.id}" ${reply.isGood ? `src="/img/imgs/like2.png">` : `src="/img/imgs/like1.png">`}
 			                					</button>
+			                					<span class="comment-like-count" name="comment-like-count${reply.id}">${reply.good}</span>
 			                					${reply.writer == email ? `&nbsp<span class="text-danger comment-event">삭제</span>` : ''}
-			                					${reply.writer == email ? '': "<a class='icon' onclick='$('#exampleModal').modal('show')'>신고</a>"}
+			                					${reply.writer == email ? '': `<button class="icon icon-comment-report"><img class="report" src="/img/imgs/report.png">`}
 			                				</div>
 		                				</div>
 		                			</div>

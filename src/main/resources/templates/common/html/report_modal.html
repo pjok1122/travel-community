@@ -1,0 +1,64 @@
+<!--Article Report Modal -->
+   <div class="modal fade" id="articleReportModal" tabindex="-1" role="dialog" aria-hidden="true">
+       <div class="modal-dialog modal-lg" role="document">
+           <div class="modal-content">
+               <div class="modal-header">
+               	<div>
+                   	<h5 class="modal-title" id="articleReportTitle" th:utext="|제목 : ${article.title}|">제목</h5>
+                   	<h6 class="modal-title mt-2" th:utext="|작성자 : ${article.email}|">작성자</h6>
+                   </div>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                       <span aria-hidden="true">&times;</span>
+                   </button>
+               </div>
+               <div class="modal-body">
+                   <h4>사유 선택 : 대표적인 사유를 선택해주세요.</h4>
+               	<ul class="list-type mt-2">
+                    <li><input type="radio" name="checkInfo" id="rdo-illegal" value="1" checked="checked">부적절한 홍보 게시글</li>
+                    <li><input type="radio" name="checkInfo" id="rdo-obscenity" value="2">음란성 또는 청소년에게 부적합한 내용</li>
+                    <li><input type="radio" name="checkInfo" id="rdo-libel" value="3">명예훼손/사생활 침해 등 저작권침해 행위</li>
+                    <li><input type="radio" name="checkInfo" id="rdo-etc" value="4">기타</li>
+                   </ul>
+                   	<textarea id="rdo-text-area" name="reportDesc" cols="50" rows="5" placeholder="해당 신고는 커뮤니티 운영자에게 전달되며, 부적절한 내용으로 판단될 경우 해당 게시물은 삭제됩니다." onkeyup="checkLength(this,$('#report-len-count'), 200)"></textarea>
+                   	<span id="report-len-count" class="len-count">0 / 200 자</span>
+               </div>
+               <div class="modal-footer">
+                   <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                   <button type="button" class="btn btn-primary" id="submit-article-report"data-dismiss="modal">신고하기</button>
+               </div>
+           </div>
+       </div>
+   </div>
+   
+<!--Comment Report Modal -->
+   <div class="modal fade" id="commentReportModal" tabindex="-1" role="dialog" aria-hidden="true">
+       <div class="modal-dialog modal-lg" role="document">
+           <div class="modal-content">
+               <div class="modal-header">
+               	<div>
+					<input type="hidden" id="commentReportId">
+                   	<h5 class="modal-title" id="commentReportContent">내용 : </h5>
+                   	<h6 class="modal-title mt-2" id="commentReportWriter">작성자 : </h6>
+                   </div>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                       <span aria-hidden="true">&times;</span>
+                   </button>
+               </div>
+               <div class="modal-body">
+                   <h4>사유 선택 : 대표적인 사유를 선택해주세요.</h4>
+               	<ul class="list-type mt-2">
+                    <li><input type="radio" name="checkInfo2" id="rdo-illegal" value="1" checked="checked">부적절한 홍보 게시글</li>
+                    <li><input type="radio" name="checkInfo2" id="rdo-obscenity" value="2">음란성 또는 청소년에게 부적합한 내용</li>
+                    <li><input type="radio" name="checkInfo2" id="rdo-libel" value="3">명예훼손/사생활 침해 등 저작권침해 행위</li>
+                    <li><input type="radio" name="checkInfo2" id="rdo-etc" value="4">기타</li>
+                   </ul>
+                   	<textarea id="rdo-text-area2" name="reportDesc" cols="50" rows="5" placeholder="해당 신고는 커뮤니티 운영자에게 전달되며, 부적절한 내용으로 판단될 경우 해당 게시물은 삭제됩니다." onkeyup="checkLength(this,$('#report-len-count2'), 200)"></textarea>
+                   	<span id="report-len-count2" class="len-count">0 / 200 자</span>
+               </div>
+               <div class="modal-footer">
+                   <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                   <button type="button" class="btn btn-primary" id="submit-comment-report"data-dismiss="modal">신고하기</button>
+               </div>
+           </div>
+       </div>
+   </div>

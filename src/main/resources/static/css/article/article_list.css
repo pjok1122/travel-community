@@ -1,0 +1,13 @@
+.list-title:hover{
+	color:gray;
+}
+
+.list-title{
+	color:black;
+}
+.article-commentCnt{
+	color: gray;	
+}
+.article-nation{
+	color: red;
+}

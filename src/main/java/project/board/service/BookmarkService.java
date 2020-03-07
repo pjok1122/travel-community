@@ -18,7 +18,7 @@ public class BookmarkService {
 	BookmarkRepository bookmarkRepository;
 	
 	public List<ArticleDto> getArticleByMemberId(Long memberId, Page page) {
-		return bookmarkRepository.findArticleByMemberId(memberId, page.getOffset(), page.getRecordsPerPage());
+		return bookmarkRepository.selectArticleByMemberId(memberId, page.getOffset(), page.getRecordsPerPage());
 	}
 
 	public int getArticleCntByMemberId(Long memberId) {

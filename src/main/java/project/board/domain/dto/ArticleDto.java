@@ -18,6 +18,4 @@ public class ArticleDto extends Article{
 
 	private String email;
 	private Long memberId;
-	private String category;
-//	private List<Comment> comments = new ArrayList<Comment>();
 }
