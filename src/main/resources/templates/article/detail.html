@@ -87,13 +87,13 @@ footer{
 
 <th:block th:replace="common/html/navBar.html"></th:block>
 
-	<div class="container">
+	<div class="container mt-5">
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="card">
 					<div class="card-header">
 						<div class="article-nation" th:text="|[${article.nation}]|"></div>
-                     	<div class="card-title" th:utext="${article.title}"></div>
+                     	<div class="card-title h2" th:utext="${article.title}"></div>
                      	<div class="meta-info row">
                      		<div class="col-9">
 	                    		<span style="display:none" id="articleId" th:text="${article.id}" ></span>
@@ -171,147 +171,150 @@ footer{
 
 
 <script th:inline="javascript">
-		$(document).ready(function(){
-			/* <![CDATA[ */
-			var articleId = [[${article.id}]]
-			var liked = [[${liked}]]
-			/* ]] */
-			var likeIcon = $("#icon-like");
-			
-			$("#icon-like").on("click", function(){
- 				$.ajax({
-					url : '/article/like',
-					type : 'POST',
-					data : {'articleId': articleId},
-					async : false,
-					success : function(liked){
-						likeIcon.prop("name", liked);
-						if(liked){
-							$("#like").prop("src", "/img/imgs/like2.png");
-						} else {
-							$("#like").prop("src", "/img/imgs/like1.png");
-						}
-					},
-					complete : function(response){
-						if(response.status == 302){
-							window.location.href=response.responseText;
-						}
-					}
-				});
-				
+	$(document).ready(function(){
+		/* <![CDATA[ */
+		var articleId = [[${article.id}]]
+		var liked = [[${liked}]]
+		/* ]] */
+		var likeIcon = $("#icon-like");
+		
+		$("#icon-like").on("click", function(){
 				$.ajax({
-					url : '/article/like',
-					type : 'GET',
-					data : {'articleId' : articleId},
-					success : function(count){
-						console.log(count);
-						$(".likeCount").html(count);
+				url : '/article/like',
+				type : 'POST',
+				data : {'articleId': articleId},
+				async : false,
+				success : function(liked){
+					likeIcon.prop("name", liked);
+					if(liked){
+						$("#like").prop("src", "/img/imgs/like2.png");
+					} else {
+						$("#like").prop("src", "/img/imgs/like1.png");
 					}
-				})
+				},
+				complete : function(response){
+					if(response.status == 302){
+						window.location.href=response.responseText;
+					}
+				}
 			});
 			
-			$("#icon-bookmark").on("click", function(){
-				$.ajax({
-					url: '/ajax/bookmark',
-					type : 'POST',
-					data : {'articleId' : articleId},
-					success : function(bookmark){
-						$("#icon-bookmark").prop("name", bookmark);
-						if(bookmark){
-							$("#bookmark").prop("src", "/img/imgs/bookmark2.png");
-						} else{
-							$("#bookmark").prop("src", "/img/imgs/bookmark1.png");
-						}
-					},
-					complete : function(response){
-						if(response.status == 302){
-							window.location.href=response.responseText;
-						}
-					}
-				})
-			});
-			$("#icon-article-report").on("click", function(){
-				$.ajax({
-					url : '/ajax/login_check',
-					type : 'GET',
-					success: function(data){
-						$('#articleReportModal').modal('show');				
-					},
-					complete : function(response){
-						if(response.status == 302){
-							alert("로그인이 필요한 작업입니다.");
-							window.location.href=response.responseText;
-						}
-					}
-				});
-			});
-			
-
-			
-			$("input:radio[name=checkInfo]").on("click", function(){
-				if($("input[name=checkInfo]:checked").val() == 4){
-					$("#rdo-text-area").css("display", "block");
-					$("#report-len-count").css("display", "block");
-				} else{
-					$("#rdo-text-area").css("display", "none");
-					$("#report-len-count").css("display", "none");
+			$.ajax({
+				url : '/article/like',
+				type : 'GET',
+				data : {'articleId' : articleId},
+				success : function(count){
+					console.log(count);
+					$(".likeCount").html(count);
 				}
 			})
-			
-			$("input:radio[name=checkInfo2]").on("click", function(){
-				if($("input[name=checkInfo2]:checked").val() == 4){
-					$("#rdo-text-area2").css("display", "block");
-					$("#report-len-count2").css("display", "block");
-				} else{
-					$("#rdo-text-area2").css("display", "none");
-					$("#report-len-count2").css("display", "none");
+		});
+		
+		$("#icon-bookmark").on("click", function(){
+			$.ajax({
+				url: '/ajax/bookmark',
+				type : 'POST',
+				data : {'articleId' : articleId},
+				success : function(bookmark){
+					$("#icon-bookmark").prop("name", bookmark);
+					if(bookmark){
+						$("#bookmark").prop("src", "/img/imgs/bookmark2.png");
+					} else{
+						$("#bookmark").prop("src", "/img/imgs/bookmark1.png");
+					}
+				},
+				complete : function(response){
+					if(response.status == 302){
+						window.location.href=response.responseText;
+					}
 				}
 			})
-			
-			$("#submit-comment-report").on("click", function(){
-				var checkInfo = $("input[name=checkInfo2]:checked").val();
-				var sendData = {'targetId':commentId, 'checkInfo':checkInfo};
-				if(checkInfo == 4){
-					reportContent = $("#rdo-text-area2").val();
-					sendData['reportContent'] = reportContent;
-				}
-				$.ajax({
-					url : '/ajax/report/comment',
-					type : 'POST',
-					data : sendData,
-					success : function(data){
-						alert(data);
+		});
+		$("#icon-article-report").on("click", function(){
+			$.ajax({
+				url : '/ajax/login_check',
+				type : 'GET',
+				success: function(data){
+					$('#articleReportModal').modal('show');				
+				},
+				complete : function(response){
+					if(response.status == 302){
+						alert("로그인이 필요한 작업입니다.");
+						window.location.href=response.responseText;
 					}
-				});
-			});
-			
-			$("#submit-article-report").on("click", function(){
-				var checkInfo = $("input[name=checkInfo]:checked").val();
-				var sendData = {'targetId':articleId, 'checkInfo':checkInfo};
-				if(checkInfo == 4){
-					reportContent = $("#rdo-text-area").val();
-					sendData['reportContent'] = reportContent;
 				}
-				$.ajax({
-					url : '/ajax/report/article',
-					type : 'POST',
-					data : sendData,
-					success : function(data){
-						alert(data);
-					}
-				});
 			});
 		});
 		
-		function checkLength(obj, target, length){
-			var content = $(obj).val();
-			target.html(`(${content.length} / ${length} 자)`);
-			
-			if(content.length > length){
-				$(obj).val(content.substring(0,length-1));
-				target.html(`(${length} / ${length} 자)`);
+
+		
+		$("input:radio[name=checkInfo]").on("click", function(){
+			if($("input[name=checkInfo]:checked").val() == 4){
+				$("#rdo-text-area").css("display", "block");
+				$("#report-len-count").css("display", "block");
+			} else{
+				$("#rdo-text-area").css("display", "none");
+				$("#report-len-count").css("display", "none");
 			}
+		})
+		
+		$("input:radio[name=checkInfo2]").on("click", function(){
+			if($("input[name=checkInfo2]:checked").val() == 4){
+				$("#rdo-text-area2").css("display", "block");
+				$("#report-len-count2").css("display", "block");
+			} else{
+				$("#rdo-text-area2").css("display", "none");
+				$("#report-len-count2").css("display", "none");
+			}
+		})
+		
+		$("#submit-comment-report").on("click", function(){
+			var checkInfo = $("input[name=checkInfo2]:checked").val();
+			var commentId = $('#commentReportId').val();
+			var sendData = {'targetId':commentId, 'checkInfo':checkInfo};
+			if(checkInfo == 4){
+				reportContent = $("#rdo-text-area2").val();
+				sendData['reportContent'] = reportContent;
+				$("#rdo-text-area2").val('');
+			}
+			$.ajax({
+				url : '/ajax/report/comment',
+				type : 'POST',
+				data : sendData,
+				success : function(data){
+					alert(data);
+				}
+			});
+		});
+		
+		$("#submit-article-report").on("click", function(){
+			var checkInfo = $("input[name=checkInfo]:checked").val();
+			var sendData = {'targetId':articleId, 'checkInfo':checkInfo};
+			if(checkInfo == 4){
+				reportContent = $("#rdo-text-area").val();
+				sendData['reportContent'] = reportContent;
+				$("#rdo-text-area").val('');
+			}
+			$.ajax({
+				url : '/ajax/report/article',
+				type : 'POST',
+				data : sendData,
+				success : function(data){
+					alert(data);
+				}
+			});
+		});
+	});
+	
+	function checkLength(obj, target, length){
+		var content = $(obj).val();
+		target.html(`(${content.length} / ${length} 자)`);
+		
+		if(content.length > length){
+			$(obj).val(content.substring(0,length-1));
+			target.html(`(${length} / ${length} 자)`);
 		}
+	}
 	</script>
 </body>
 </html>

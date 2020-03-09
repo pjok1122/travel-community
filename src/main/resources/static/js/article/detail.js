@@ -1,4 +1,4 @@
-function getModalForm(obj){
+function getCommentModalForm(obj, commentId){
 	$.ajax({
 		url : '/ajax/login_check',
 		type : 'GET',
@@ -7,7 +7,9 @@ function getModalForm(obj){
 			var content = $(obj).parents('.media-body').children('.comment-content').html();
 			$('#commentReportWriter').html(`작성자 : ${writer}`);
 			$('#commentReportContent').html(`내용 : ${content.length <= 100 ? `${content.length}` : `${content.substr(0,100)} ...`}`);
-			$('#commentReportModal').modal('show');				
+			$('#commentReportId').val(commentId);
+			$('#commentReportModal').modal('show');
+			
 		},
 		complete : function(response){
 			if(response.status == 302){
@@ -47,7 +49,6 @@ $(document).ready(function(){
 		}	
 		else if(current.innerText == '등록')
 		{
-			//글자수 0이면 거절 하기.
 			var content = parent.parentElement.getElementsByTagName("textarea")[0].value;
 			console.log(content);
 			if(content.length <= 0){
@@ -67,7 +68,7 @@ $(document).ready(function(){
 			if(email == null)
 			{
 				alert("로그인이 필요한 작업입니다.");
-				window.location.href='http://localhost:8080/login';
+				window.location.href='/login';
 				return;
 			}	
 			
@@ -214,11 +215,12 @@ $(document).ready(function(){
 	        	'articleId': articleId
 	        },
 	        success : function(data){
-	        	$(".commentCount").html(data.length);
+	        	var count = data.length;
 	            var html = "";
 	            
 	            if(data.length > 0){
 	                for(i=0; i<data.length; i++){
+	                	count += data[i].replies.length;
 	                	html +=
 	                		`
 	                		<div class="media">
@@ -227,7 +229,7 @@ $(document).ready(function(){
 		                			<h6 class="mt-0">
 		                				<strong class="comment-writer">${data[i].updateDate != null ? `비공개</strong>` : `${data[i].writer} </strong>
 		                				&nbsp ${data[i].registerDate}
-		                				${data[i].writer == article_writer ? `&nbsp[글쓴이]` : ''}`
+		                				${data[i].writer == article_writer ? `<button class="btn btn-info btn-sm">글쓴이</button>` : ''}`
 		                				}
 	                				</h6>
 	                				<span class="comment-content">${data[i].updateDate != null ? '삭제된 댓글입니다' : `${data[i].content}`}</span>
@@ -242,7 +244,7 @@ $(document).ready(function(){
 		                				${data[i].updateDate == null ? `&nbsp<span class="text-primary comment-event">댓글달기</span>` : ''}
 	
 		                				${data[i].writer == email ? `&nbsp<span class="text-danger comment-event">삭제</span>` : ''}
-		                				${data[i].writer == email ? '': `<button class="icon icon-comment-report" onclick="getModalForm(this)"><img class="report" src="/img/imgs/report.png">`}
+		                				${data[i].writer == email ? '': `<button class="icon icon-comment-report" onclick="getCommentModalForm(this, ${data[i].id})"><img class="report" src="/img/imgs/report.png">`}
 	                				</div>
 	                				`}
 	                			
@@ -253,7 +255,7 @@ $(document).ready(function(){
                 						<div class="media-body">
 			                				<h6 class="mt-0">
 			                					<strong class="comment-writer"> ${reply.writer} </strong>&nbsp ${reply.registerDate}
-			                					${reply.writer == article_writer ? `&nbsp[글쓴이]` : ''}
+			                					${reply.writer == article_writer ? `<button class="btn btn-info btn-sm">글쓴이</button>` : ''}
 			                				</h6>
 		                					<span class="comment-content">${reply.content}</span>
 			                				<div class='mt-2' name='${reply.id}'>
@@ -262,13 +264,13 @@ $(document).ready(function(){
 			                					</button>
 			                					<span class="comment-like-count" name="comment-like-count${reply.id}">${reply.good}</span>
 			                					${reply.writer == email ? `&nbsp<span class="text-danger comment-event">삭제</span>` : ''}
-			                					${reply.writer == email ? '': `<button class="icon icon-comment-report"><img class="report" src="/img/imgs/report.png">`}
+			                					${reply.writer == email ? '': `<button class="icon icon-comment-report" onclick="getCommentModalForm(this, ${reply.id})"><img class="report" src="/img/imgs/report.png">`}
 			                				</div>
 		                				</div>
 		                			</div>
 	                				`
 	                			).join("")}
-	                			<div style='border-bottom: 1px dotted #ccc'></div>
+	                			<div class="mt-2 mb-2" style='border-bottom: 1px dotted #ccc'></div>
                 			</div>
                 		</div>
 	                		`
@@ -281,6 +283,7 @@ $(document).ready(function(){
 	            	</div>
 	            	`
 	            }
+	            $(".commentCount").html(count);
 	            $("#commentList").html(html);
 	        }
 	    });
