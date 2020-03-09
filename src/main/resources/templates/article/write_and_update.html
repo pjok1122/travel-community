@@ -70,7 +70,7 @@
 						<input type="hidden" class="form-control" th:field="*{id}">
 						<div class="input-group mb-3">
 							<div class="input-group-prepended">
-								<label class="input-group-text" for="categoryId">카테고리</label>
+								<label class="input-group-text" for="category">카테고리</label>
 							</div>
 							<select class="custom-select" th:field="*{category}">
 								<option value="accomodation">숙박 정보
@@ -78,7 +78,7 @@
 								<option value="festival">축제정보
 								<option value="attractions">관광지
 							</select>
-							<small class="form-text text-muted" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}">Incorrect date</small>
+							<small class="form-text text-muted" th:if="${#fields.hasErrors('category')}" th:errors="*{category}">Incorrect date</small>
 						</div>
 					
 						<div class="input-group mb-3">
@@ -210,14 +210,14 @@
 		
 		function saveTempArticle(){
 			var title = $("#title").val();
-			var categoryId = $("#categoryId").val();
+			var category = $("#category").val();
 			var content = $("#content").val();
 			var nation = $("#nation").val();
 			if(title.length <= 0 || content.length <=0){
 				alert("제목과 내용을 입력해주세요.");
 			}
 			else{
-				var data = {'title':title, 'content':content,'categoryId':categoryId, 'nation':nation};
+				var data = {'title':title, 'content':content,'category':category, 'nation':nation};
 				ajaxTempWrite(data);
 			}
 		}
@@ -246,6 +246,7 @@
 			if(articleId){
 				data['articleId']=articleId;
 			}
+			console.log(data);
 			$.ajax({
 				url : url,
 				data : data,
@@ -291,7 +292,7 @@
 											<div class="list-group-item-action" onclick="loadTempArticle(${i})">
 												<input type="hidden" id="index" value=${i}></span>
 												<span class="item-nation">[${articles[i].nation}]</span>
-												<span class="item-title">${(articles[i].title).length >= 20 ? `${articles[i].title.substr(0,20)} ... ` : `articles[i].title`} </span>
+												<span class="item-title">${(articles[i].title).length >= 20 ? `${articles[i].title.substr(0,20)} ... ` : `${articles[i].title}`} </span>
 												<span class="item-date">${articles[i].updateDate > new Date(articles[i].registerDate).toLocaleString('ko-KR') ? (articles[i].updateDate) : new Date(articles[i].registerDate).toLocaleString('ko-KR')}</span>
 											</div>
 											<span class="delete-button" data-dismiss="modal" onclick="deleteTempArticle(${i})"><i class="far fa-trash-alt"></i></span>
