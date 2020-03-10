@@ -2,6 +2,7 @@ package project.board.domain;
 
 import project.board.enums.Category;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.apache.ibatis.type.Alias;
 import org.hibernate.validator.constraints.Length;
@@ -41,7 +42,7 @@ public class Article extends CommonDomain{
 	private String status;
 	
 	
-	 @NotBlank
+	 @NotNull
 	 private Category category;
 	 
 }
