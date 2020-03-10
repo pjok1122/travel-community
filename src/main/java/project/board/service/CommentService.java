@@ -67,14 +67,39 @@ public class CommentService {
 	{
 		CommentDto comment = getById(commentId, memberId);
 		
+		if(comment == null) {
+			return;
+		}
+		
 		if(comment.isDelete())
 		{
 			deleteCommentById(commentId);
+			//부모가 동일한 애들이 있는지 체크하고 없다면 부모도 같이 삭제.
 		}
 		else
 		{
 			updateCommentContentById(commentId);
 		}
+	}
+
+
+	@Transactional
+	public int like(Long memberId, Long commentId)
+	{
+		Boolean isAlreayLike = selectCommentLikeByMemberIdAndCommentId(memberId, commentId);
+		if(isAlreayLike)
+		{
+			deleteCommentLikeByMemberIdAndCommentId(memberId, commentId);
+			GoodDown(commentId);
+			
+		}
+		else
+		{
+			insertCommentLikeByMemberIdAndCommentId(memberId, commentId);
+			GoodUp(commentId);
+		}
+		
+		return selectCommentGoodById(commentId);
 	}
 	
 	public void deleteCommentById(Long id)
@@ -113,22 +138,5 @@ public class CommentService {
 		return commentRepository.selectCommentById(commentId).getGood();
 	}
 	
-	@Transactional
-	public int like(Long memberId, Long commentId)
-	{
-		Boolean isAlreayLike = selectCommentLikeByMemberIdAndCommentId(memberId, commentId);
-		if(isAlreayLike)
-		{
-			deleteCommentLikeByMemberIdAndCommentId(memberId, commentId);
-			GoodDown(commentId);
-			
-		}
-		else
-		{
-			insertCommentLikeByMemberIdAndCommentId(memberId, commentId);
-			GoodUp(commentId);
-		}
-		
-		return selectCommentGoodById(commentId);
-	}
+
 }

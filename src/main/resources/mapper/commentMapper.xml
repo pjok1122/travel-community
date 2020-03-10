@@ -129,5 +129,6 @@
 		SET good = good - 1
 		WHERE id= #{id}
 	</update>
+	
 
 </mapper>

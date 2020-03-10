@@ -19,6 +19,7 @@ import project.board.domain.Comment;
 import project.board.domain.dto.CommentDto;
 import project.board.service.CommentService;
 import project.board.util.CommonUtils;
+import project.board.util.ScriptEscapeUtils;
 
 @Controller
 @RequestMapping("/comment")
@@ -26,6 +27,9 @@ public class CommentController {
 	
 	@Autowired
 	private CommentService commentService;
+	
+	@Autowired
+	private ScriptEscapeUtils scriptUtils;
 	
 	@Autowired
 	private CommonUtils utils;
@@ -41,7 +45,7 @@ public class CommentController {
 	) throws Exception
 	{
 		
-		commentService.create(articleId, utils.memberIdConvertThrow(session), parentCommentId, content);
+		commentService.create(articleId, utils.memberIdConvertThrow(session), parentCommentId, scriptUtils.scriptEscape(content));
 		
 		return ResponseEntity.ok().build();
 	}
@@ -67,6 +71,7 @@ public class CommentController {
 	) 
 	{
 		commentService.delete(commentId, utils.memberIdConvert(session));
+		
 		
 		return ResponseEntity.ok().build(); 
 	}
