@@ -11,6 +11,7 @@
 		<result column="good" property="good" />
 		<result column="writer" property="writer" />
 		<result column="is_good" property="isGood" />
+		<result column="parent_comment_id" property="parentCommentId" />
 		<result column="register_date" property="registerDate" />
 		<result column="update_date" property="updateDate" />
 		<collection property="replies" ofType="replyDto">
@@ -55,6 +56,7 @@
 			c1.register_date register_date, 
 			c1.update_date update_date, 
 			c1.good good, 
+			c1.parent_comment_id parent_comment_id,  
 			CASE 
 				WHEN c1.parent_comment_id IS NULL THEN c2.content 
 				ELSE c2.content 
@@ -129,6 +131,20 @@
 		SET good = good - 1
 		WHERE id= #{id}
 	</update>
+	
+	<delete id="deleteCommentIfNoChild">
+		DELETE 
+		FROM comment
+		WHERE id = (
+		SELECT `result` 
+		FROM 
+			(
+			SELECT if(count(c1.parent_comment_id)>0,0,#{id}) as `result` 
+			FROM comment c1
+			WHERE c1.parent_comment_id = #{id}
+			) c2
+		)
+	</delete>
 	
 
 </mapper>

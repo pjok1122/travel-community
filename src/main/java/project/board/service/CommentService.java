@@ -44,7 +44,6 @@ public class CommentService {
 	public List<CommentDto> getByArticleId(Long memberId, Long articleId)
 	{
 		List<CommentDto> list = commentRepository.selectCommentByArticleId(memberId, articleId);
-		System.out.println();
 		return list;
 	}
 	
@@ -63,6 +62,7 @@ public class CommentService {
 		commentRepository.insertComment(articleId, memberId, parentCommentId, content);
 	}
 	
+	@Transactional
 	public void delete(Long commentId, Long memberId)
 	{
 		CommentDto comment = getById(commentId, memberId);
@@ -74,14 +74,18 @@ public class CommentService {
 		if(comment.isDelete())
 		{
 			deleteCommentById(commentId);
-			//부모가 동일한 애들이 있는지 체크하고 없다면 부모도 같이 삭제.
+			System.out.println(comment.getParentCommentId());
+			deleteCommentIfNoChild(comment.getParentCommentId());
 		}
 		else
 		{
 			updateCommentContentById(commentId);
 		}
 	}
-
+	
+	private void deleteCommentIfNoChild(Long id) {
+		commentRepository.deleteCommentIfNoChild(id);
+	}
 
 	@Transactional
 	public int like(Long memberId, Long commentId)

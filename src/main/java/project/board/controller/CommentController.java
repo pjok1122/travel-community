@@ -72,7 +72,6 @@ public class CommentController {
 	{
 		commentService.delete(commentId, utils.memberIdConvert(session));
 		
-		
 		return ResponseEntity.ok().build(); 
 	}
 	

@@ -215,6 +215,7 @@ $(document).ready(function(){
 	        	'articleId': articleId
 	        },
 	        success : function(data){
+	        	console.log(data);
 	        	var count = data.length;
 	            var html = "";
 	            
@@ -233,7 +234,7 @@ $(document).ready(function(){
 		                				}
 	                				</h6>
 	                				<span class="comment-content">${data[i].updateDate != null ? '삭제된 댓글입니다' : `${data[i].content}`}</span>
-	                				${data[i].udpateDate != null ? '' : 
+	                				${data[i].updateDate != null ? '' : 
 	                				`
 	                				<div class="mt-2" name='${data[i].id}'>
 		                				<button class="icon" name='comment-like'>
