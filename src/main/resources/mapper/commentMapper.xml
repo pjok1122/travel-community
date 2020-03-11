@@ -97,8 +97,10 @@
 		ON c1.id = c2.parent_comment_id 
 		INNER JOIN `member` m1 
 		ON c1.member_id = m1.id 
+		OR c1.member_id IS NULL  
 		LEFT JOIN `member` m2 
 		ON c2.member_id = m2.id 
+		OR c2.member_id IS NULL 
 		LEFT JOIN comment_like cl1 
 		ON c1.id = cl1.comment_id 
 		LEFT JOIN comment_like cl2 
