@@ -22,7 +22,6 @@
 **fail**
 
 - view				: `member/register`
-- model				: `String error`
 
 ### GET /login : 로그인 페이지를 보여준다.
 
@@ -35,24 +34,38 @@
 ### POST /login : 로그인을 처리한다.
 
 - method       		: `processLoginForm()`
-- parameter 		: `MemberDto`
+- parameter 		: `MemberDto memberDto`
 
 **success**
 
-- redirect			: `/`
+- redirect			: `String prevPage`
 
 **fail**				
 
 - view			: `member/login`
-- model			: `String error`
 
-### GET /logout : 로그아웃을 처리한다.
+### GET,POST /logout : 로그아웃을 처리한다.
 
 - method       		: `processLogout()`
 
 **success**
 
 - redirect			: `/`
+
+### GET /ajax/login_check : 비동기적으로 로그인 유무를 확인한다.
+
+- method 			: `processLoginCheck()`
+
+**success**
+
+- status			: `200`
+- body				: `String email`
+
+**fail**
+
+- status			: `302`
+- body				: `/login`
+
 
 <br><hr>
 
@@ -80,6 +93,8 @@
 - `/mypage/temp_article`
   - view			: `member/mypage/temp_article`
   - model			: `List<Article> list`, `Page page`
+  
+_cf) page안에 list가 포함되어있다._
   
 **fail**
 
@@ -139,7 +154,7 @@
 - view      		: `member/mypage/update`
 - model				: `String error`
 
-### GET /mypage/delete : 회원 정보를 삭제한다.
+### GET,POST /mypage/delete : 회원 정보를 삭제한다.
 
 - method			: `deleteMember()`
 
@@ -166,19 +181,19 @@
 - view				: `article/list`
 - model				: `List<Article> list`, `Page page`
 
-### GET /{category}/write : {category}에 대한 글쓰기 폼을 보여준다.
+### GET /article/write : 글쓰기 양식을 보여준다.
 
 - method			: `getCreationForm()`
 
 **success**
 
-- view				: `article/write`
+- view				: `article/write_and_update`
 
 **fail**
 
-- view				: member/login
+- view				: `member/login`
 
-### POST /{category}/write : {category}에 대한 글쓰기 요청을 처리한다.
+### POST /article/write : 글쓰기 요청을 처리한다.
 
 - method			: `processCreationForm()`
 - parameter			: `Article article`
@@ -189,8 +204,7 @@
  
 **fail**
 
-- view				: `article/write`
-- model				: `String error`
+- view				: `article/write_and_update`
 
 ### GET /article/{articleId} : articleId에 대한 상세보기 페이지를 보여준다.
 
@@ -211,7 +225,7 @@
 
 **success**
 
-- view				: `article/update`
+- view				: `article/write_and_update`
 - model				: `ArticleDto article`
 
 **fail**
@@ -229,7 +243,7 @@
 
 **fail**
 
-- view				: `article/update` 
+- view				: `article/write_and_update` 
 
 ### GET,POST /article/delete/{articleId} : articleId에 해당하는 Article을 삭제 처리한다.
 
@@ -243,7 +257,17 @@
 
 - redirect			: `/`
 
-### GET /article/like : 게시물에서 좋아요를 클릭하면, 비동기적으로 좋아요를 반영하여 응답한다.
+### GET /article/like : 비동기적으로 게시물의 좋아요 개수를 전달한다.
+
+- method			: `getLikeCount()`
+- parameter			: `Long articleId`
+
+**success**
+
+- status			: `200`
+- body				: `Integer likeCount`
+
+### POST /article/like : 게시물에서 좋아요를 클릭하면, 비동기적으로 좋아요를 반영하여 응답한다.
 
 - method			: `processLikeArticle()`
 - parameter			: `Long articleId`, `int liked`
