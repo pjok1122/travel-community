@@ -20,6 +20,7 @@ import project.board.common.MemberRegisterValidator;
 import project.board.domain.Member;
 import project.board.domain.dto.MemberDto;
 import project.board.service.MemberService;
+import project.board.util.MySessionUtils;
 
 
 @Controller
@@ -27,6 +28,9 @@ public class LoginController {
 	
 	@Autowired
 	MemberService memberService;
+	
+	@Autowired
+	MySessionUtils sessionUtils;
 	
 	@Autowired
 	MemberRegisterValidator memberValidator;
@@ -46,7 +50,6 @@ public class LoginController {
 	{
 		memberValidator.validate(memberDto, result);
 		if(result.hasErrors()) {
-			model.addAttribute(memberDto);
 			return "member/register";
 		}
 		
@@ -57,8 +60,11 @@ public class LoginController {
 	}
 
 	@GetMapping("/login")
-	public String getLoginForm(HttpSession session, Model model) {
-		if(session.getAttribute("memberId") == null) {
+	public String getLoginForm(
+			HttpSession session,
+			Model model) 
+	{
+		if(sessionUtils.getMemberId(session) == null) {
 			model.addAttribute("memberDto", new MemberDto());
 			return "member/login";
 		}
@@ -73,7 +79,6 @@ public class LoginController {
 			Model model)
 	{
 		if (result.hasErrors()) {
-			model.addAttribute("memberDto", memberDto);
 			return "member/login";
 		}
 

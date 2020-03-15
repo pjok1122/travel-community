@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import project.board.annotation.LoginAuth;
 import project.board.common.MemberRegisterValidator;
@@ -56,22 +57,25 @@ public class MemberController {
 	@Autowired
 	MemberUpdateValidator memberValidator;
 	
+	
 	@GetMapping("/{info}")
 	@LoginAuth
 	public String getMypage(
 		@PathVariable(required = true, value = "info") MyInfo info,
 		@RequestParam(required = false, value = "page", defaultValue = "1") int page, 
-		HttpSession session, 
+		HttpSession session,
 		Model model)
 	{
-		Long memberId = (Long)session.getAttribute("memberId");
+		Long memberId = sessionUtils.getMemberId(session);
 		model.addAllAttributes(memberService.getMypage(info, memberId, page));
 		
 		return BASE_VIEW_NAME + info.toString().toLowerCase();
 	}
+	
 	@GetMapping("/auth")
 	@LoginAuth
 	public String getAuthForm(HttpSession session, Model model) {
+		System.out.println(sessionUtils.getMemberEmail(session));
 		model.addAttribute(MemberDto.builder().email(sessionUtils.getMemberEmail(session)).build());
 		return BASE_VIEW_NAME + "auth";
 	}
@@ -123,13 +127,11 @@ public class MemberController {
 			HttpSession session,
 			Model model) {
 		if(session.getAttribute("isOwner")== null) {
-			model.addAttribute(MemberDto.builder().email(sessionUtils.getMemberEmail(session)).build());
 			return BASE_VIEW_NAME +"auth";
 		}
 		
 		memberValidator.validate(memberDto, result);
 		if(result.hasErrors()) {
-			model.addAttribute(memberDto);
 			return BASE_VIEW_NAME + "update";
 		}
 		
