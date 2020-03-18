@@ -14,7 +14,7 @@ import project.board.repository.CommentRepository;
 
 @Service
 public class CommentService {
-
+	
 	@Autowired
 	private CommentRepository commentRepository;
 	
@@ -52,11 +52,6 @@ public class CommentService {
 		if(content.length() > 300)
 		{
 			content = content.substring(0, 300);
-		}
-		
-		if(parentCommentId == null)
-		{
-			
 		}
 		
 		commentRepository.insertComment(articleId, memberId, parentCommentId, content);

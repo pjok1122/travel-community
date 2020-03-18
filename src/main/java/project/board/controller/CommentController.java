@@ -36,7 +36,7 @@ public class CommentController {
 	
 	@PostMapping("")
 	@AjaxLoginAuth
-	public ResponseEntity<?> create
+	public ResponseEntity<?> processCommentCreate
 	(
 		@RequestParam Long articleId,
 		@RequestParam String content, 
@@ -58,7 +58,6 @@ public class CommentController {
 	)
 	{
 		List<CommentDto> comments = commentService.getByArticleId(utils.memberIdConvert(session), articleId);
-		
 		return ResponseEntity.ok().body(comments);
 	}
 	

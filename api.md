@@ -94,8 +94,9 @@
   - view			: `member/mypage/temp_article`
   - model			: `List<Article> list`, `Page page`
   
+
 _cf) page안에 list가 포함되어있다._
-  
+
 **fail**
 
 - view			: `member/login`
@@ -201,7 +202,7 @@ _cf) page안에 list가 포함되어있다._
 **success**
 
 - redirect			: `/article/{articleId}`
- 
+
 **fail**
 
 - view				: `article/write_and_update`
@@ -282,6 +283,80 @@ _cf) page안에 list가 포함되어있다._
 - status			: `302`
 - body				: `/login`
 
+
+
+### POST /ajax/temp/write : Ajax를 이용하여 회원의 임시저장 글 작성을 처리한다.
+
+- method			: `processTempArticleWirte()`
+- paramater       : `Article article`
+
+
+
+**success**
+
+- status				: `200`
+- body                  :  `Long articleId`
+
+
+
+**fail**
+
+- status                : `400`
+
+
+
+### POST /ajax/temp/update : Ajax를 이용하여 회원이 최근에 임시저장한 글에 대한 업데이트를 처리한다.
+
+- method			: `processTempArticleUpdate()`
+- paramater       : `Long articleId`, `Article article`
+
+
+
+**success**
+
+- status				: `200`
+- body                  :  `Long articleId`
+
+
+
+**fail**
+
+- status                : `400`
+
+
+
+### GET /ajax/temp : Ajax를 이용하여 회원이 임시저장한 글 목록을 응답한다.
+
+- method			: `processTempArticleList()`
+
+**success**
+
+- status				: `200`
+- body                  :  `List<ArticleDto> tempArticles`
+
+
+
+### POST /ajax/temp/delete : Ajax를 이용하여 회원의 임시저장한 글에 대한 삭제를 처리한다.
+
+- method			: `deleteTempArticle()`
+- paramater       : `Long articleId`
+
+
+
+**success**
+
+- status				: `200`
+
+
+
+**fail**
+
+- status                : `400`
+
+
+
+<br><hr>
+
 ## UploadFileController
 
 ### GET /image/{fileId} : fileId에 해당하는 image를 response body에 담아 전달한다.
@@ -310,3 +385,25 @@ _cf) page안에 list가 포함되어있다._
 **fail**
 
 - status			: `400`
+
+
+
+<br><hr>
+
+
+
+## CommentController
+
+### POST /comment		: 댓글 작성을 처리한다.
+
+- method			: `processCommentCreate()`
+- parameter			: `Long articleId`, `String content`, `Long parentCommentId`
+
+**success**
+
+- status			: `200`
+
+**fail**
+
+- status			: `400`
+

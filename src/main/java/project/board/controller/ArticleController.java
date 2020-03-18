@@ -193,7 +193,7 @@ public class ArticleController {
 	
 	@PostMapping("/ajax/temp/update")
 	@AjaxLoginAuth
-	public ResponseEntity<?> processTempArticleWirte(
+	public ResponseEntity<?> processTempArticleUpdate(
 			@RequestParam("articleId") Long articleId,
 			@ModelAttribute @Valid Article article,
 			BindingResult result,
