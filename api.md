@@ -394,7 +394,7 @@ _cf) page안에 list가 포함되어있다._
 
 ## CommentController
 
-### POST /comment		: 댓글 작성을 처리한다.
+### POST /comment		: 댓글 작성을 비동기적으로 처리한다.
 
 - method			: `processCommentCreate()`
 - parameter			: `Long articleId`, `String content`, `Long parentCommentId`
@@ -405,5 +405,113 @@ _cf) page안에 list가 포함되어있다._
 
 **fail**
 
-- status			: `400`
+- status			: `400`, `302`
+
+
+
+### GET /comment		: 게시물에 대한 댓글 목록을 가져와 비동기적으로 응답한다.
+
+- method			: `getCommentByArticleId()`
+- parameter			: `Long articleId`
+
+**success**
+
+- status			: `200`
+- body              : `List<CommentDto> comments`
+
+
+
+### POST /delete/{commentId}		: 댓글 삭제를 비동기적으로 처리한다.
+
+- method			: `deleteComment()`
+- parameter			: `Long commentId`
+
+**success**
+
+- status			: `200`
+
+**fail**
+
+- status : `302`
+- redirect : `/login`
+
+
+
+### POST /like : 댓글에 대한 좋아요 반영을 처리한다.
+
+- method : `processLikeComment()`
+- parameter : `Long commentId`
+
+
+
+**success**
+
+- status : `200`
+- body : `int likeCount`
+
+**fail**
+
+- status : `302`
+- redirect : `/login`
+
+
+
+<br><hr>
+
+## ReportController
+
+### POST /ajax/report/{target} : {target}에 대한 신고 요청을 비동기적으로 처리한다.
+
+- method : `processReport()`
+- parameter : `Long targetId`, `Long checkInfo`, `String reportContent`
+
+
+
+**success**
+
+- status : `200`
+- body : `String message`
+
+**faill**
+
+- status : `302`
+- redirect : `/login`
+
+
+
+## BookmarkController
+
+### POST /ajax/bookmark : 회원의 북마크 리스트에 게시물을 추가한다.
+
+- method : `processAddBookmark()`
+- parameter : `Long articleId`
+
+
+
+**success**
+
+- status : `200`
+- body : `int bookmarkStatus`
+
+
+
+**fail**
+
+- status : `302`
+- redirect : `/login`
+
+
+
+## MainController
+
+### GET / : 메인 페이지에 해당하는 뷰를 응답한다.
+
+- method : `getMainPage()`
+
+
+
+**success**
+
+- view : `index`
+- model : `List<ArticleDto> newest`, `List<ArticleDto> popular`
 
