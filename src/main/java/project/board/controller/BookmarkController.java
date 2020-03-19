@@ -10,8 +10,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import project.board.annotation.AjaxLoginAuth;
 import project.board.service.ArticleService;
 import project.board.service.BookmarkService;
+import project.board.util.MySessionUtils;
 
 @Controller
 public class BookmarkController {
@@ -22,19 +24,17 @@ public class BookmarkController {
 	@Autowired
 	ArticleService articleService;
 	
+	@Autowired
+	MySessionUtils sUtils;
+	
 	@PostMapping("/ajax/bookmark")
+	@AjaxLoginAuth
 	public ResponseEntity<?> processAddBookmark(
 			@RequestParam("articleId") Long articleId,
-			HttpServletRequest request,
-			HttpSession session,
-			Model model)
+			HttpSession session
+			)
 	{
-		if(session.getAttribute("memberId") == null) {
-			return ResponseEntity.status(302).body("/login");
-		}
-		else {
-			int bookmarkStatus = bookmarkService.modifyBookmarkStatus((Long)session.getAttribute("memberId"), articleId);
-			return ResponseEntity.ok().body(bookmarkStatus);
-		}
+		int bookmarkStatus = bookmarkService.modifyBookmarkStatus(sUtils.getMemberId(session), articleId);
+		return ResponseEntity.ok().body(bookmarkStatus);
 	}
 }

@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import project.board.annotation.AjaxLoginAuth;
 import project.board.annotation.LoginAuth;
 import project.board.service.ReportService;
+import project.board.util.MySessionUtils;
 
 @Controller
 public class ReportController {
@@ -18,21 +20,20 @@ public class ReportController {
 	@Autowired
 	ReportService reportService;
 	
+	@Autowired
+	MySessionUtils sUtils;
+	
 	@PostMapping("/ajax/report/{target}")
-	public ResponseEntity<?> processReportArticle(
+	@AjaxLoginAuth
+	public ResponseEntity<?> processReport(
 			@PathVariable("target") String target,
 			@RequestParam("targetId") Long targetId,
 			@RequestParam("checkInfo") Long checkInfo,
 			@RequestParam(required = false, value = "reportContent") String reportContent,
 			HttpSession session
 			)
-	{
-		Long memberId = (Long) session.getAttribute("memberId");
-		if(memberId == null) {
-			return ResponseEntity.status(302).body("/login");
-		}
-		
-		String message = reportService.addReport(target.toUpperCase(), targetId, memberId, checkInfo, reportContent);
+	{		
+		String message = reportService.addReport(target.toUpperCase(), targetId, sUtils.getMemberId(session), checkInfo, reportContent);
 		return ResponseEntity.ok().body(message);
 	}
 
