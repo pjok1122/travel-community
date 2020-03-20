@@ -28,7 +28,7 @@ public class Page {
 	public Page(int currentPageNo) {
 		this.currentPageNo = currentPageNo;
 		this.recordsPerPage = 10;
-		this.sizeOfPage = 3;
+		this.sizeOfPage = 9;
 		this.startPageNo = 1;
 		this.endPageNo = 1;
 		this.finalPageNo = 1;
