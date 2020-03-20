@@ -19,7 +19,7 @@
 			  
 			  <ul class="list-group list-group-flush" th:object="${member}">
 			    <li class="list-group-item" th:text="|이메일 : *{email}|"></li>
-			    <li class="list-group-item" th:text="|가입일자 : *{registerDate}|"></li>
+			    <li class="list-group-item" th:text="|가입일자 : ${#temporals.format(member.registerDate, 'yyyy-MM-dd HH:mm')}|"></li>
 			    <li class="list-group-item" th:text="|최근 로그인 : ${#temporals.format(member.loginDate, 'yyyy-MM-dd HH:mm')}|"></li>
 			    <li class="list-group-item" th:text="|좋아요 수 : ${like}|"></li>
 			  </ul>
