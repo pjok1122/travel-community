@@ -30,7 +30,7 @@
 			</thead>
 			<tr th:each="article,iterStat : ${page.list}">
 				<th scope="row" th:text="${iterStat.count} + ${page.currentPageNo-1}*${page.recordsPerPage}"></th>
-				<td><a class="list-title" th:href="@{/article/write}">
+				<td><a class="list-title" th:href="@{/article/write(id=${article.id})}">
 					<span class="article-nation" th:utext="|[${article.nation}]|"></span>
 					<span th:utext="|${#strings.abbreviate(article.title,35)}|"></span>
 				</a></td>

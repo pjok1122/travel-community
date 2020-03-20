@@ -191,6 +191,19 @@ public class ArticleService {
 		
 	}
 
+	public Article loadTempArticleById(Long memberId, Long articleId) {
+		try {
+			ArticleDto article = getArticleById(articleId);
+			if(checkArticleOwner(memberId, article) && checkStatusTemp(article)) {
+				return article;
+			} else {
+				return new Article();
+			}
+		} catch(Exception e) {
+			return new Article();
+		}
+	}
+
 
 
 }

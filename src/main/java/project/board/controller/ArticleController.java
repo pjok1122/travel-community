@@ -74,9 +74,10 @@ public class ArticleController {
 	@LoginAuth
 	public String getCreationForm(
 			HttpSession session,
+			@RequestParam(value = "id", required = false) Long articleId,
 			Model model)
 	{
-		model.addAttribute("article", new Article());
+		model.addAttribute("article", articleService.loadTempArticleById(sessionUtils.getMemberId(session), articleId));
 		return WRITE_AND_UPDATE_FORM;
 	}
 	
