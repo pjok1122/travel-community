@@ -1,1 +1,0 @@
-ALTER TABLE upload_file add save_file_name VARCHAR(255);
