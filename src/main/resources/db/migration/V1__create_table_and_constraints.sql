@@ -45,11 +45,11 @@ CREATE TABLE `comment` (
 );
 
 
-CREATE TABLE `resource` (
+CREATE TABLE `upload_file` (
 	`id`				BIGINT			NOT NULL	AUTO_INCREMENT	COMMENT '시퀀스',
 	`file_name`			VARCHAR(255)	NULL						COMMENT '파일명',
 	`file_path`			VARCHAR(255)	NULL						COMMENT '파일경로',
-	`content_type`		VARCHAR(64)		NULL						COMMENT '확장자',
+	`content_type`		VARCHAR(6)		NULL						COMMENT '확장자',
 	`size`				BIGINT			NULL						COMMENT '파일 크기 (byte)',
 	`register_date`		TIMESTAMP		NULL						COMMENT '등록 일자',
 	`update_date`		TIMESTAMP		NULL						COMMENT '수정 일자',
@@ -63,7 +63,7 @@ CREATE TABLE `report` (
 	`target_id`			BIGINT			NOT NULL					COMMENT '피신고자',
 	`register_date`		TIMESTAMP		NOT NULL					COMMENT '신고 일자',
 	`update_date`		TIMESTAMP		NULL						COMMENT '신고 수정 일자',
-	`content`			BIGINT			NULL						COMMENT '신고 내용',
+	`content`			VARCHAR(200)	NULL						COMMENT '신고 내용',
 	`process`			BOOLEAN			NULL						COMMENT '처리 결과',
 	PRIMARY KEY(id)
 );
@@ -98,3 +98,12 @@ FOREIGN KEY (`member_id`) REFERENCES `member` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `bookmark` ADD CONSTRAINT `FK_article_TO_bookmark`
 FOREIGN KEY (`article_id`) REFERENCES `article` (`id`) ON DELETE CASCADE;
+
+INSERT INTO `category`(title, order)
+VALUES ('관광지', 1);
+INSERT INTO `category`(title, order)
+VALUES ('맛집',2);
+INSERT INTO `category`(title, order)
+VALUES ('숙소', 3);
+INSERT INTO `category`(title, order)
+VALUES ('축제', 4);
