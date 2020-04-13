@@ -95,19 +95,17 @@
 		FROM comment c1  
 		LEFT JOIN comment c2 
 		ON c1.id = c2.parent_comment_id 
-		INNER JOIN `member` m1 
+		LEFT JOIN `member` m1 
 		ON c1.member_id = m1.id 
-		OR c1.member_id IS NULL  
 		LEFT JOIN `member` m2 
 		ON c2.member_id = m2.id 
-		OR c2.member_id IS NULL 
 		LEFT JOIN comment_like cl1 
 		ON c1.id = cl1.comment_id 
 		LEFT JOIN comment_like cl2 
 		ON c2.id = cl2.comment_id 
 		WHERE c1.article_id = #{articleId} 
 		AND c1.parent_comment_id IS NULL 
-		ORDER BY c1.id DESC 
+		ORDER BY c1.good DESC, c1.register_date ASC 
 	</select>
 	
 	<delete id="deleteCommentById">

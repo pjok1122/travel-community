@@ -228,7 +228,7 @@ $(document).ready(function(){
               					<i class="mr-3 fas fa-user fa-2x"></i>
 	                			<div class="media-body">
 		                			<h6 class="mt-0">
-		                				<strong class="comment-writer">${data[i].updateDate != null ? `비공개</strong>` : `${data[i].writer} </strong>
+		                				<strong class="comment-writer">${data[i].writer == null ? `탈퇴한 회원입니다. </strong>` : `${data[i].writer} </strong>
 		                				&nbsp ${data[i].registerDate}
 		                				${data[i].writer == article_writer ? `<button class="btn btn-info btn-sm">글쓴이</button>` : ''}`
 		                				}
@@ -255,8 +255,8 @@ $(document).ready(function(){
                 						<i class="mr-3 fas fa-user fa-2x"></i>
                 						<div class="media-body">
 			                				<h6 class="mt-0">
-			                					<strong class="comment-writer"> ${reply.writer} </strong>&nbsp ${reply.registerDate}
-			                					${reply.writer == article_writer ? `<button class="btn btn-info btn-sm">글쓴이</button>` : ''}
+			                					<strong class="comment-writer"> ${reply.writer == null ? `탈퇴한 회원입니다. </strong>` : `${data[i].writer} </strong>&nbsp ${reply.registerDate}
+			                					${reply.writer == article_writer ? `<button class="btn btn-info btn-sm">글쓴이</button>` : ''}`}
 			                				</h6>
 		                					<span class="comment-content">${reply.content}</span>
 			                				<div class='mt-2' name='${reply.id}'>
