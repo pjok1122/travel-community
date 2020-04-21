@@ -2,22 +2,33 @@ package project.board.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.extern.slf4j.Slf4j;
 import project.board.enums.ImageMediaType;
 
 
 @Component
+@Slf4j
 public class UploadFileUtils {
-		
+	
+	/**
+	 * 파일명의 확장자를 토대로 이미지 파일인지 확인하는 메서드
+	 */
 	public static Boolean isImageType(String mediaType) {
 		try {
+			log.info(mediaType.toUpperCase());
 			ImageMediaType.valueOf(mediaType.toUpperCase());
 			return true;
 		} catch(IllegalArgumentException e) {
@@ -48,10 +59,12 @@ public class UploadFileUtils {
 	 * 			파일이 저장되는 루트 디렉터리
 	 * @param multipartFile
 	 * 			업로드한 파일
+	 * @param String email
+	 * 			업로드한 사람
 	 * @return 파일이 저장된 최종 경로
 	 * @throws IOException
 	 */
-	public static String fileSave(String rootLocation, MultipartFile file) throws IOException {
+	public static String fileSave(String rootLocation, MultipartFile file, String email) throws IOException {
 		File uploadDir = new File(rootLocation);
 		File saveFile = null;
 		
@@ -59,10 +72,10 @@ public class UploadFileUtils {
 			uploadDir.mkdir();
 		}
 		while(true) {
-			String uuid = UUID.randomUUID().toString();
-			uuid = uuid.replace("-", "");
+			String uuid = email.substring(0, email.indexOf('@')) + currentTimeToHex() + UUID.randomUUID().toString().replace("-", "");
 			String saveFileName = uuid + "." + getExtension(file.getOriginalFilename());
 			
+			//폴더경로 생성
 			String savePath = makeSavePath(rootLocation);
 			
 			saveFile = new File(rootLocation + savePath, saveFileName);
@@ -74,6 +87,7 @@ public class UploadFileUtils {
 				break;
 			}
 		}
+		log.info(saveFile.getPath());
 		return saveFile.getPath().replace(File.separatorChar, '/');
 	}
 
@@ -101,5 +115,20 @@ public class UploadFileUtils {
 				dirPath.mkdir();
 			}
 		}
+	}
+	
+	private static String currentTimeToHex() throws UnsupportedEncodingException {
+		LocalDateTime now = LocalDateTime.now();
+		return toHex(localDateTimeToHMS(now.toString()));
+	}
+
+
+	private static String localDateTimeToHMS(String str) {
+		return str.substring(str.indexOf('T')+1, str.lastIndexOf('.'));
+	}
+
+
+	private static String toHex(String arg) throws UnsupportedEncodingException {
+	    return String.format("%x", new BigInteger(1, arg.getBytes("UTF-8")));
 	}
 }

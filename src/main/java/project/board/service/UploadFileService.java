@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import project.board.domain.UploadFile;
@@ -17,18 +15,21 @@ import project.board.repository.UploadFileRepository;
 import project.board.util.UploadFileUtils;
 
 @Service
+@Transactional(readOnly = true)
 public class UploadFileService {
 
 	@Autowired
 	UploadFileRepository uploadFileRepository;
 	
-	private final Path rootLocation;	//d:/image/
+	private final Path rootLocation;	
 	
-	public UploadFileService(String uploadPath) {
+	
+	public UploadFileService(@Value("${image.save.path}") String uploadPath) {
 		this.rootLocation = Paths.get(uploadPath);
 	}
 	
-	public UploadFile store(MultipartFile file) throws Exception {
+	@Transactional
+	public UploadFile store(MultipartFile file, String email) throws Exception {
 		try {
 			if(file.isEmpty()) {
 				throw new Exception("Failed to store empty file" + file.getOriginalFilename());
@@ -41,12 +42,12 @@ public class UploadFileService {
 			}
 			
 			//파일을 디스크에 저장하고, DB에 메타정보 저장.
-			String filePath = UploadFileUtils.fileSave(rootLocation.toString(), file);
+			String filePath = UploadFileUtils.fileSave(rootLocation.toString(), file, email);
 			UploadFile saveFile = new UploadFile();
-			saveFile.setFileName(file.getOriginalFilename());
+			saveFile.seperateDirAndFile(filePath);
+			saveFile.setOriginFileName(file.getOriginalFilename());
 			saveFile.setContentType(extension);
 			saveFile.setSize(file.getResource().contentLength());
-			saveFile.setFilePath(filePath);
 			uploadFileRepository.insert(saveFile); 
 			return saveFile;
 		} catch(IOException e) {
@@ -54,10 +55,8 @@ public class UploadFileService {
 		}
 	}
 
-
-
-	public UploadFile load(Long fileId) {
-		return uploadFileRepository.findById(fileId);
+	public UploadFile load(String fileName) {
+		return uploadFileRepository.selectByFileName(fileName);
 	}
 
 }

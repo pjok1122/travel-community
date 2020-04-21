@@ -47,12 +47,26 @@ CREATE TABLE `comment` (
 
 CREATE TABLE `upload_file` (
 	`id`				BIGINT			NOT NULL	AUTO_INCREMENT	COMMENT '시퀀스',
-	`file_name`			VARCHAR(255)	NULL						COMMENT '파일명',
-	`file_path`			VARCHAR(255)	NULL						COMMENT '파일경로',
+	`origin_file_name`	VARCHAR(255)	NOT NULL					COMMENT '원본 파일명',
+	`dir_path`			VARCHAR(255)	NOT NULL					COMMENT '폴더 경로',
+	`file_name`			VARCHAR(255)	NOT NULL					COMMENT '생성된 파일 이름',
 	`content_type`		VARCHAR(6)		NULL						COMMENT '확장자',
 	`size`				BIGINT			NULL						COMMENT '파일 크기 (byte)',
 	`register_date`		TIMESTAMP		NULL						COMMENT '등록 일자',
 	`update_date`		TIMESTAMP		NULL						COMMENT '수정 일자',
+	PRIMARY KEY(id)
+);
+
+CREATE TABLE `post_file` (
+	`id`				BIGINT			NOT NULL	AUTO_INCREMENT	COMMENT '시퀀스',
+	`origin_file_name`	VARCHAR(255)	NOT NULL					COMMENT '원본 파일명',
+	`dir_path`			VARCHAR(255)	NOT NULL					COMMENT '폴더 경로',
+	`file_name`			VARCHAR(255)	NOT NULL					COMMENT '생성된 파일 이름',
+	`content_type`		VARCHAR(6)		NULL						COMMENT '확장자',
+	`size`				BIGINT			NULL						COMMENT '파일 크기 (byte)',
+	`register_date`		TIMESTAMP		NULL						COMMENT '등록 일자',
+	`update_date`		TIMESTAMP		NULL						COMMENT '수정 일자',
+	`article_id`		BIGINT			NOT NULL					COMMENT '게시물 시퀀스',
 	PRIMARY KEY(id)
 );
 
@@ -99,11 +113,14 @@ FOREIGN KEY (`member_id`) REFERENCES `member` (`id`) ON DELETE CASCADE;
 ALTER TABLE `bookmark` ADD CONSTRAINT `FK_article_TO_bookmark`
 FOREIGN KEY (`article_id`) REFERENCES `article` (`id`) ON DELETE CASCADE;
 
-INSERT INTO `category`(title, order)
+ALTER TABLE `post_file` ADD CONSTRAINT `FK_article_TO_post_file`
+FOREIGN KEY (`article_id`) REFERENCES `article` (`id`) ON DELETE CASCADE;
+
+INSERT INTO `category`(title, `order`)
 VALUES ('관광지', 1);
-INSERT INTO `category`(title, order)
-VALUES ('맛집',2);
-INSERT INTO `category`(title, order)
+INSERT INTO `category`(title, `order`)
+VALUES ('맛집', 2);
+INSERT INTO `category`(title, `order`)
 VALUES ('숙소', 3);
-INSERT INTO `category`(title, order)
+INSERT INTO `category`(title, `order`)
 VALUES ('축제', 4);

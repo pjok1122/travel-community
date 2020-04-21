@@ -7,14 +7,23 @@
 
 	<insert id="insert" parameterType="uploadFile"
 	useGeneratedKeys="true" keyProperty="id">
-	INSERT INTO upload_file(file_name, file_path, content_type, size, register_date)
-	VALUES(#{fileName}, #{filePath}, #{contentType}, #{size}, NOW())
+		INSERT INTO upload_file(origin_file_name, dir_path, file_name, content_type, size, register_date)
+		VALUES(#{originFileName}, #{dirPath}, #{fileName}, #{contentType}, #{size}, NOW())
 	</insert>
 	
-	<select id="findById" resultType="uploadFile">
-	SELECT *
-	FROM upload_file
-	WHERE id = #{id}
+	<select id="selectByFileName" resultType="uploadFile">
+		SELECT *
+		FROM upload_file
+		WHERE file_name = #{fileName}
+	</select>
+	
+	<select id="selectByFileNames" resultType="uploadFile">
+		SELECT *
+		FROM upload_file
+		WHERE file_name in
+		<foreach collection="fileNames" item="fileName" separator="," open="(" close=")">
+			#{fileName}
+		</foreach>
 	</select>
 
 </mapper>

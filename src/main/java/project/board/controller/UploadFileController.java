@@ -24,21 +24,21 @@ public class UploadFileController {
 	ResourceLoader resourceLoader;
 	
 	@PostMapping("/image")
-	public ResponseEntity<?> imageUpload(@RequestParam("file") MultipartFile file){
+	public ResponseEntity<?> imageUpload(@RequestParam("file") MultipartFile file, @RequestParam("email") String email){
 		try {
-			UploadFile uploadFile = imageService.store(file);
-			return ResponseEntity.ok().body("/image/" + uploadFile.getId());
+			UploadFile uploadFile = imageService.store(file, email);
+			return ResponseEntity.ok().body("/upload/image/" + uploadFile.getFileName());
 		} catch(Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().build();
 		}
 	}
 	
-	@GetMapping("/image/{fileId}")
-	public ResponseEntity<?> getFile(@PathVariable Long fileId){
+	@GetMapping("/upload/image/{filePath}")
+	public ResponseEntity<?> getFile(@PathVariable String filePath){
 		try {
-			UploadFile uploadFile = imageService.load(fileId);
-			Resource resource = resourceLoader.getResource("file:" + uploadFile.getFilePath());
+			UploadFile uploadFile = imageService.load(filePath);
+			Resource resource = resourceLoader.getResource("file:" + uploadFile.getDirPath() + uploadFile.getFileName());
 			return ResponseEntity.ok().body(resource);
 			
 		} catch(Exception e) {
