@@ -21,7 +21,7 @@
 		SELECT *
 		FROM upload_file
 		WHERE file_name in
-		<foreach collection="fileNames" item="fileName" separator="," open="(" close=")">
+		<foreach collection="list" item="fileName" separator="," open="(" close=")">
 			#{fileName}
 		</foreach>
 	</select>

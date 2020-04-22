@@ -8,6 +8,6 @@ public interface UploadFileRepository {
 
 	UploadFile selectByFileName(String fileName);
 	void insert(UploadFile saveFile);
-	List<UploadFile> selectByFileNames(String[] fileNames);
+	List<UploadFile> selectByFileNames(List<String> fileNames);
 
 }

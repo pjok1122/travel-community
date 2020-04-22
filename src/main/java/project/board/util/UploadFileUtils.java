@@ -7,21 +7,25 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.slf4j.Slf4j;
+import project.board.domain.UploadFile;
 import project.board.enums.ImageMediaType;
 
 
 @Component
 @Slf4j
 public class UploadFileUtils {
+	
+	@Value("{image.save.path}")
+	private static String imageSavePath; 
 	
 	/**
 	 * 파일명의 확장자를 토대로 이미지 파일인지 확인하는 메서드
@@ -69,16 +73,16 @@ public class UploadFileUtils {
 		File saveFile = null;
 		
 		if(!uploadDir.exists()) {
-			uploadDir.mkdir();
+			uploadDir.mkdirs();
 		}
 		while(true) {
 			String uuid = email.substring(0, email.indexOf('@')) + currentTimeToHex() + UUID.randomUUID().toString().replace("-", "");
 			String saveFileName = uuid + "." + getExtension(file.getOriginalFilename());
 			
 			//폴더경로 생성
-			String savePath = makeSavePath(rootLocation);
+			String dirPath = makeSavePath(rootLocation);
 			
-			saveFile = new File(rootLocation + savePath, saveFileName);
+			saveFile = new File(rootLocation + dirPath, saveFileName);
 			if(saveFile.exists()) {
 				continue;
 			}
@@ -91,31 +95,51 @@ public class UploadFileUtils {
 		return saveFile.getPath().replace(File.separatorChar, '/');
 	}
 
+	public static void tempFileCopyAsPostFile(String imageSavePath, String imagePostPath, List<UploadFile> postFiles) {
+		postFiles.forEach(pf->{
+			File postDir =new File(imagePostPath + pf.getDirPath());
+			if(!postDir.exists()) {
+				postDir.mkdirs();
+			}
+			File in = new File(imageSavePath + pf.getDirPath() + pf.getFileName());
+			File out = new File(postDir, pf.getFileName());
+			try {
+				FileCopyUtils.copy(in, out);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+		
+	}
+	
 	private static String makeSavePath(String rootLocation) {
 		Calendar cal = Calendar.getInstance();
 		
 		String yearPath = File.separator + cal.get(Calendar.YEAR);
-		String monthPath = yearPath + File.separator + new DecimalFormat("00").format(cal.get(Calendar.MONTH));
+		String monthPath = yearPath + File.separator + new DecimalFormat("00").format(cal.get(Calendar.MONTH)+1);
 		String datePath = monthPath + File.separator + new DecimalFormat("00").format(cal.get(Calendar.DATE));
 		
-		makeDir(rootLocation, yearPath, monthPath, datePath);
+		File dirPath = new File(rootLocation + datePath);
 		
+		if(!dirPath.exists()) {
+			dirPath.mkdirs();
+		}
 		return datePath;
 	}
 
-	private static void makeDir(String rootLocation, String... paths) {
-		if(new File(paths[paths.length-1]).exists()) {
-			return;
-		}
-		
-		for (String path : paths) {
-			File dirPath = new File(rootLocation + path);
-			
-			if(!dirPath.exists()) {
-				dirPath.mkdir();
-			}
-		}
-	}
+//	private static void makeDir(String rootLocation, String... paths) {
+//		if(new File(paths[paths.length-1]).exists()) {
+//			return;
+//		}
+//		
+//		for (String path : paths) {
+//			File dirPath = new File(rootLocation + path);
+//			
+//			if(!dirPath.exists()) {
+//				dirPath.mkdir();
+//			}
+//		}
+//	}
 	
 	private static String currentTimeToHex() throws UnsupportedEncodingException {
 		LocalDateTime now = LocalDateTime.now();

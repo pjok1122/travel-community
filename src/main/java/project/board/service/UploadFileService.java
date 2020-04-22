@@ -44,7 +44,7 @@ public class UploadFileService {
 			//파일을 디스크에 저장하고, DB에 메타정보 저장.
 			String filePath = UploadFileUtils.fileSave(rootLocation.toString(), file, email);
 			UploadFile saveFile = new UploadFile();
-			saveFile.seperateDirAndFile(filePath);
+			saveFile.seperateDirAndFile(rootLocation.toString(),filePath);
 			saveFile.setOriginFileName(file.getOriginalFilename());
 			saveFile.setContentType(extension);
 			saveFile.setSize(file.getResource().contentLength());
