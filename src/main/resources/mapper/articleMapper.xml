@@ -103,6 +103,7 @@
 		SET title = #{title},
 			content = #{content},
 			nation = #{nation},
+			category_id = #{categoryId},
 			update_date = NOW()
 		WHERE id = #{id};
 	</update>

@@ -84,6 +84,7 @@ public class ArticleController {
 	@PostMapping("/article/write")
 	@LoginAuth
 	public String processCreationForm(
+			@RequestParam(value = "images", required = false) String images,
 			@ModelAttribute @Valid Article article,
 			BindingResult result,
 			HttpSession session,
@@ -93,7 +94,7 @@ public class ArticleController {
 			model.addAttribute("article", article);
 			return WRITE_AND_UPDATE_FORM;
 		}
-		Long articleId = articleService.createArticle(article, sessionUtils.getMemberId(session));
+		Long articleId = articleService.createArticle(article, images, sessionUtils.getMemberId(session));
 		return "redirect:/article/" + articleId;
 	}
 		
@@ -135,6 +136,7 @@ public class ArticleController {
 	@isArticleOwner
 	public String processUpdateArticleForm(
 			@PathVariable Long articleId,
+			@RequestParam(value = "images", required = false) String images,
 			@ModelAttribute @Valid Article article,
 			BindingResult result,
 			HttpSession session)
@@ -142,7 +144,7 @@ public class ArticleController {
 		if(result.hasErrors()) {
 			return WRITE_AND_UPDATE_FORM;
 		}
-		articleService.modifyArticle(articleId, article);
+		articleService.modifyArticle(articleId, article, images);
 		return "redirect:/article/" + articleId;
 	}
 	
@@ -184,7 +186,6 @@ public class ArticleController {
 		Long memberId = sessionUtils.getMemberId(session);
 
 		if(result.hasErrors() || !articleService.checkTempArticleWritable(memberId)) {
-			result.getAllErrors().forEach(System.out::println);
 			return ResponseEntity.badRequest().build();
 		}
 		
@@ -196,6 +197,7 @@ public class ArticleController {
 	@AjaxLoginAuth
 	public ResponseEntity<?> processTempArticleUpdate(
 			@RequestParam("articleId") Long articleId,
+			@RequestParam(value = "images", required = false) String images,
 			@ModelAttribute @Valid Article article,
 			BindingResult result,
 			HttpSession session)
@@ -212,7 +214,7 @@ public class ArticleController {
 			return ResponseEntity.badRequest().build();
 		}
 		
-		articleService.modifyArticle(articleId, article);
+		articleService.modifyArticle(articleId, article, images);
 		return ResponseEntity.ok().body(articleId);
 	}
 	

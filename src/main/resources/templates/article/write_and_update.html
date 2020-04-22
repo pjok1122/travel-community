@@ -62,21 +62,23 @@
 	</div>
 
 	<div class="container mt-5">
+		<input type="hidden" id="email" class="form-control" th:value="${session.email}">
 		<form class="needs-validation" th:action="@{''}"
 			th:object="${article}" method="post">
 			<div class="form-row">
 				<div class="col-sm-3">
 					<div class="form-group">
 						<input type="hidden" class="form-control" th:field="*{id}">
+						<input id="images" name="images" type="hidden" class="form-control"> 
 						<div class="input-group mb-3">
 							<div class="input-group-prepended">
 								<label class="input-group-text" for="category">카테고리</label>
 							</div>
 							<select class="custom-select" th:field="*{category}">
-								<option value="accomodation">숙박 정보
-								<option value="restaurant">맛집
-								<option value="festival">축제정보
 								<option value="attractions">관광지
+								<option value="restaurant">맛집
+								<option value="accomodation">숙박
+								<option value="festival">축제
 							</select>
 							<small class="form-text text-muted" th:if="${#fields.hasErrors('category')}" th:errors="*{category}">Incorrect date</small>
 						</div>
@@ -96,7 +98,6 @@
 								<option value="태국">태국
 							</select>
 							<small class="form-text text-muted" th:if="${#fields.hasErrors('nation')}" th:errors="*{nation}">Incorrect date</small>
-							
 						</div>
 					</div>
 				</div>
@@ -159,7 +160,6 @@
        
 	<script>
 	var tempArticles = null;
-	
 		$(document).ready(function() {
 			$('#content').summernote({
 				height : 300,
@@ -181,6 +181,7 @@
 		function sendFile(file, el) {
 			var form_data = new FormData();
 			form_data.append('file', file);
+			form_data.append('email', $("#email").val())
 			$.ajax({
 				data : form_data,
 				type : "POST",
@@ -191,6 +192,7 @@
 				processData : false,
 				success : function(url, xhr) {
 					console.log(xhr);
+					$("#images").val($("#images").val() +' ' + url)
 					$(el).summernote('insertImage', url, function($image) {
 						$image.css('width', "50%");
 					});
@@ -242,11 +244,14 @@
 		function ajaxTempWrite(data){
 			var articleId = $("#id").val();
 			var url = '/ajax/temp/';
+			//var form_data = new FormData();
 			url += (articleId==="" ? 'write' : 'update');
 			if(articleId){
-				data['articleId']=articleId;
+				data["articleId"] = articleId;
+				data["images"] = $("#images").val();
+				//form_data.append("articleId", articleId);
+				//form_data.append("images", $("#images").val());
 			}
-			console.log(data);
 			$.ajax({
 				url : url,
 				data : data,
@@ -270,6 +275,23 @@
 			$("#nation").val(article.nation);
 			$("#title").val(article.title);
 			$("#content").summernote("code", article.content);
+			$("#images").val('');
+			findImages();
+		}
+		
+		function findImages(){
+			content = $("#content").val();
+			
+			while(true){
+				pos = content.search("src=\"");
+				if(pos == -1) break;
+				else{
+					content = content.slice(pos+5);
+					end_pos = content.search("\"");
+					$("#images").val($("#images").val() +' ' + content.slice(0, end_pos));
+					content = content.slice(end_pos);
+				}
+			}
 		}
 		
 		function loadTempArticleList(){
@@ -293,7 +315,7 @@
 												<input type="hidden" id="index" value=${i}></span>
 												<span class="item-nation">[${articles[i].nation}]</span>
 												<span class="item-title">${(articles[i].title).length >= 20 ? `${articles[i].title.substr(0,20)} ... ` : `${articles[i].title}`} </span>
-												<span class="item-date">${articles[i].updateDate > new Date(articles[i].registerDate).toLocaleString('ko-KR') ? (articles[i].updateDate) : new Date(articles[i].registerDate).toLocaleString('ko-KR')}</span>
+												<span class="item-date">${articles[i].updateDate > new Date(articles[i].registerDate).toLocaleDateString('ko-KR') ? (articles[i].updateDate) : new Date(articles[i].registerDate).toLocaleDateString('ko-KR')}</span>
 											</div>
 											<span class="delete-button" data-dismiss="modal" onclick="deleteTempArticle(${i})"><i class="far fa-trash-alt"></i></span>
 										</a>
