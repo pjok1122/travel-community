@@ -59,7 +59,7 @@ public class ArticleController {
 			@PathVariable("category") Category category,
 			@PathVariable("nation") Nation nation,
 			@ModelAttribute("pageAndSort") PageAndSort pageAndSort, 
-			@RequestParam(required = false, value = "search") String search,
+			@ModelAttribute("search") String search,
 			Model model)
 	{
 		if(search!=null) {

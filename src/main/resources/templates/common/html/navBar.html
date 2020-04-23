@@ -1,3 +1,5 @@
+
+
 <nav style="background-color: #FFE3ED;" class="navbar navbar-expand-lg navbar-light sticky-top font-weight-bold">
 	<div class="container-fluid">
 		<div class="navbar-header">
@@ -6,12 +8,9 @@
 		<div class="navbar-collapse collapse" id="navbarNavDropdown">
 			<ul id="category-nav" class="navbar-nav mr-auto">
 				<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-				<li class="nav-item"><a class="nav-link"
-					href="/attractions/all">관광</a></li>
-				<li class="nav-item"><a class="nav-link" href="/restaurant/all">맛집</a></li>
-				<li class="nav-item"><a class="nav-link" href="/festival/all">축제</a></li>
-				<li class="nav-item"><a class="nav-link"
-					href="/accomodation/all">숙박</a></li>
+				<li class="nav-item" th:each="category : ${T(project.board.enums.Category).values()}">
+					<a class="nav-link" th:text="${category.getKrValue()}" th:href="|/${#strings.toLowerCase(category)}/all|"></a>
+				</li>
 			</ul>
 
 			<ul class="navbar-nav ml-auto">

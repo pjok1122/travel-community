@@ -149,7 +149,7 @@
 			        	<span aria-hidden="true">&times;</span>
 			        </button>
                 </div>
-                <div class="modal-body mb-0">
+                <div class="temp-modal-body modal-body mb-0">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
@@ -322,7 +322,7 @@
 											`
 					}
 					html += `</div></div>`;
-					$(".modal-body").html(html);
+					$(".temp-modal-body").html(html);
 				},
 				complete : function(response){
 					if(response.status == 302){

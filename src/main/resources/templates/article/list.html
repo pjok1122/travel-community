@@ -34,15 +34,9 @@
 		<div class="row">
 			<div class="col-12">
 				<ul id="nation-nav" style="font-weight:600;" class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="./all">전체</a></li>
-					<li class="nav-item"><a class="nav-link" href="./tw">대만</a></li>
-					<li class="nav-item"><a class="nav-link" href="./la">라오스</a></li>
-					<li class="nav-item"><a class="nav-link" href="./my">말레이시아</a></li>
-					<li class="nav-item"><a class="nav-link" href="./vn">베트남</a></li>
-					<li class="nav-item"><a class="nav-link" href="./sg">싱가폴</a></li>
-					<li class="nav-item"><a class="nav-link" href="./jp">일본</a></li>
-					<li class="nav-item"><a class="nav-link" href="./cn">중국</a></li>
-					<li class="nav-item"><a class="nav-link" href="./th">태국</a></li>
+					<li th:each="nation : ${T(project.board.enums.Nation).values()}" class="nav-item">
+					 <a class="nav-link" th:value="${nation}" th:text="${nation.getKrValue()}" th:href="|./${#strings.toLowerCase(nation)}"></a>
+					 </li>
 				</ul>
 			</div>
 		</div>
@@ -59,7 +53,7 @@
 			</div>
 			<div class="justify-content-right">
 				<div class="search-group">
-					<input class="form-control" type="text" id="search" placeholder="제목 검색"/>
+					<input class="form-control" type="text" id="search" name="search"  th:value="${search}" placeholder="제목 검색"/>
 					<i class="fas fa-search" id="search-icon"></i>
 				</div>
 			</div>
@@ -115,16 +109,6 @@
 			}
 		}
 		
-/* 		function makePageLink(url, paramMap){
-			var pageLinks = $(".page-link");
-			for(pageLink of pageLinks){
-				var pageNo = pageLink.getAttribute("href");
-				paramMap['page'] = pageNo;
-				var qs = objectToQueryString(paramMap);
-				pageLink.setAttribute("href", url+qs);
-			}
-		}
-*/
 		function sortHref(obj, url, params) {
 			const params_copy = {...params};
 			params_copy["sort"] = obj.attr("id");
@@ -134,13 +118,8 @@
 		
 		function search(url, paramMap) {
 			var search = $("#search").val().trim();
-
-			if (search == "") {
-				alert("검색할 내용을 넣어주세요.");
-			} else {
-				paramMap["search"] = search;
-				window.location.href = url + objectToQueryString(paramMap);
-			}
+			paramMap["search"] = search;
+			window.location.href = url + objectToQueryString(paramMap);
 		}
 
 	</script>
