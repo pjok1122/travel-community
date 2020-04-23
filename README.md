@@ -4,7 +4,7 @@
 
 ## 프로젝트 시연 영상 
 
-[![동영상](https://img.youtube.com/vi/6nsu5F_E37Q/0.jpg)](https://youtu.be/6nsu5F_E37Q)
+[![동영상](https://img.youtube.com/vi/D_vpl5GnkeE/0.jpg)](https://youtu.be/D_vpl5GnkeE)
 
 ## 기술스택
 
