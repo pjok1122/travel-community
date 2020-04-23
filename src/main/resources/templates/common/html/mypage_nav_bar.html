@@ -1,14 +1,40 @@
-<th:block th:replace="common/html/navBar.html"></th:block>
+<div th:replace="common/html/navBar.html"></div>
+
+<style>
+	#mypage-nav > .nav-item > .nav-link{
+		color: rgba(0,0,0,.7);
+		font-weight: 600;
+	}
+	
+	#mypage-nav > .nav-item > .nav-link.active{
+		color: #3399ff;
+	}
+	
+</style>
+
 <div class="container mt-5">
 	<div class="row">
 		<div class="col-12">
 			<ul id="mypage-nav" class="nav justify-content-center">
-				<li class="nav-item"><a class="nav-link" href="/mypage/member">회원 정보</a></li>
-				<li class="nav-item"><a class="nav-link" href="/mypage/article">작성 글</a></li>
-				<li class="nav-item"><a class="nav-link" href="/mypage/temp_article">임시 저장 글</a></li>
-				<li class="nav-item"><a class="nav-link" href="/mypage/comment">작성 댓글</a></li>
-				<li class="nav-item"><a class="nav-link" href="/mypage/bookmark">즐겨찾기</a></li>
+				<li class="nav-item"><a class="nav-link member" href="/mypage/member">회원 정보</a></li>
+				<li class="nav-item"><a class="nav-link article" href="/mypage/article">작성 글</a></li>
+				<li class="nav-item"><a class="nav-link temp_article" href="/mypage/temp_article">임시 저장 글</a></li>
+				<li class="nav-item"><a class="nav-link comment" href="/mypage/comment">작성 댓글</a></li>
+				<li class="nav-item"><a class="nav-link bookmark" href="/mypage/bookmark">즐겨찾기</a></li>
 			</ul>
 		</div>
 	</div>
 </div>
+
+<script>
+$(function(){
+	makeMypageActive();
+})
+
+function makeMypageActive(){
+	var curUrl = '.'+window.location.pathname.split('/')[2].split('?')[0];
+	$(curUrl).addClass("active");
+}
+</script>
+
+

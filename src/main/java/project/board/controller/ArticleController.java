@@ -30,6 +30,7 @@ import project.board.annotation.isArticleOwner;
 import project.board.domain.Article;
 import project.board.domain.dto.ArticleDto;
 import project.board.domain.dto.Page;
+import project.board.domain.dto.PageAndSort;
 import project.board.enums.Category;
 import project.board.enums.Nation;
 import project.board.enums.Sort;
@@ -57,8 +58,7 @@ public class ArticleController {
 	public String getBoardByCategoryAndNation(
 			@PathVariable("category") Category category,
 			@PathVariable("nation") Nation nation,
-			@RequestParam(value = "page", defaultValue = "1") int page,
-			@RequestParam(value = "sort", defaultValue = "NEWEST") Sort sort, 
+			@ModelAttribute("pageAndSort") PageAndSort pageAndSort, 
 			@RequestParam(required = false, value = "search") String search,
 			Model model)
 	{
@@ -66,7 +66,7 @@ public class ArticleController {
 			search = search.trim();
 		}
 		
-		model.addAllAttributes(articleService.getArticleList(category, nation, page, sort, search));
+		model.addAllAttributes(articleService.getArticleList(category, nation, pageAndSort, search));
 		return "article/list";
 	}
 	

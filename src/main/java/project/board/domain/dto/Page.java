@@ -1,14 +1,10 @@
 package project.board.domain.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
-import lombok.Setter;
-import project.board.domain.Article;
 import project.board.domain.CommonDomain;
 
-@Setter
 @Getter
 public class Page {
 	int recordsPerPage;
@@ -25,6 +21,8 @@ public class Page {
 
 	List<? extends CommonDomain> list;
 	
+	
+	
 	public Page(int currentPageNo) {
 		this.currentPageNo = currentPageNo;
 		this.recordsPerPage = 10;
@@ -39,6 +37,10 @@ public class Page {
 		this.numberOfRecords = numberOfRecords;
 		makePageInfo();
 	}
+	
+	public void setList(List<? extends CommonDomain> list) {
+		this.list = list;
+	}	
 	
 	public void setNumberOfRecordsAndMakePageInfo(int numberOfRecords) {
 		this.numberOfRecords = numberOfRecords;
@@ -72,8 +74,7 @@ public class Page {
 		prevPageNo = (currentPageNo==1) ? 1 : currentPageNo-1;
 		nextPageNo = (currentPageNo==finalPageNo) ? finalPageNo : currentPageNo+1;
 		
-		offset = (currentPageNo-1)*recordsPerPage;
-		
+		offset = (currentPageNo-1)*recordsPerPage;	
 	}
-	
+
 }

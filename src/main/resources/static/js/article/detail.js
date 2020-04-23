@@ -230,7 +230,7 @@ $(document).ready(function(){
 		                			<h6 class="mt-0">
 		                				<strong class="comment-writer">${data[i].writer == null ? `탈퇴한 회원입니다. </strong>` : `${data[i].writer} </strong>
 		                				&nbsp ${data[i].registerDate}
-		                				${data[i].writer == article_writer ? `<button class="btn btn-info btn-sm">글쓴이</button>` : ''}`
+		                				${data[i].writer == article_writer ? `<button style="background: #ff7e00; border-color: #ff7e00; color:white;" class="btn btn-sm">글쓴이</button>` : ''}`
 		                				}
 	                				</h6>
 	                				<span class="comment-content">${data[i].updateDate != null ? '삭제된 댓글입니다' : `${data[i].content}`}</span>
@@ -255,8 +255,8 @@ $(document).ready(function(){
                 						<i class="mr-3 fas fa-user fa-2x"></i>
                 						<div class="media-body">
 			                				<h6 class="mt-0">
-			                					<strong class="comment-writer"> ${reply.writer == null ? `탈퇴한 회원입니다. </strong>` : `${data[i].writer} </strong>&nbsp ${reply.registerDate}
-			                					${reply.writer == article_writer ? `<button class="btn btn-info btn-sm">글쓴이</button>` : ''}`}
+			                					<strong class="comment-writer"> ${reply.writer == null ? `탈퇴한 회원입니다. </strong>` : `${reply.writer} </strong>&nbsp ${reply.registerDate}
+			                					${reply.writer == article_writer ? `<button style="background: #ff7e00; border-color: #ff7e00; color:white;" class="btn btn-sm">글쓴이</button>` : ''}`}
 			                				</h6>
 		                					<span class="comment-content">${reply.content}</span>
 			                				<div class='mt-2' name='${reply.id}'>

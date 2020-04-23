@@ -117,27 +117,29 @@ footer{
 		</div>
 		<div class="row mt-1">
 			<div class="col">
-				<button class="icon" id="icon-like">
-					<img th:if="${liked} eq 1" id="like" th:name="${liked}" src="/img/imgs/like2.png">
-					<img th:unless="${liked} eq 1" id="like" th:name="${liked}" th:src="@{/img/imgs/like1.png}">
-				</button>
-				<span th:text="${article.good}" class="likeCount">좋아요 숫자</span>
-				<button class="icon" id="icon-bookmark">
-					<img th:if="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" src="/img/imgs/bookmark2.png">
-					<img th:unless="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" th:src="@{/img/imgs/bookmark1.png}">
-				</button>
-				<button class="icon" id="icon-article-report">
-					<img class="report" src="/img/imgs/report.png">
-				</button>
-			</div>
-			<div class="col">
-				<span class="control-button">
+				<span class="control-button float-left">
 					<button class="btn btn-primary"
 							th:if="${session.memberId} == ${article.memberId}"
 							th:onclick="|window.location.href='/article/update/${article.id}'|">수정하기</button>
 					<button class="btn btn-danger"
 							th:if="${session.memberId} == ${article.memberId}"
 							th:onclick="|window.location.href='/article/delete/${article.id}'|">삭제하기</button>
+				</span>
+			</div>
+			<div class="col">
+				<span class="float-right">
+					<button class="icon" id="icon-like">
+						<img th:if="${liked} eq 1" id="like" th:name="${liked}" src="/img/imgs/like2.png">
+						<img th:unless="${liked} eq 1" id="like" th:name="${liked}" th:src="@{/img/imgs/like1.png}">
+					</button>
+					<span th:text="${article.good}" class="likeCount">좋아요 숫자</span>
+					<button class="icon" id="icon-bookmark">
+						<img th:if="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" src="/img/imgs/bookmark2.png">
+						<img th:unless="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" th:src="@{/img/imgs/bookmark1.png}">
+					</button>
+					<button class="icon" id="icon-article-report">
+						<img class="report" src="/img/imgs/report.png">
+					</button>
 				</span>
 			</div>
 		</div>

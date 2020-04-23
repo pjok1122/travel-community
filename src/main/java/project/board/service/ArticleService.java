@@ -23,6 +23,7 @@ import project.board.domain.CommonDomain;
 import project.board.domain.UploadFile;
 import project.board.domain.dto.ArticleDto;
 import project.board.domain.dto.Page;
+import project.board.domain.dto.PageAndSort;
 import project.board.enums.Category;
 import project.board.enums.Nation;
 import project.board.enums.Sort;
@@ -92,13 +93,13 @@ public class ArticleService {
 		return totalCnt;
 	}
 
-	public Map<String, Object> getArticleList(Category category, Nation nation, int page, Sort sort, String search) {
+	public Map<String, Object> getArticleList(Category category, Nation nation, PageAndSort ps, String search) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		Page paging = new Page(page);
+		Page paging = new Page(ps.getPage());
 		paging.setNumberOfRecordsAndMakePageInfo(
 				articleRepository.getArticleCnt(category.getKrValue(), nation.getKrValue(), search));
 		paging.setList(articleRepository.selectArticleList(category.getKrValue(), nation.getKrValue(), search,
-				sort.toString(), paging.getOffset(), paging.getRecordsPerPage()));
+				ps.getSort().toString(), paging.getOffset(), paging.getRecordsPerPage()));
 		map.put("page", paging);
 		return map;
 	}
