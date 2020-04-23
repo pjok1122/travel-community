@@ -50,7 +50,7 @@ $(document).ready(function(){
 		else if(current.innerText == '등록')
 		{
 			var content = parent.parentElement.getElementsByTagName("textarea")[0].value;
-			console.log(content);
+//			console.log(content);
 			if(content.length <= 0){
 				alert("내용을 입력해주세요.");
 			}
@@ -190,6 +190,7 @@ $(document).ready(function(){
 	}
 	
 	function commentDelete(commentId){
+		console.log(commentId)
 	    $.ajax({
 	        url : '/comment/delete/'+commentId,
 	        type : 'post',
@@ -215,7 +216,7 @@ $(document).ready(function(){
 	        	'articleId': articleId
 	        },
 	        success : function(data){
-	        	console.log(data);
+//	        	console.log(data);
 	        	var count = data.length;
 	            var html = "";
 	            

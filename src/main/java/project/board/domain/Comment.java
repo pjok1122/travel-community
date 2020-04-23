@@ -19,5 +19,15 @@ public class Comment extends CommonDomain{
 //	private LocalDateTime updateDate;
 	private Long parentCommentId;
 	private int good;
+	
+	public boolean parentAlreadyDeleted()
+	{
+		// updateDate가 삭제 날짜
+		if(getUpdateDate()!=null)
+		{
+			return true;
+		}
+		return false;
+	}
 }
 

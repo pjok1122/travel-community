@@ -62,24 +62,30 @@ public class CommentService {
 	{
 		CommentDto comment = getById(commentId, memberId);
 		
-		if(comment == null) {
-			return;
-		}
-		
-		if(comment.isDelete())
+		// 자식 삭제
+		if(comment.isChild())
 		{
 			deleteCommentById(commentId);
-			System.out.println(comment.getParentCommentId());
-			deleteCommentIfNoChild(comment.getParentCommentId());
+			
+			//부모가 삭제된 상태면 부모도 삭제
+			Comment parent = getById(comment.getParentCommentId());
+			if(parent.parentAlreadyDeleted())
+			{
+				deleteCommentById(parent.getId());
+			}
 		}
-		else
+		// 부모 삭제 
+		else if(comment.isParent())
 		{
-			updateCommentContentById(commentId);
+			if(comment.parentHaveNoChildren())
+			{
+				deleteCommentById(commentId);
+			}
+			else // 자식 노드가 존재하면 "삭제된 댓글입니다"로 남길거임
+			{
+				updateCommentContentById(commentId);
+			}
 		}
-	}
-	
-	private void deleteCommentIfNoChild(Long id) {
-		commentRepository.deleteCommentIfNoChild(id);
 	}
 
 	@Transactional

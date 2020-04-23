@@ -26,7 +26,27 @@ public class CommentDto extends Comment
 		return false;
 	}
 	
-	public boolean isDelete()
+	public boolean isParent()
+	{
+		if(getParentCommentId() == null)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isChild()
+	{
+		if(getParentCommentId() != null)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean parentHaveNoChildren()
 	{
 		if(replyEmpty())
 		{
