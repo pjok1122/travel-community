@@ -7,19 +7,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import org.hibernate.validator.constraints.ISBN;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,8 +29,6 @@ import project.board.domain.dto.Page;
 import project.board.domain.dto.PageAndSort;
 import project.board.enums.Category;
 import project.board.enums.Nation;
-import project.board.enums.Sort;
-import project.board.repository.ArticleRepository;
 import project.board.service.ArticleService;
 import project.board.service.MemberService;
 import project.board.util.MySessionUtils;
@@ -104,13 +98,9 @@ public class ArticleController {
 			HttpSession session,
 			Model model)
 	{
-		ArticleDto article = articleService.getArticleById(articleId);
-		if(articleService.checkStatusTemp(article)) {
-			return "redirect:/";
-		}
-		articleService.increaseHitById(articleId);
-		model.addAttribute("article", article);
-		model.addAllAttributes(articleService.checkArticleSatus(sessionUtils.getMemberId(session), articleId));
+		Map<String, Object> articleMap = articleService.getArticleDetailById(sessionUtils.getMemberId(session), articleId);
+		if(articleMap == null) return "redirect:/";
+		model.addAllAttributes(articleMap);
 		session.setAttribute("prevPage", "/article/" + articleId);
 		return "article/detail";
 	}
@@ -122,11 +112,8 @@ public class ArticleController {
 			HttpSession session,
 			Model model)
 	{
-		ArticleDto article = articleService.getArticleById(articleId);
-		if(!articleService.checkArticleOwner(sessionUtils.getMemberId(session), article)) {
-			return "redirect:/";
-		}
-		
+		ArticleDto article = articleService.getUpdateForm(sessionUtils.getMemberId(session), articleId);
+		if(article==null) return "redirect:/";
 		model.addAttribute("article", article);
 		return WRITE_AND_UPDATE_FORM;
 	}
@@ -206,11 +193,10 @@ public class ArticleController {
 			return ResponseEntity.badRequest().build();
 		}
 		
-		ArticleDto oldArticle = articleService.getArticleById(articleId);
-		Long memberId = sessionUtils.getMemberId(session);
+		ArticleDto oldArticle = articleService.getUpdateForm(sessionUtils.getMemberId(session), articleId);
 		
 		//글의 주인이 아니거나 TEMP 글이 아니라면, 잘못된 요청.
-		if(!articleService.checkArticleOwner(memberId, oldArticle) || !articleService.checkStatusTemp(oldArticle)) {
+		if(oldArticle == null || !oldArticle.getStatus().equals("TEMP")) {
 			return ResponseEntity.badRequest().build();
 		}
 		
@@ -234,10 +220,9 @@ public class ArticleController {
 			@RequestParam("articleId") Long articleId
 			)
 	{
-		Long memberId =sessionUtils.getMemberId(session);
-		ArticleDto article = articleService.getArticleById(articleId);
+		ArticleDto article = articleService.getUpdateForm(sessionUtils.getMemberId(session), articleId);
 		
-		if(!articleService.checkArticleOwner(memberId, article) || !articleService.checkStatusTemp(article)) {
+		if(article == null || !articleService.checkStatusTemp(article)) {
 			return ResponseEntity.badRequest().build();
 		}
 		

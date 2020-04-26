@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import project.board.domain.UploadFile;
+import project.board.domain.dto.ArticleDto;
+import project.board.domain.dto.GpsDecimal;
 
 @Repository
 public interface PostFileRepository {
@@ -15,4 +17,6 @@ public interface PostFileRepository {
 	public List<UploadFile> selectByArticleIds(List<Long> popularArticleIds);
 	
 	public UploadFile selectByFileName(String fileName);
+
+	public List<GpsDecimal> selectByArticleId(Long articleId);
 }

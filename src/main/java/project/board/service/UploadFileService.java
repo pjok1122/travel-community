@@ -1,25 +1,32 @@
 package project.board.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Metadata;
+
+import lombok.RequiredArgsConstructor;
 import project.board.domain.UploadFile;
+import project.board.domain.dto.GpsDecimal;
 import project.board.repository.UploadFileRepository;
+import project.board.util.GpsExtractUtils;
 import project.board.util.UploadFileUtils;
 
 @Service
 @Transactional(readOnly = true)
 public class UploadFileService {
 
-	@Autowired
-	UploadFileRepository uploadFileRepository;
+	@Autowired private UploadFileRepository uploadFileRepository;
+	@Autowired private GpsExtractUtils gpsUtils;
 	
 	private final Path rootLocation;	
 	
@@ -41,9 +48,13 @@ public class UploadFileService {
 				throw new Exception("Failed to store the file because it is not image file." + file.getOriginalFilename());
 			}
 			
-			//파일을 디스크에 저장하고, DB에 메타정보 저장.
+			//파일을 디스크에 저장
 			String filePath = UploadFileUtils.fileSave(rootLocation.toString(), file, email);
+			
+			//파일의 메타저보를 DB에 저장. (setter 보단 domain에서 처리하는 것이 좋다.)
 			UploadFile saveFile = new UploadFile();
+			Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
+			saveFile.setGps(gpsUtils.toGpsDecimal(metadata));
 			saveFile.seperateDirAndFile(rootLocation.toString(),filePath);
 			saveFile.setOriginFileName(file.getOriginalFilename());
 			saveFile.setContentType(extension);
@@ -52,6 +63,8 @@ public class UploadFileService {
 			return saveFile;
 		} catch(IOException e) {
 			throw new Exception("Failed to store file " + file.getOriginalFilename(), e);
+		} catch(ImageProcessingException e) {
+			throw new Exception("Failed to extract metadata of" + file.getOriginalFilename(), e);
 		}
 	}
 

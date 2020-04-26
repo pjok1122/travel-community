@@ -44,6 +44,7 @@ public interface ArticleRepository {
 	void updateTempToPermanent(Article article);
 
 
+
 	
 	
 }

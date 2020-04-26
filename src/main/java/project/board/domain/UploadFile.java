@@ -1,11 +1,19 @@
 package project.board.domain;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.ibatis.type.Alias;
 
-import lombok.EqualsAndHashCode;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Metadata;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import project.board.domain.dto.GpsDecimal;
+import project.board.util.GpsExtractUtils;
 
 @Getter @Setter
 @Alias("uploadFile")
@@ -21,12 +29,20 @@ public class UploadFile extends CommonDomain{
 //	private LocalDateTime registerDate;
 //	private LocalDateTime updateDate;
 	
+	private Double latitude;
+	private Double longitude;
+	
 	//DB에 없는 값.
 	private Long articleId;
 	
 	public void seperateDirAndFile(String rootPath, String filePath) {
 		this.fileName = filePath.substring(filePath.lastIndexOf('/')+1, filePath.length());
 		this.dirPath = filePath.substring(rootPath.length()+1 , filePath.lastIndexOf('/')+1);
+	}
+	
+	public void setGps(GpsDecimal gpsDecimal) {
+		this.latitude = gpsDecimal.getLatitude();
+		this.longitude = gpsDecimal.getLongitude();
 	}
 
 	@Override

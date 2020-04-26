@@ -56,13 +56,9 @@ public class SessionValidAspect {
 		Long memberId = sessionUtils.getMemberId(session);
 		Long articleId = parseLong(pjp);
 		
-		ArticleDto article = articleService.getArticleById(articleId);
-		if(!articleService.checkArticleOwner(memberId, article)) {
-			throw new Exception("you are not a owner of the article.");
-		} else {
-			return pjp.proceed();
-		}
-		
+		ArticleDto article = articleService.getUpdateForm(memberId, articleId);
+		if(article ==null)	throw new Exception("you are not a owner of the article.");
+		return pjp.proceed();
 	}
 	
 	private Long parseLong(ProceedingJoinPoint pjp) {

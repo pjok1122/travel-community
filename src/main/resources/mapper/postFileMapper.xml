@@ -7,10 +7,10 @@
 
 	<insert id="insertPostFiles" parameterType="java.util.Collection"
 	useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO post_file(origin_file_name, dir_path, file_name, content_type, size, register_date, article_id)
+		INSERT INTO post_file(origin_file_name, dir_path, file_name, content_type, size, latitude, longitude, register_date, article_id)
 		VALUES
 		<foreach collection="list" item="file" separator=" , ">
-			(#{file.originFileName}, #{file.dirPath}, #{file.fileName}, #{file.contentType}, #{file.size}, #{file.registerDate}, #{file.articleId})
+			(#{file.originFileName}, #{file.dirPath}, #{file.fileName}, #{file.contentType}, #{file.size}, #{file.latitude}, #{file.longitude}, #{file.registerDate}, #{file.articleId})
 		</foreach>
 	</insert>
 	
@@ -22,13 +22,18 @@
 			#{articleId}
 		</foreach>
 		ORDER BY pf.register_date DESC;
-	
 	</select>
 	
 	<select id="selectByFileName" resultType="uploadFile">
 		SELECT pf.dir_path, pf.file_name
 		FROM post_file pf
 		WHERE pf.file_name = #{fileName}
+	</select>
+	
+	<select id="selectByArticleId" resultType="GpsDecimal">
+		SELECT pf.latitude, pf.longitude
+		FROM post_file pf
+		WHERE pf.article_id = #{articleId}
 	</select>
 	
 </mapper>

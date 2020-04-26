@@ -97,7 +97,7 @@
 		ON am.id = c.article_id
 		GROUP BY am.id
 	</select>
-	
+		
 	<update id="updateArticle" parameterType="article">
 		UPDATE article
 		SET title = #{title},

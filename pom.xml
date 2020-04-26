@@ -84,6 +84,14 @@
 		    <artifactId>jquery</artifactId>
 		    <version>3.4.1</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.drewnoakes/metadata-extractor -->
+		<dependency>
+			<groupId>com.drewnoakes</groupId>
+			<artifactId>metadata-extractor</artifactId>
+			<version>2.13.0</version>
+		</dependency>
+		
 	</dependencies>
 
 

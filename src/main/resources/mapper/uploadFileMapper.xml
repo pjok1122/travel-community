@@ -7,8 +7,8 @@
 
 	<insert id="insert" parameterType="uploadFile"
 	useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO upload_file(origin_file_name, dir_path, file_name, content_type, size, register_date)
-		VALUES(#{originFileName}, #{dirPath}, #{fileName}, #{contentType}, #{size}, NOW())
+		INSERT INTO upload_file(origin_file_name, dir_path, file_name, content_type, size, latitude, longitude, register_date)
+		VALUES(#{originFileName}, #{dirPath}, #{fileName}, #{contentType}, #{size}, #{latitude}, #{longitude}, NOW())
 	</insert>
 	
 	<select id="selectByFileName" resultType="uploadFile">

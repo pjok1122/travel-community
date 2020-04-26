@@ -25,7 +25,7 @@ import project.board.enums.ImageMediaType;
 public class UploadFileUtils {
 	
 	@Value("{image.save.path}")
-	private static String imageSavePath; 
+	private String imageSavePath; 
 	
 	/**
 	 * 파일명의 확장자를 토대로 이미지 파일인지 확인하는 메서드

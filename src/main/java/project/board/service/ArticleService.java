@@ -2,8 +2,6 @@ package project.board.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +9,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import project.board.domain.Article;
 import project.board.domain.Bookmark;
-import project.board.domain.CommonDomain;
 import project.board.domain.UploadFile;
 import project.board.domain.dto.ArticleDto;
 import project.board.domain.dto.Page;
 import project.board.domain.dto.PageAndSort;
 import project.board.enums.Category;
 import project.board.enums.Nation;
-import project.board.enums.Sort;
 import project.board.repository.ArticleLikeRepository;
 import project.board.repository.ArticleRepository;
 import project.board.repository.BookmarkRepository;
@@ -38,7 +33,7 @@ import project.board.util.UploadFileUtils;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ArticleService {
 
 	private final ArticleRepository articleRepository;
@@ -126,6 +121,7 @@ public class ArticleService {
 	@Transactional
 	private void insertPostImages(String imageNames, Long articleId) {
 		List<String> fileNames = Arrays.asList(imageNames.trim().split(" "));
+		
 		// 이미지 이름을 List에 저장한다.
 		fileNames = fileNames.stream().filter(name-> name.length() > imageBaseUrl.length()+dirPathFormat.length())
 						.map(name -> name.substring(imageBaseUrl.length()+dirPathFormat.length()))
@@ -165,11 +161,32 @@ public class ArticleService {
 		articleRepository.insertTempArticle(article);
 		return article.getId();
 	}
-
-	public ArticleDto getArticleById(Long articleId) {
-		return articleRepository.selectArticleById(articleId);
+	
+	@Transactional
+	public Map<String, Object> getArticleDetailById(Long memberId, Long articleId) {
+		ArticleDto article = articleRepository.selectArticleById(articleId);
+		article.setGpsInfo(postFileRepository.selectByArticleId(articleId));
+		
+		//임시저장글인지 검증
+		if(checkStatusTemp(article)) return null;
+		//조회수 Up
+		increaseHitById(articleId);
+		
+		//유저가 해당 글에 좋아요와 북마크를 했는지에 대한 상태를 조회한다.
+		Map<String, Object> articleMap = checkArticleSatus(memberId, articleId);
+		articleMap.put("article", article);
+		
+		return articleMap;
 	}
+	
+	public ArticleDto getUpdateForm(Long memberId, Long articleId) {
+		ArticleDto article = articleRepository.selectArticleById(articleId);
+		if(!checkArticleOwner(memberId, article)) return null;
+		return article;
+	}
+	
 
+	@Transactional
 	public void modifyArticle(Long articleId, @Valid Article article, String images) {
 		
 		insertPostImages(images, articleId);
@@ -181,11 +198,13 @@ public class ArticleService {
 		article.setContent(article.getContent().replaceAll("src=\""+imageBaseUrl, "src=\""+imagePostUrl));
 		articleRepository.updateArticle(article);
 	}
-
+	
+	@Transactional
 	public void removeArticleById(Long articleId) {
 		articleRepository.deleteArticleById(articleId);
 	}
 
+	@Transactional
 	public void increaseHitById(Long articleId) {
 		articleRepository.updateHitById(articleId);
 	}
@@ -298,7 +317,7 @@ public class ArticleService {
 
 	public Article loadTempArticleById(Long memberId, Long articleId) {
 		try {
-			ArticleDto article = getArticleById(articleId);
+			ArticleDto article = articleRepository.selectArticleById(articleId);
 			if (checkArticleOwner(memberId, article) && checkStatusTemp(article)) {
 				return article;
 			} else {
@@ -308,5 +327,4 @@ public class ArticleService {
 			return new Article();
 		}
 	}
-
 }
