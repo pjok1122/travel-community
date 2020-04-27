@@ -165,10 +165,13 @@ public class ArticleService {
 	@Transactional
 	public Map<String, Object> getArticleDetailById(Long memberId, Long articleId) {
 		ArticleDto article = articleRepository.selectArticleById(articleId);
-		article.setGpsInfo(postFileRepository.selectByArticleId(articleId));
 		
 		//임시저장글인지 검증
 		if(checkStatusTemp(article)) return null;
+		
+		//GPS 정보 추가
+		article.setGpsInfo(postFileRepository.selectByArticleId(articleId));
+		
 		//조회수 Up
 		increaseHitById(articleId);
 		

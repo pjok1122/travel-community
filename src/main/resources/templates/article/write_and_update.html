@@ -75,10 +75,7 @@
 								<label class="input-group-text" for="category">카테고리</label>
 							</div>
 							<select class="custom-select" th:field="*{category}">
-								<option value="attractions">관광지
-								<option value="restaurant">맛집
-								<option value="accomodation">숙박
-								<option value="festival">축제
+								<option th:each="category : ${T(project.board.enums.Category).values()}" th:unless="${#strings.equals(category, 'ALL')}	" th:value="${category}" th:text="${category.getKrValue()}"> 
 							</select>
 							<small class="form-text text-muted" th:if="${#fields.hasErrors('category')}" th:errors="*{category}">Incorrect date</small>
 						</div>
@@ -88,14 +85,7 @@
 								<label class="input-group-text" for="nation">국가</label>
 							</div>
 							<select class="custom-select" th:field="*{nation}">
-								<option value="대만">대만
-								<option value="라오스">라오스
-								<option value="말레이시아">말레이시아
-								<option value="베트남">베트남
-								<option value="싱가폴">싱가폴
-								<option value="일본">일본
-								<option value="중국">중국
-								<option value="태국">태국
+								<option th:each="nation,iterStat : ${T(project.board.enums.Nation).values()}" th:unless="${#strings.equals(nation,'ALL')}" th:value="${nation.getKrValue()}" th:text="${nation.getKrValue()}">
 							</select>
 							<small class="form-text text-muted" th:if="${#fields.hasErrors('nation')}" th:errors="*{nation}">Incorrect date</small>
 						</div>
@@ -335,9 +325,12 @@
 		function checkValid(){
 			var title = $("#title").val();
 			var content = $("#content").val();
-			
 			if(title.length <=0 || content.length <=0){
 				alert("제목과 내용을 입력해주세요.");
+			} else{
+				$("#images").val('');
+				findImages();
+					
 			}
 		}
 		

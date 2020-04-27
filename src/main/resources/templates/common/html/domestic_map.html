@@ -3,9 +3,15 @@
 <script type="text/javascript"
 	src="//dapi.kakao.com/v2/maps/sdk.js?appkey=00b3e879474a452f47bcfbe656b36ac8"></script>
 <script th:inline="javascript">
+
 		/*<![CDATA[*/
 		var gpsInfo = /*[[ ${article.gpsInfo} ]]*/;
 		/*]]*/
+		
+		if(gpsInfo.length ==0){
+			$("#map").css("display", "none");
+		}
+		
 		
 		var points = []
 		

@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum Nation {
 	ALL("ALL","전체"),
 	TW("TAIWAN", "대만"),				//대만
+	KR("KOREA", "한국"),				//한국
 	LA("LAOS", "라오스"),				//라오스
 	MY("MALAYSIA", "말레이시아"),		//말레이시아
 	VN("VIETNAM", "베트남"),			//베트남

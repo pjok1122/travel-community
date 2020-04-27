@@ -1,9 +1,7 @@
 package project.board.aop;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import project.board.domain.dto.ArticleDto;
-import project.board.repository.ArticleRepository;
 import project.board.service.ArticleService;
 import project.board.util.MySessionUtils;
 

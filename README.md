@@ -220,3 +220,10 @@ Ajax를 이용하여 임시저장을 구현했습니다. `임시저장`버튼을
 
 
 
+
+## 해야할 일
+
+1. article을 temp_article과 article로 테이블 나누기
+
+2. article의 category_id를 enum Category 값으로 바꾸고 Category 테이블 삭제하기
+
