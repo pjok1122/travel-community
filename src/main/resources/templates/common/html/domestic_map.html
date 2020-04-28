@@ -56,15 +56,29 @@
 		polyline.setMap(map);
 		setBounds();
 		
+		//출발 지점에 대한 정보를 작성합니다.
 		var content = '<div style="margin-top:15px; width:3rem;" class="badge badge-primary text-wrap">출발!</div>';
 		var position = points[0];
 		
-		var customOverlay = new kakao.maps.CustomOverlay({
+		//출발 지점에 대한 커스텀 오버레이를 설정합니다.
+/* 		var customOverlay = new kakao.maps.CustomOverlay({
 			position : position,
 			content : content
 		});
+		customOverlay.setMap(map); */
 		
-		customOverlay.setMap(map);
+		
+		//이동 경로의 순서를 나타내는 커스텀 오버레이를 작성합니다.
+		for(var i=1;i<gpsInfo.length;i++){
+			latitude = (gpsInfo[i]['latitude'] + gpsInfo[i-1]['latitude'])/2;
+			longitude = (gpsInfo[i]['longitude'] + gpsInfo[i-1]['longitude'])/2;
+			
+			customOverlay = new kakao.maps.CustomOverlay({
+				position : new kakao.maps.LatLng(latitude, longitude),
+				content : `<div style="width:1rem; font-size:xx-small;" class="badge badge-warning text-wrap">${i}</div>`
+			})
+			customOverlay.setMap(map);
+		}
 		
 		function setBounds() {
 		    // LatLngBounds 객체에 추가된 좌표들을 기준으로 지도의 범위를 재설정합니다

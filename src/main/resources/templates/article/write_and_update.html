@@ -234,13 +234,13 @@
 		function ajaxTempWrite(data){
 			var articleId = $("#id").val();
 			var url = '/ajax/temp/';
-			//var form_data = new FormData();
 			url += (articleId==="" ? 'write' : 'update');
+			
+			$("#images").val('');
+			findImages();
 			if(articleId){
 				data["articleId"] = articleId;
 				data["images"] = $("#images").val();
-				//form_data.append("articleId", articleId);
-				//form_data.append("images", $("#images").val());
 			}
 			$.ajax({
 				url : url,

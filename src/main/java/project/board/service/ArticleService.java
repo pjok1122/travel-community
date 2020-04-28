@@ -155,6 +155,7 @@ public class ArticleService {
 		}
 	}
 
+	@Transactional
 	public Long createTempArticle(Article article, Long memberId) {
 		article.setMemberId(memberId);
 		article.setTitle((scriptEscaper.scriptEscape(article.getTitle())));

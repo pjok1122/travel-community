@@ -34,6 +34,6 @@
 		SELECT pf.latitude, pf.longitude
 		FROM post_file pf
 		WHERE pf.article_id = #{articleId}
+		ORDER BY pf.register_date ASC;
 	</select>
-	
 </mapper>
