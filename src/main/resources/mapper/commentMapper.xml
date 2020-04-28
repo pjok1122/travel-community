@@ -82,7 +82,7 @@
 			c1.update_date update_date, 
 			c1.good good, 
 			m1.email writer, 
-			IF(cl1.member_id = #{memberId}, 1, 0) AS `is_good`, 
+			(select IF(cl.id,1,0) from comment_like cl where cl.member_id = #{memberId} and cl.comment_id = c1.id) AS `is_good`,  
 			CASE 
 				WHEN c1.parent_comment_id IS NULL THEN c2.content 
 				ELSE c2.content 
@@ -91,7 +91,7 @@
 			c2.register_date reply_register_date, 
 			c2.good reply_good, 
 			c2.id reply_id, 
-			IF(cl2.member_id = #{memberId}, 1, NULL) AS `reply_is_good`
+			(select IF(cl2.id,1,0) from comment_like cl2 where cl2.member_id = #{memberId} and cl2.comment_id = c2.id) AS `reply_is_good` 
 		FROM comment c1  
 		LEFT JOIN comment c2 
 		ON c1.id = c2.parent_comment_id 
@@ -99,10 +99,6 @@
 		ON c1.member_id = m1.id 
 		LEFT JOIN `member` m2 
 		ON c2.member_id = m2.id 
-		LEFT JOIN comment_like cl1 
-		ON c1.id = cl1.comment_id 
-		LEFT JOIN comment_like cl2 
-		ON c2.id = cl2.comment_id 
 		WHERE c1.article_id = #{articleId} 
 		AND c1.parent_comment_id IS NULL 
 		ORDER BY c1.good DESC, c1.register_date ASC 
