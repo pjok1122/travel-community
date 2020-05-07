@@ -1,0 +1,36 @@
+package project.board.exception;
+
+public class NoExistException extends RuntimeException{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -884905374156358953L;
+
+	public NoExistException() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public NoExistException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+		// TODO Auto-generated constructor stub
+	}
+
+	public NoExistException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	public NoExistException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
+
+	public NoExistException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
+	
+}

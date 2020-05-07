@@ -3,13 +3,15 @@ package project.board.service;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import project.board.entity.Member;
+import project.board.entity.dto.MyInfoDto;
+import project.board.exception.NoExistException;
+import project.board.repository.ArticleRepositoryJpa;
+import project.board.repository.CommentRepositoryJpa;
 import project.board.repository.MemberRepositoryJpa;
 import project.board.util.Sha256Utils;
 
@@ -19,6 +21,8 @@ import project.board.util.Sha256Utils;
 public class MemberServiceJpa {
 
 	private final MemberRepositoryJpa memberRepository;
+	private final ArticleRepositoryJpa articleRepository;
+	private final CommentRepositoryJpa commentRepository;
 	private final Sha256Utils shaUtils;
 	
 	
@@ -66,17 +70,11 @@ public class MemberServiceJpa {
 	public Member login(String email, String password) {
 		Member findMember = memberRepository.findByEmail(email).orElse(null);
 		
-		System.out.println(0);
-		
 		//존재하지 않는 유저인 경우
 		if(findMember == null) return null;
 
-		System.out.println(1);
-		
 		//비밀번호가 일치하지 않는 경우
 		if(!isPasswordCorrect(findMember, password)) return null;
-		
-		System.out.println(2);
 		
 		//로그인 시간 변경
 		findMember.updateLoginDate();
@@ -86,6 +84,18 @@ public class MemberServiceJpa {
 	
 	private Boolean isPasswordCorrect(Member member, String password) {
 		return member.getPassword().equals(shaUtils.sha256(password, member.getSalt())) ? true : false; 
+	}
+
+	/**
+	 * 회원 정보를 Dto로 반환한다.
+	 * @param memberId
+	 * @return MyInfoDto
+	 */
+	public MyInfoDto getMyInfo(Long memberId) {
+		Member member = memberRepository.findById(memberId).orElseThrow(()->new NoExistException(memberId + "is not exist"));
+		int likeCount = articleRepository.countByMember(member) + commentRepository.countByMember(member);
+		
+		return new MyInfoDto(member, likeCount);
 	}
 	
 	
