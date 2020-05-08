@@ -8,12 +8,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Category{
-	
-	@Id @GeneratedValue
-	private Long id;
-	private String title;
-}
+//@Entity
+//@Getter
+//@NoArgsConstructor(access = AccessLevel.PROTECTED)
+//public class Category{
+//	
+//	@Id @GeneratedValue
+//	private Long id;
+//	private String title;
+//}

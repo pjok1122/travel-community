@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project.board.repository.ArticleRepositoryCustom">
+	
+	<select id="count" resultType="int">
+		SELECT count(*) as totalCnt
+		FROM article
+		<where>
+			<if test='category neq "ALL"'>
+			category = #{category}
+			</if>
+			<if test='nation neq "ALL"'>
+			AND nation = #{nation}
+			</if>
+			<if test='search!=null'>
+			AND title like CONCAT('%', #{search}, '%') 
+			</if>
+		</where>
+		
+	</select>
+	<select id="findAll" resultType="articleDto2">
+		SELECT a.* , (a.hit+a.good*3) as score, count(c.id) as commentCount
+		FROM article a
+		LEFT JOIN comment c
+		ON a.id = c.article_id
+		<where>
+			<if test='category neq "ALL"'>
+				a.category = #{category}
+			</if>			
+			<if test='nation neq "ALL"'>
+				AND a.nation = #{nation}
+			</if>
+			<if test='search!=null'>
+				AND  a.title like CONCAT('%', #{search}, '%') 
+			</if>
+		</where>
+		GROUP BY a.id
+		<if test='sort eq "NEWEST"'>
+		ORDER BY created_date DESC		
+		</if>
+		<if test='sort eq "POPULAR"'>
+		ORDER BY score DESC
+		</if>
+		LIMIT #{offset}, #{numOfRecords}
+	</select>
+	
+	
+</mapper>

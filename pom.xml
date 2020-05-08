@@ -92,6 +92,13 @@
 			<version>2.13.0</version>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/com.github.gavlyukovskiy/p6spy-spring-boot-starter -->
+		<dependency>
+		    <groupId>com.github.gavlyukovskiy</groupId>
+		    <artifactId>p6spy-spring-boot-starter</artifactId>
+		    <version>1.6.1</version>
+		</dependency>
+		
 	</dependencies>
 
 
