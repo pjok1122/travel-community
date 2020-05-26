@@ -35,17 +35,10 @@ public class MemberServiceJpa {
 	 * @return Member
 	 */
 	@Transactional
-	public Member save(String email, String password) {
-
-		String salt = UUID.randomUUID().toString();
-		String hashPassword = shaUtils.sha256(password, salt);
-		Member member = Member.builder().email(email)
-							.password(hashPassword)
-							.salt(salt).build();
-		
+	public Long save(String email, String password) {
+		Member member = Member.createMember(email, password);
 		memberRepository.save(member);
-		
-		return member;
+		return member.getId();
 	}
 	
 	/**
