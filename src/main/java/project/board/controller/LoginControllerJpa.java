@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import project.board.entity.Member;
 import project.board.entity.dto.LoginForm;
 import project.board.entity.dto.RegisterForm;
+import project.board.repository.MemberRepository;
+import project.board.repository.MemberRepositoryJpa;
 import project.board.service.MemberServiceJpa;
 import project.board.service.validator.MemberRegisterValidator2;
 
@@ -23,6 +25,7 @@ import project.board.service.validator.MemberRegisterValidator2;
 public class LoginControllerJpa {
 	
 	private final MemberServiceJpa memberService;
+	private final MemberRepositoryJpa memberRepository;
 	private final MemberRegisterValidator2 registerValidator;
 	
 	@GetMapping("/register2")
@@ -48,7 +51,8 @@ public class LoginControllerJpa {
 		}
 		
 		//멤버 저장.
-		Member member = memberService.save(registerForm.getEmail(), registerForm.getPassword());
+		Long id = memberService.save(registerForm.getEmail(), registerForm.getPassword());
+		Member member = memberRepository.findById(id).orElse(null);
 		session.setAttribute("memberId", member.getId());
 		session.setAttribute("email", member.getEmail());
 		return "redirect:/";
