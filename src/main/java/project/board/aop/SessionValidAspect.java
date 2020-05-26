@@ -10,19 +10,18 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
 import project.board.domain.dto.ArticleDto;
 import project.board.service.ArticleService;
 import project.board.util.MySessionUtils;
 
 @Component
 @Aspect
+@RequiredArgsConstructor
 public class SessionValidAspect {
 	
-	@Autowired
-	MySessionUtils sessionUtils;
-	
-	@Autowired
-	ArticleService articleService;
+	private final MySessionUtils sessionUtils;
+	private final ArticleService articleService;
 	
 	@Order(1)
 	@Around("@annotation(project.board.annotation.LoginAuth)")

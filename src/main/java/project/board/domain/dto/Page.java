@@ -4,9 +4,10 @@ import java.util.List;
 
 import lombok.Getter;
 import project.board.domain.CommonDomain;
+import project.board.entity.BaseTimeEntity;
 
 @Getter
-public class Page {
+public class Page<T> {
 	int recordsPerPage;
 	int firstPageNo;
 	int prevPageNo;
@@ -19,7 +20,7 @@ public class Page {
 	int sizeOfPage;
 	int offset;
 
-	List<? extends CommonDomain> list;
+	List<T> list;
 	
 	
 	
@@ -38,7 +39,7 @@ public class Page {
 		makePageInfo();
 	}
 	
-	public void setList(List<? extends CommonDomain> list) {
+	public void setList(List<T> list) {
 		this.list = list;
 	}	
 	

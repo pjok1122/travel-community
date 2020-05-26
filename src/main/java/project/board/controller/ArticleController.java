@@ -48,7 +48,7 @@ public class ArticleController {
 	
 	private static final String WRITE_AND_UPDATE_FORM = "article/write_and_update";
 	
-	@GetMapping("/{category}/{nation}")
+//	@GetMapping("/{category}/{nation}")
 	public String getBoardByCategoryAndNation(
 			@PathVariable("category") Category category,
 			@PathVariable("nation") Nation nation,
@@ -64,7 +64,7 @@ public class ArticleController {
 		return "article/list";
 	}
 	
-	@GetMapping("/article/write")
+//	@GetMapping("/article/write")
 	@LoginAuth
 	public String getCreationForm(
 			HttpSession session,
@@ -75,8 +75,8 @@ public class ArticleController {
 		return WRITE_AND_UPDATE_FORM;
 	}
 	
-	@PostMapping("/article/write")
-	@LoginAuth
+//	@PostMapping("/article/write")
+//	@LoginAuth
 	public String processCreationForm(
 			@RequestParam(value = "images", required = false) String images,
 			@ModelAttribute @Valid Article article,
@@ -92,7 +92,7 @@ public class ArticleController {
 		return "redirect:/article/" + articleId;
 	}
 		
-	@GetMapping("/article/{articleId}")
+//	@GetMapping("/article/{articleId}")
 	public String showArticle(
 			@PathVariable Long articleId,
 			HttpSession session,
@@ -105,7 +105,7 @@ public class ArticleController {
 		return "article/detail";
 	}
 	
-	@GetMapping("/article/update/{articleId}")
+//	@GetMapping("/article/update/{articleId}")
 	@LoginAuth
 	public String getUpdateArticleForm(
 			@PathVariable Long articleId,
@@ -118,7 +118,7 @@ public class ArticleController {
 		return WRITE_AND_UPDATE_FORM;
 	}
 	
-	@PostMapping("/article/update/{articleId}")
+//	@PostMapping("/article/update/{articleId}")
 	@LoginAuth
 	@isArticleOwner
 	public String processUpdateArticleForm(
@@ -135,7 +135,7 @@ public class ArticleController {
 		return "redirect:/article/" + articleId;
 	}
 	
-	@RequestMapping("/article/delete/{articleId}")
+//	@RequestMapping("/article/delete/{articleId}")
 	@LoginAuth
 	@isArticleOwner
 	public String deleteArticle(

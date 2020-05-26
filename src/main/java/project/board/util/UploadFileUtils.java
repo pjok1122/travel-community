@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.slf4j.Slf4j;
 import project.board.domain.UploadFile;
+import project.board.entity.PostFile;
 import project.board.enums.ImageMediaType;
 
 
@@ -24,8 +25,12 @@ import project.board.enums.ImageMediaType;
 @Slf4j
 public class UploadFileUtils {
 	
-	@Value("{image.save.path}")
-	private String imageSavePath; 
+	@Value("${image.save.path}")
+	private String imageSavePath;
+
+	@Value("${image.post.path}")
+	private String imagePostPath;
+
 	
 	/**
 	 * 파일명의 확장자를 토대로 이미지 파일인지 확인하는 메서드
@@ -95,7 +100,7 @@ public class UploadFileUtils {
 		return saveFile.getPath().replace(File.separatorChar, '/');
 	}
 
-	public static void tempFileCopyAsPostFile(String imageSavePath, String imagePostPath, List<UploadFile> postFiles) {
+	public void tempFileCopyAsPostFile(List<PostFile> postFiles) {
 		postFiles.forEach(pf->{
 			File postDir =new File(imagePostPath + pf.getDirPath());
 			if(!postDir.exists()) {

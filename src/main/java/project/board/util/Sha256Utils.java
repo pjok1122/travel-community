@@ -20,7 +20,7 @@ public class Sha256Utils {
 		return null;
     }
     
-    public String sha256(String msg, String salt){
+    public static String sha256(String msg, String salt){
         MessageDigest md;
 		try {
 			msg = salt + msg;
