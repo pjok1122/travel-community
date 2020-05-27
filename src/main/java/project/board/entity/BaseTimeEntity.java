@@ -12,11 +12,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Getter
+@EqualsAndHashCode
 public class BaseTimeEntity {
 	
 	@CreatedDate

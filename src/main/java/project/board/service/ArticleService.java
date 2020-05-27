@@ -143,7 +143,7 @@ public class ArticleService {
 		postFileRepository.insertPostFiles(postFiles);
 
 		// 이미지 파일을 복사해서 새로운 폴더에서 관리한다.
-		UploadFileUtils.tempFileCopyAsPostFile(imageSavePath, imagePostPath, postFiles);
+//		UploadFileUtils.tempFileCopyAsPostFile(postFiles);
 
 	}
 

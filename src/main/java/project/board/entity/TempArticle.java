@@ -19,7 +19,6 @@ import javax.persistence.OneToMany;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.board.enums.Category;
@@ -29,8 +28,7 @@ import project.board.enums.Nation;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-@EqualsAndHashCode(of = {"id"}, callSuper = false)
-public class Article extends BaseTimeEntity{
+public class TempArticle extends BaseTimeEntity{
 
 	@Id @GeneratedValue
 	private Long id;
@@ -49,9 +47,6 @@ public class Article extends BaseTimeEntity{
 	@Column(nullable = false, length = 1000000)
 	private String content;
 	
-	private int good;
-	private int hit;
-	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Nation nation;
@@ -59,16 +54,7 @@ public class Article extends BaseTimeEntity{
 	@OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PostFile> postFiles = new ArrayList<>();
 	
-	public void hitUp() {
-		hit++;
-	}
-	public void goodUp() {
-		good++;
-	}
-	public void goodDown() {
-		good--;
-	}
-	public Article(Member member, Category category, String title, String content, Nation nation) {
+	public TempArticle(Member member, Category category, String title, String content, Nation nation) {
 		super();
 		this.member = member;
 		this.category = category;
@@ -77,7 +63,6 @@ public class Article extends BaseTimeEntity{
 		this.nation = nation;
 	}
 	
-
 	
 	/**
 	 * 게시물 수정하기
@@ -102,7 +87,6 @@ public class Article extends BaseTimeEntity{
 	 */
 	public void addPostFile(PostFile postFile) {
 		postFiles.add(postFile);
-		postFile.setArticle(this);
 	}
 	public void addPostFiles(List<PostFile> postFiles) {
 		postFiles.forEach(pf-> addPostFile(pf));

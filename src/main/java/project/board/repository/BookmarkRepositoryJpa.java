@@ -8,6 +8,6 @@ import project.board.entity.Member;
 
 public interface BookmarkRepositoryJpa extends JpaRepository<Bookmark, Long>{
 
-	int countByMemberAndArticle(Member member, Article article);
+	boolean existsByMemberAndArticle(Member member, Article article);
 
 }

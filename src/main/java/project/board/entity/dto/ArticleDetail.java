@@ -24,10 +24,10 @@ public class ArticleDetail {
 	
 	private List<GpsDecimal> gpsInfo;
 	
-	private int liked;
-	private int bookmarked;
+	private boolean liked;
+	private boolean bookmarked;
 	
-	public ArticleDetail(Article article, int liked, int bookmarked) {
+	public ArticleDetail(Article article, boolean liked, boolean bookmarked) {
 		articleId = article.getId();
 		category = article.getCategory();
 		nation = article.getNation();

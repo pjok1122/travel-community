@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 @Component
 public class Sha256Utils {
 	
-    public String sha256(String msg){
+    public static String sha256(String msg){
         MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-256");

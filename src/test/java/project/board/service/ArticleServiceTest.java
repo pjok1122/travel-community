@@ -196,8 +196,8 @@ public class ArticleServiceTest {
 		assertThat(detail.getCreatedDate()).isEqualTo(article.getCreatedDate());
 		assertThat(detail.getGood()).isEqualTo(0);
 		assertThat(detail.getGpsInfo().size()).isEqualTo(article.getPostFiles().size());
-		assertThat(detail.getLiked()).isEqualTo(0);
-		assertThat(detail.getBookmarked()).isEqualTo(0);
+		assertThat(detail.isLiked()).isEqualTo(false);
+		assertThat(detail.isBookmarked()).isEqualTo(false);
 		assertThat(detail.getUpdateDate()).isEqualTo(article.getLastModifiedDate());
 		assertThat(detail.getHit()).isEqualTo(1);
 	}
@@ -249,5 +249,7 @@ public class ArticleServiceTest {
 		//then
 		assertThat(postFiles.size()).isEqualTo(0);
 	}
+	
+
 
 }

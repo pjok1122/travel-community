@@ -27,6 +27,18 @@ CREATE TABLE `article` (
 	`hit`			INT				NOT NULL	DEFAULT 0			COMMENT '조회 수',
 	`register_date`	TIMESTAMP		NOT NULL						COMMENT '등록 일자',
 	`update_date`	TIMESTAMP		NULL							COMMENT '마지막 수정 일자',
+	`nation`		VARCHAR(20)		NOT NULL						COMMENT '국가'
+	PRIMARY KEY(`id`)
+);
+
+CREATE TABLE `temp_article` (
+	`id`			BIGINT			NOT NULL	AUTO_INCREMENT		COMMENT '시퀀스',
+	`member_id`		BIGINT			NOT NULL						COMMENT '유저 시퀀스 (FK)',
+	`category_id`	BIGINT			NULL							COMMENT '카테고리 시퀀스 (FK) ex)맛집, 숙소',
+	`title`			VARCHAR(50)		NOT NULL						COMMENT '글 제목',
+	`content`		TEXT			NULL							COMMENT '글 내용',
+	`register_date`	TIMESTAMP		NOT NULL						COMMENT '등록 일자',
+	`update_date`	TIMESTAMP		NULL							COMMENT '마지막 수정 일자',
 	`nation`		VARCHAR(20)		NOT NULL						COMMENT '국가',
 	`status`		VARCHAR(20)		NOT NULL	DEFAULT 'PERMANENT'	COMMENT 'enum{TEMPORARY,  PERMANENT}',
 	PRIMARY KEY(`id`)

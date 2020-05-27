@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import project.board.domain.dto.GpsDecimal;
@@ -90,6 +91,5 @@ public class ArticleRepositoryTest {
 		assertThat(findArticle.getPostFiles().get(1).getLatitude()).isEqualTo(1.3);
 		assertThat(findArticle.getPostFiles().get(1).getLongitude()).isEqualTo(2.2);
 		assertThat(findArticle.getPostFiles().get(0).getLatitude()).isEqualTo(1.2);
-		
 	}
 }

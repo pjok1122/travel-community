@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
+import project.board.annotation.AjaxLoginAuth;
 import project.board.annotation.LoginAuth;
-import project.board.annotation.isArticleOwner;
 import project.board.domain.dto.ArticleDto2;
 import project.board.domain.dto.Page;
 import project.board.domain.dto.PageAndSort;
@@ -36,7 +35,6 @@ public class ArticleControllerJpa {
 	private static final String WRITE_AND_UPDATE_FORM = "article/write_and_update";
 	private static final String ARTICLE_LIST = "article/list";
 	private static final String ARTICLE_DETAIL = "article/detail";
-	
 	
 	@GetMapping("/{category}/{nation}")
 	public String getBoard(
@@ -135,4 +133,5 @@ public class ArticleControllerJpa {
 		return "redirect:/";
 	}
 	
+
 }

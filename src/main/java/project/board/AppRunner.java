@@ -17,7 +17,7 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 
 
-@Component
+//@Component
 public class AppRunner implements ApplicationRunner{
 	@Override
 	public void run(ApplicationArguments args) throws Exception {

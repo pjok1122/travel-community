@@ -136,8 +136,8 @@ public class ArticleController {
 	}
 	
 //	@RequestMapping("/article/delete/{articleId}")
-	@LoginAuth
-	@isArticleOwner
+//	@LoginAuth
+//	@isArticleOwner
 	public String deleteArticle(
 			@PathVariable("articleId") Long articleId,
 			HttpSession session)
@@ -146,8 +146,8 @@ public class ArticleController {
 		return "redirect:/";
 	}
 	
-	@PostMapping("/article/like")
-	@AjaxLoginAuth
+//	@PostMapping("/article/like")
+//	@AjaxLoginAuth
 	public ResponseEntity<?> processLikeArticle(
 			@RequestParam("articleId") Long articleId,
 			HttpSession session,
@@ -157,14 +157,14 @@ public class ArticleController {
 		return ResponseEntity.ok().body(likeStatus);
 	}
 	
-	@GetMapping("/article/like")
-	@ResponseBody
+//	@GetMapping("/article/like")
+//	@ResponseBody
 	public Integer getLikeCount(@RequestParam("articleId") Long articleId) {
 		return articleService.getLikeCount(articleId);
 	}
 	
-	@PostMapping("/ajax/temp/write")
-	@AjaxLoginAuth
+//	@PostMapping("/ajax/temp/write")
+//	@AjaxLoginAuth
 	public ResponseEntity<?> processTempArticleWirte(
 			@ModelAttribute @Valid Article article,
 			BindingResult result,
@@ -180,8 +180,8 @@ public class ArticleController {
 		return ResponseEntity.ok().body(id);
 	}
 	
-	@PostMapping("/ajax/temp/update")
-	@AjaxLoginAuth
+//	@PostMapping("/ajax/temp/update")
+//	@AjaxLoginAuth
 	public ResponseEntity<?> processTempArticleUpdate(
 			@RequestParam("articleId") Long articleId,
 			@RequestParam(value = "images", required = false) String images,
@@ -204,8 +204,8 @@ public class ArticleController {
 		return ResponseEntity.ok().body(articleId);
 	}
 	
-	@GetMapping("/ajax/temp")
-	@AjaxLoginAuth
+//	@GetMapping("/ajax/temp")
+//	@AjaxLoginAuth
 	public ResponseEntity<?> getTempArticleList(HttpSession session){
 		Long memberId = sessionUtils.getMemberId(session);
 		
@@ -213,8 +213,8 @@ public class ArticleController {
 		return ResponseEntity.ok().body(tempArticles);
 	}
 	
-	@PostMapping("/ajax/temp/delete")
-	@AjaxLoginAuth
+//	@PostMapping("/ajax/temp/delete")
+//	@AjaxLoginAuth
 	public ResponseEntity<?> deleteTempArticle(
 			HttpSession session,
 			@RequestParam("articleId") Long articleId

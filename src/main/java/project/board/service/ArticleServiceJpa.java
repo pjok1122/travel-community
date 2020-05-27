@@ -17,6 +17,7 @@ import project.board.domain.dto.ArticleDto2;
 import project.board.domain.dto.Page;
 import project.board.domain.dto.PageAndSort;
 import project.board.entity.Article;
+import project.board.entity.ArticleLike;
 import project.board.entity.Member;
 import project.board.entity.PostFile;
 import project.board.entity.UploadFile;
@@ -43,7 +44,6 @@ public class ArticleServiceJpa {
 	private final MemberRepositoryJpa memberRepository;
 	private final BookmarkRepositoryJpa bookmarkRepository;
 	private final ArticleLikeRepositoryJpa articleLikeRepository;
-	private final PostFileRepositoryJpa postFileRepository;
 	private final UploadFileRepositoryJpa uploadFileRepository;
 	private final UploadFileUtils uploadFileUtils;
 	
@@ -75,7 +75,7 @@ public class ArticleServiceJpa {
 	/**
 	 * 게시물을 저장한다.
 	 * @param memberId
-	 * @param article
+	 * @param articleForm
 	 * @return articleId
 	 */
 	@Transactional
@@ -101,7 +101,7 @@ public class ArticleServiceJpa {
 	 * @param imageNames
 	 * @return List<PostFile>
 	 */
-	private List<PostFile> strToPostFiles(String imageNames) {
+	protected List<PostFile> strToPostFiles(String imageNames) {
 		if(imageNames == null) return new ArrayList<PostFile>();
 		
 		List<String> fileNames = Arrays.asList(imageNames.trim().split(" "));
@@ -151,8 +151,8 @@ public class ArticleServiceJpa {
 		Member member = memberRepository.findById(memberId).orElseThrow(()->new NoExistException());
 		
 		//게시물 상태 조회
-		int liked = articleLikeRepository.countByMemberAndArticle(member, article);
-		int bookmarked = bookmarkRepository.countByMemberAndArticle(member, article);
+		boolean liked = articleLikeRepository.existsByMemberAndArticle(member, article);
+		boolean bookmarked = bookmarkRepository.existsByMemberAndArticle(member, article);
 		
 		//조회수 증가
 		article.hitUp();
@@ -168,11 +168,8 @@ public class ArticleServiceJpa {
 	@Transactional
 	public void update(Long memberId, @Valid ArticleForm article) {
 		Article oldArticle = getMyArticle(memberId, article.getArticleId());
-		System.out.println(oldArticle.getPostFiles().size());
 		oldArticle.getPostFiles().clear();
-		System.out.println(oldArticle.getPostFiles().size());
 		oldArticle.update(article.getTitle(), article.getContent(), article.getCategory(), article.getNation(), strToPostFiles(article.getImages()));
-		System.out.println(oldArticle.getPostFiles().size());
 	}
 	
 	/**
@@ -198,5 +195,6 @@ public class ArticleServiceJpa {
 	private Boolean isArticleOwner(Long memberId, Article article) {
 		return article.getMember().getId().equals(memberId) ? true : false;
 	}
+
 
 }
