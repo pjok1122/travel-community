@@ -1,7 +1,5 @@
 package project.board.entity;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,4 +22,12 @@ public class Bookmark extends BaseTimeEntity{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "article_id")
 	private Article article;
+
+	// ========== 생성 메서드 =========
+	public static Bookmark createBookmark(Member member, Article article) {
+		Bookmark bookmark = new Bookmark();
+		bookmark.member = member;
+		bookmark.article = article;
+		return bookmark;
+	}
 }
