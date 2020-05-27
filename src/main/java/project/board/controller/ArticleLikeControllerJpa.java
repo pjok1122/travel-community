@@ -2,27 +2,24 @@ package project.board.controller;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import project.board.annotation.AjaxLoginAuth;
 import project.board.entity.Article;
 import project.board.exception.NoExistException;
-import project.board.repository.ArticleRepository;
 import project.board.repository.ArticleRepositoryJpa;
 import project.board.service.ArticleLikeServiceJpa;
-import project.board.service.ArticleServiceJpa;
 import project.board.util.MySessionUtils;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class ArticleLikeControllerJpa {
 	
 	private final ArticleLikeServiceJpa articleLikeService;
-	private final ArticleServiceJpa articleService;
 	private final ArticleRepositoryJpa articleRepository;
 	private final MySessionUtils sessionUtils;
 	
@@ -37,6 +34,12 @@ public class ArticleLikeControllerJpa {
 		return article.getGood();
 	}
 	
+	/**
+	 * 게시물에 좋아요(또는 취소)를 반영한다.
+	 * @param articleId
+	 * @param session
+	 * @return 현재 로그인한 유저가 게시물에 반영한 좋아요 상태 True(좋아요) False(좋아요X)
+	 */
 	@PostMapping("/ajax/v1/article/{articleId}/like")
 	@AjaxLoginAuth
 	public boolean processLikeArticle(
