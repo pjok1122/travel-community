@@ -1,5 +1,7 @@
-package project.board.domain.dto;
+package project.board.entity.dto;
 
+
+import java.time.LocalDateTime;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,7 +13,6 @@ import project.board.enums.Nation;
 @EqualsAndHashCode(callSuper = false)
 public class ArticleDto2 extends BaseTimeEntity{
 	private Long id;
-//	private String email;
 	private String title;
 	private String content;
 	private int good;
@@ -19,5 +20,6 @@ public class ArticleDto2 extends BaseTimeEntity{
 	private int commentCount;
 	private Nation nation;
 	private Category category;
-//	private List<GpsDecimal> gpsInfo;
+	private LocalDateTime createdDate;
+	private LocalDateTime lastModifiedDate;
 }

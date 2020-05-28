@@ -3,37 +3,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="project.board.repository.PostFileRepository">
-
-	<insert id="insertPostFiles" parameterType="java.util.Collection"
-	useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO post_file(origin_file_name, dir_path, file_name, content_type, size, latitude, longitude, register_date, article_id)
-		VALUES
-		<foreach collection="list" item="file" separator=" , ">
-			(#{file.originFileName}, #{file.dirPath}, #{file.fileName}, #{file.contentType}, #{file.size}, #{file.latitude}, #{file.longitude}, #{file.registerDate}, #{file.articleId})
-		</foreach>
-	</insert>
+<mapper namespace="project.board.repository.PostFileRepositoryCustom">
 	
-	<select id="selectByArticleIds" parameterType="java.util.Collection" resultType="uploadFile">
+	<select id="selectByArticleIds" parameterType="java.util.Collection" resultType="PostFile">
 		SELECT pf.dir_path, pf.file_name, pf.article_id
 		FROM post_file pf
 		WHERE pf.article_id in
 		<foreach collection="list" separator="," open="(" close=")" item="articleId">
 			#{articleId}
 		</foreach>
-		ORDER BY pf.register_date DESC;
+		ORDER BY pf.created_date DESC;
 	</select>
 	
-	<select id="selectByFileName" resultType="uploadFile">
-		SELECT pf.dir_path, pf.file_name
-		FROM post_file pf
-		WHERE pf.file_name = #{fileName}
-	</select>
-	
-	<select id="selectByArticleId" resultType="GpsDecimal">
-		SELECT pf.latitude, pf.longitude
-		FROM post_file pf
-		WHERE pf.article_id = #{articleId}
-		ORDER BY pf.register_date ASC;
-	</select>
 </mapper>

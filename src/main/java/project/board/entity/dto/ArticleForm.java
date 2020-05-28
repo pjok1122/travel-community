@@ -1,28 +1,30 @@
 package project.board.entity.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.Range;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import project.board.entity.Article;
 import project.board.enums.Category;
 import project.board.enums.Nation;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class ArticleForm {
 	
 	private Long articleId;
 	
-	@NotBlank
+	@NotNull
 	private Category category;
 	
-	@NotBlank
+	@NotNull
 	private Nation nation;
 	
 	@NotBlank

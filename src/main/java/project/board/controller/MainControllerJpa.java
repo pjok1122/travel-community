@@ -5,13 +5,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import project.board.service.ArticleService;
+import project.board.service.ArticleServiceJpa;
 
 @Controller
-public class MainController {
+public class MainControllerJpa {
 	
 	@Autowired
-	ArticleService articleService;
+	ArticleServiceJpa articleService;
 	
 	@GetMapping("/")
 	public String getMainPage(Model model) {

@@ -13,10 +13,10 @@
 			<td><a class="list-title" th:href="@{/article/{id}(id=${article.id})}">
 					<span class="article-nation" th:utext="|[${article.nation}]|"></span>
 					<span th:utext="|${#strings.abbreviate(article.title, 35)}|"></span>
-					<span class="article-commentCnt" th:utext="|[${article.commentCnt}]|"></span>
+					<span class="article-commentCount" th:utext="|[${article.commentCount}]|"></span>
 				</a>
 			</td>
-			<td th:text="${#temporals.format(article.registerDate, 'yyyy-MM-dd HH:mm')}"></td>
+			<td th:text="${#temporals.format(article.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
 			<td th:text="${article.hit}"></td>
 		</tr>
 	</table>

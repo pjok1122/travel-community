@@ -3,10 +3,7 @@ package project.board.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 
 import javax.persistence.EntityManager;
 
@@ -15,16 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import project.board.domain.dto.ArticleDto;
-import project.board.domain.dto.ArticleDto2;
 import project.board.domain.dto.GpsDecimal;
 import project.board.domain.dto.Page;
 import project.board.domain.dto.PageAndSort;
 import project.board.entity.Article;
-import project.board.entity.BaseTimeEntity;
 import project.board.entity.Member;
 import project.board.entity.PostFile;
 import project.board.entity.dto.ArticleDetail;
+import project.board.entity.dto.ArticleDto2;
 import project.board.entity.dto.ArticleForm;
 import project.board.enums.Category;
 import project.board.enums.Nation;
@@ -32,7 +27,6 @@ import project.board.exception.EntityOwnerMismatchException;
 import project.board.exception.NoExistException;
 import project.board.repository.ArticleRepositoryJpa;
 import project.board.repository.MemberRepositoryJpa;
-import project.board.repository.PostFileRepository;
 import project.board.repository.PostFileRepositoryJpa;
 
 @SpringBootTest

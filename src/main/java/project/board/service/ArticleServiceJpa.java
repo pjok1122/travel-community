@@ -2,8 +2,9 @@ package project.board.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -13,15 +14,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import project.board.domain.dto.ArticleDto2;
 import project.board.domain.dto.Page;
 import project.board.domain.dto.PageAndSort;
 import project.board.entity.Article;
-import project.board.entity.ArticleLike;
 import project.board.entity.Member;
 import project.board.entity.PostFile;
 import project.board.entity.UploadFile;
 import project.board.entity.dto.ArticleDetail;
+import project.board.entity.dto.ArticleDto2;
 import project.board.entity.dto.ArticleForm;
 import project.board.enums.Category;
 import project.board.enums.Nation;
@@ -45,7 +45,12 @@ public class ArticleServiceJpa {
 	private final BookmarkRepositoryJpa bookmarkRepository;
 	private final ArticleLikeRepositoryJpa articleLikeRepository;
 	private final UploadFileRepositoryJpa uploadFileRepository;
+	private final PostFileRepositoryJpa postFileRepository;
 	private final UploadFileUtils uploadFileUtils;
+	
+	private final int MAIN_ARTICLE_NUM = 5;
+	private final String NEWEST = "NEWEST";
+	private final String POPULAR = "POPULAR";
 	
 	@Value("${image.baseUrl}")
 	private String imageBaseUrl;
@@ -148,7 +153,8 @@ public class ArticleServiceJpa {
 		//(article -> member,  article -> postFile) Fetch Join
 		Article article = articleRepository.findDetailById(articleId).orElseThrow(()->new NoExistException());
 		
-		Member member = memberRepository.findById(memberId).orElseThrow(()->new NoExistException());
+		Member member = null;
+		if(memberId != null) member = memberRepository.findById(memberId).orElseGet(null);
 		
 		//게시물 상태 조회
 		boolean liked = articleLikeRepository.existsByMemberAndArticle(member, article);
@@ -190,10 +196,53 @@ public class ArticleServiceJpa {
 		Article article = getMyArticle(memberId, articleId);
 		articleRepository.delete(article);
 	}
+	
+	
+	public Map<String, Object> getMainArticle() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<ArticleDto2> newest = articleRepository.findAll("ALL", "ALL", null, NEWEST, 0, MAIN_ARTICLE_NUM);
+		List<ArticleDto2> populars = articleRepository.findAll("ALL", "ALL", null, NEWEST, 0, MAIN_ARTICLE_NUM);
+		
+		//이미지 가져오기
+		List<PostFile> newImages = getImages(newest.stream().map(a -> a.getId()).collect(Collectors.toList()));
+		List<PostFile> popularImages = getImages(populars.stream().map(a -> a.getId()).collect(Collectors.toList()));
 
+		//이미지 선택하기
+		if(newImages.size()>4)	newImages = newImages.subList(0, 4);
+		
+		popularImages = chooseImages(newImages, popularImages);
+		map.put("newest", newest);
+		map.put("popular", populars);
+		map.put("newImages", newImages);
+		map.put("popularImages", popularImages);
+
+		return map;
+	}
 	
 	private Boolean isArticleOwner(Long memberId, Article article) {
 		return article.getMember().getId().equals(memberId) ? true : false;
+	}
+	
+	private List<PostFile> chooseImages(List<PostFile> newImages, List<PostFile> popularImages) {
+		ArrayList<PostFile> temp = new ArrayList<PostFile>();
+		int count = 0;
+		for(PostFile file : popularImages) {
+			if(count ==4) {
+				break;
+			}
+			if(!newImages.contains(file)) {
+				temp.add(file);
+				count++;
+			}
+		}
+		return temp;
+	}
+
+	private List<PostFile> getImages(List<Long> articleIds){
+		if(articleIds.isEmpty()) {
+			return new ArrayList<PostFile>();
+		}
+		return postFileRepository.selectByArticleIds(articleIds);
 	}
 
 

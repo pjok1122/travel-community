@@ -51,6 +51,7 @@ public class Article extends BaseTimeEntity{
 	
 	private int good;
 	private int hit;
+	private int commentCount;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)

@@ -9,7 +9,7 @@
 	color:red;
 }
 
-.article-commentCnt{
+.article-commentCount{
 	color:gray;
 }
 
@@ -42,7 +42,7 @@
 							<span class="article-index" th:text="${iterStat.count}"></span>
 							<span class="article-nation" th:text="|[${article.nation}]|"></span>
 							<span th:utext="${#strings.abbreviate(article.title, 25)}"></span>
-							<span class="article-commentCnt" th:text="|[${article.commentCnt}]|"></span>
+							<span class="article-commentCount" th:text="|[${article.commentCount}]|"></span>
 						</a>
 					</div>
 				</div>
@@ -54,7 +54,7 @@
 							<span class="article-index" th:text="|${iterStat.count} |"></span>
 							<span class="article-nation" th:text="|[${article.nation}]|"></span>
 							<span th:utext="${article.title}"></span>
-							<span class="article-commentCnt" th:text="|[${article.commentCnt}]|"></span>
+							<span class="article-commentCount" th:text="|[${article.commentCount}]|"></span>
 						</a>
 					</div>
 				</div>

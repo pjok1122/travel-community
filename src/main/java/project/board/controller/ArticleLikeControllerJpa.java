@@ -2,6 +2,7 @@ package project.board.controller;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,11 +43,12 @@ public class ArticleLikeControllerJpa {
 	 */
 	@PostMapping("/ajax/v1/article/{articleId}/like")
 	@AjaxLoginAuth
-	public boolean processLikeArticle(
+	public ResponseEntity<?> processLikeArticle(
 			@PathVariable("articleId") Long articleId,
 			HttpSession session)
 	{
-		return articleLikeService.modifyLikeStatus(sessionUtils.getMemberId(session), articleId);
+		boolean status = articleLikeService.modifyLikeStatus(sessionUtils.getMemberId(session), articleId);
+		return ResponseEntity.ok(status);
 		
 	}
 	

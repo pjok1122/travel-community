@@ -12,7 +12,7 @@ import project.board.repository.MemberRepositoryJpa;
 
 @Component
 @RequiredArgsConstructor
-public class MemberRegisterValidator2{
+public class MemberRegisterValidator{
 	
 	private final MemberRepositoryJpa memberRepository;
 	

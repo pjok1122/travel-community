@@ -4,7 +4,7 @@ import java.util.List;
 
 
 import lombok.RequiredArgsConstructor;
-import project.board.domain.dto.ArticleDto2;
+import project.board.entity.dto.ArticleDto2;
 
 @RequiredArgsConstructor
 public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {

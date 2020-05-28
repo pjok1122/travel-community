@@ -29,11 +29,11 @@ public class ArticleLikeServiceJpa {
 	 * @param articleId
 	 * @return 변경된 좋아요 상태를 반환한다. True(좋아요 활성 상태) False(좋아요 비활성 상태)
 	 */
+	@Transactional
 	public boolean modifyLikeStatus(Long memberId, Long articleId) {
 		Member member = memberRepository.findById(memberId).orElseThrow(()->new NoExistException());
 		Article article = articleRepository.findById(articleId).orElseThrow(()->new NoExistException());
 		Optional<ArticleLike> optLike = articleLikeRepository.findByMemberAndArticle(member, article);
-		
 		if(optLike.isPresent()) {
 			unlike(member, article);
 			return false;

@@ -10,15 +10,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.RequiredArgsConstructor;
 import project.board.entity.Member;
 import project.board.entity.dto.LoginForm;
 import project.board.entity.dto.RegisterForm;
-import project.board.repository.MemberRepository;
 import project.board.repository.MemberRepositoryJpa;
 import project.board.service.MemberServiceJpa;
-import project.board.service.validator.MemberRegisterValidator2;
+import project.board.service.validator.MemberRegisterValidator;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,19 +26,19 @@ public class LoginControllerJpa {
 	
 	private final MemberServiceJpa memberService;
 	private final MemberRepositoryJpa memberRepository;
-	private final MemberRegisterValidator2 registerValidator;
+	private final MemberRegisterValidator registerValidator;
 	
-	@GetMapping("/register2")
+	@GetMapping("/register")
 	public String getRegisterForm(@ModelAttribute("registerForm") RegisterForm registerForm) {
 		return "member/register";
 	}
 	
-	@GetMapping("/login2")
+	@GetMapping("/login")
 	public String getLoginForm(@ModelAttribute("loginForm") LoginForm loginForm) {
 		return "member/login";
 	}
 	
-	@PostMapping("/register2")
+	@PostMapping("/register")
 	public String processRegisterForm(
 			HttpSession session,
 			@ModelAttribute("registerForm") @Valid RegisterForm registerForm,
@@ -58,7 +58,7 @@ public class LoginControllerJpa {
 		return "redirect:/";
 	}
 	
-	@PostMapping("/login2")
+	@PostMapping("/login")
 	public String processLoginForm(
 			HttpSession session,
 			@ModelAttribute("loginForm") @Valid LoginForm loginForm,
@@ -79,7 +79,7 @@ public class LoginControllerJpa {
 		return "redirect:/";
 	}
 	
-	@PostMapping("/logout")
+	@RequestMapping("/logout")
 	public String processLogout(HttpSession session) {
 		session.invalidate();
 		return "redirect:/";

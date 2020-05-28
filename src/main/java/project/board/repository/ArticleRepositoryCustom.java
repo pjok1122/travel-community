@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import project.board.domain.dto.ArticleDto2;
+import project.board.entity.dto.ArticleDto2;
 
 @Mapper
 public interface ArticleRepositoryCustom {

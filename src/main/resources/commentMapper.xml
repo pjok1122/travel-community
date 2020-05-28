@@ -5,7 +5,7 @@
 
 <mapper namespace="project.board.repository.CommentRepository">
 
-	<resultMap type="commentDto" id="commentDto">
+	<resultMap type="commentDto" id="project.board.domain.dto.CommentDto">
 		<id column="id" property="id" />
 		<result column="content" property="content" />
 		<result column="good" property="good" />
@@ -24,7 +24,7 @@
 		</collection>
 	</resultMap>
 	
-	<select id="selectByMemberId" resultType="comment">
+	<select id="selectByMemberId" resultType="project.board.domain.Comment">
 		SELECT *
 		FROM comment
 		WHERE member_id = #{memberId}
@@ -49,7 +49,7 @@
 		WHERE id = #{id}
 	</select>
 	
-	<select id="selectCommentByIdAndMemberId" resultMap="commentDto">
+	<select id="selectCommentByIdAndMemberId" resultMap="project.board.domain.Comment">
 		SELECT  
 			c1.id id,
 			c1.content content, 
@@ -74,7 +74,7 @@
 		AND c1.member_id = #{memberId}
 	</select>
 	
-	<select id="selectCommentByArticleId" resultMap="commentDto">
+	<select id="selectCommentByArticleId" resultMap="project.board.domain.Comment">
 		SELECT 
 			c1.id id,
 			c1.content content, 

@@ -96,22 +96,22 @@ footer{
                      	<div class="card-title h2" th:utext="${article.title}"></div>
                      	<div class="meta-info row">
                      		<div class="col-9">
-	                    		<span style="display:none" id="articleId" th:text="${article.id}" ></span>
-	                    		<span id="email" th:text="${article.email}" ></span>
-	                       		<small class="ml-2 text-gray" th:utext="${#temporals.format(article.registerDate, 'yyyy-MM-dd HH:mm')}"></small>
-	                       		<small class="ml-5 text-gray" th:if="${article.updateDate}!=null" th:utext="|수정일자 :${#temporals.format(article.updateDate, 'yyyy-MM-dd HH:mm')}"></small>
+	                    		<span style="display:none" id="articleId" th:text="${article.articleId}" ></span>
+	                    		<span id="email" th:text="${article.writer}" ></span>
+	                       		<small class="ml-2 text-gray" th:utext="${#temporals.format(article.createdDate, 'yyyy-MM-dd HH:mm')}"></small>
+	                       		<small class="ml-5 text-gray" th:if="${article.updateDate}!=null" th:utext="|수정일자 :${#temporals.format(article.createdDate, 'yyyy-MM-dd HH:mm')}"></small>
 	                        </div>
 	                        <div class="col text-right text-gray">
 		                        <small class="card-text">조회 : </small>
 		                        <small class="card-text" th:text="${article.hit}"></small>
 		                        <small class="card-text">댓글 : </small>
-		                        <small class="card-text commentCount" th:text="${article.commentCnt}"></small>
+		                        <small class="card-text commentCount" th:text="${article.commentCount}"></small>
 		                        <small class="card-text">좋아요  : </small>
 		                        <small class="card-text likeCount" th:text="${article.good}"></small>
                      		</div>
                     	</div>
 					</div>
-					<span th:if="${article.nation}==한국">
+					<span th:if="${article.nation eq 'KR'}">
 						<th:block th:replace="common/html/domestic_map.html"></th:block>
 					</span>
 					<div class="card-body" th:utext="${article.content}"></div>
@@ -122,23 +122,23 @@ footer{
 			<div class="col">
 				<span class="control-button float-left">
 					<button class="btn btn-primary"
-							th:if="${session.memberId} == ${article.memberId}"
-							th:onclick="|window.location.href='/article/update/${article.id}'|">수정하기</button>
+							th:if="${session.email} == ${article.writer}"
+							th:onclick="|window.location.href='/article/update/${article.articleId}'|">수정하기</button>
 					<button class="btn btn-danger"
-							th:if="${session.memberId} == ${article.memberId}"
-							th:onclick="|window.location.href='/article/delete/${article.id}'|">삭제하기</button>
+							th:if="${session.email} == ${article.writer}"
+							th:onclick="|window.location.href='/article/delete/${article.articleId}'|">삭제하기</button>
 				</span>
 			</div>
 			<div class="col">
 				<span class="float-right">
 					<button class="icon" id="icon-like">
-						<img th:if="${liked} eq 1" id="like" th:name="${liked}" src="/img/imgs/like2.png">
-						<img th:unless="${liked} eq 1" id="like" th:name="${liked}" th:src="@{/img/imgs/like1.png}">
+						<img th:if="${article.liked}" id="like" th:name="${article.liked}" th:src="@{/img/imgs/like2.png}">
+						<img th:unless="${article.liked}" id="like" th:name="${article.liked}" th:src="@{/img/imgs/like1.png}">
 					</button>
 					<span th:text="${article.good}" class="likeCount">좋아요 숫자</span>
 					<button class="icon" id="icon-bookmark">
-						<img th:if="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" src="/img/imgs/bookmark2.png">
-						<img th:unless="${bookmark} eq 1" id="bookmark" th:name="${bookmark}" th:src="@{/img/imgs/bookmark1.png}">
+						<img th:if="${article.bookmarked}" id="bookmark" th:name="${article.bookmarked}" src="/img/imgs/bookmark2.png">
+						<img th:unless="${article.bookmarked}" id="bookmark" th:name="${article.bookmarked}" th:src="@{/img/imgs/bookmark1.png}">
 					</button>
 					<button class="icon" id="icon-article-report">
 						<img class="report" src="/img/imgs/report.png">
@@ -147,8 +147,8 @@ footer{
 			</div>
 		</div>
 	</div>
-	
-	<div class="container mt-4">
+
+ 	<div class="container mt-4">
         <div class="commentList" id="commentList"></div>
     </div>
 
@@ -174,23 +174,20 @@ footer{
 
 	<th:block th:replace="common/html/report_modal.html"></th:block>
 
-
 <script th:inline="javascript">
 	$(document).ready(function(){
 		/* <![CDATA[ */
-		var articleId = [[${article.id}]]
+		var articleId = [[${article.articleId}]]
 		var liked = [[${liked}]]
 		/* ]] */
 		var likeIcon = $("#icon-like");
 		
 		$("#icon-like").on("click", function(){
-				$.ajax({
-				url : '/article/like',
+			$.ajax({
+				url : `/ajax/v1/article/${articleId}/like`,
 				type : 'POST',
-				data : {'articleId': articleId},
 				async : false,
 				success : function(liked){
-					likeIcon.prop("name", liked);
 					if(liked){
 						$("#like").prop("src", "/img/imgs/like2.png");
 					} else {
@@ -205,11 +202,9 @@ footer{
 			});
 			
 			$.ajax({
-				url : '/article/like',
+				url : `/ajax/v1/article/${articleId}/like`,
 				type : 'GET',
-				data : {'articleId' : articleId},
 				success : function(count){
-					console.log(count);
 					$(".likeCount").html(count);
 				}
 			})
@@ -217,11 +212,9 @@ footer{
 		
 		$("#icon-bookmark").on("click", function(){
 			$.ajax({
-				url: '/ajax/bookmark',
+				url: `/ajax/v1/article/${articleId}/bookmark`,
 				type : 'POST',
-				data : {'articleId' : articleId},
 				success : function(bookmark){
-					$("#icon-bookmark").prop("name", bookmark);
 					if(bookmark){
 						$("#bookmark").prop("src", "/img/imgs/bookmark2.png");
 					} else{

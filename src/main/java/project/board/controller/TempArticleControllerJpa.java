@@ -8,7 +8,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,11 +23,13 @@ import lombok.RequiredArgsConstructor;
 import project.board.annotation.AjaxLoginAuth;
 import project.board.entity.TempArticle;
 import project.board.entity.dto.ArticleForm;
+import project.board.enums.Category;
+import project.board.enums.Nation;
 import project.board.service.ArticleServiceJpa;
 import project.board.service.TempArticleServiceJpa;
 import project.board.util.MySessionUtils;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class TempArticleControllerJpa {
 	private final TempArticleServiceJpa tempArticleService;
@@ -67,11 +69,11 @@ public class TempArticleControllerJpa {
 	 */
 	@GetMapping("/ajax/v1/temp-article")
 	@AjaxLoginAuth
-	public Result<List<TempArticleDto>> getTempArticles(HttpSession session){
+	public ResponseEntity<?> getTempArticles(HttpSession session){
 		List<TempArticle> articles = tempArticleService.getMyArticles(sessionUtils.getMemberId(session));
 		List<TempArticleDto> dtos = articles.stream().map(TempArticleDto::new).collect(Collectors.toList());
 		
-		return new Result<>(dtos, dtos.size());
+		return ResponseEntity.ok(new Result<>(dtos, dtos.size()));
 	}
 	
 	/**
@@ -126,12 +128,20 @@ public class TempArticleControllerJpa {
 	@AllArgsConstructor
 	@Data
 	static class TempArticleDto{
+		private Long articleId;
 		private String title;
+		private Category category;
+		private Nation nation;
+		private String content;
 		private LocalDateTime createdDate;
 		private LocalDateTime lastModifiedDate;
 		
 		public TempArticleDto(TempArticle article) {
+			this.articleId = article.getId();
 			this.title = article.getTitle();
+			this.content = article.getContent();
+			this.category = article.getCategory();
+			this.nation = article.getNation();
 			this.createdDate = article.getCreatedDate();
 			this.lastModifiedDate = article.getLastModifiedDate();
 		}

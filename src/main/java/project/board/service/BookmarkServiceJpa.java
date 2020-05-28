@@ -31,6 +31,7 @@ public class BookmarkServiceJpa {
 	 * @param articleId
 	 * @return 변경된 북마크 상태를 반환한다. True(북마크 활성 상태) False(북마크 비활성 상태)
 	 */
+	@Transactional
 	public boolean modifyBookmarkStatus(Long memberId, Long articleId) {
 		Member member = memberRepository.findById(memberId).orElseThrow(()-> new NoExistException());
 		Article article = articleRepository.findById(articleId).orElseThrow(()-> new NoExistException());

@@ -54,8 +54,8 @@
 		<div class="row mt-5">
 			<div class="col-12">
 				<div class="title text-center">
-					<h1 th:if="${article.status} neq 'PERMANENT'">글 쓰기</h1>
-					<h1 th:unless="${article.status} neq 'PERMANENT'">글 수정</h1>
+					<h1 th:if="${#httpServletRequest.requestURI eq '/article/write'}">글 쓰기</h1>
+					<h1 th:unless="${#httpServletRequest.requestURI eq '/article/write'}">글 수정</h1>
 				</div>
 			</div>
 		</div>
@@ -68,8 +68,8 @@
 			<div class="form-row">
 				<div class="col-sm-3">
 					<div class="form-group">
-						<input type="hidden" class="form-control" th:field="*{id}">
-						<input id="images" name="images" type="hidden" class="form-control"> 
+						<input type="hidden" class="form-control" th:field="*{articleId}">
+						<input type="hidden" class="form-control" th:field="*{images}" > 
 						<div class="input-group mb-3">
 							<div class="input-group-prepended">
 								<label class="input-group-text" for="category">카테고리</label>
@@ -85,7 +85,7 @@
 								<label class="input-group-text" for="nation">국가</label>
 							</div>
 							<select class="custom-select" th:field="*{nation}">
-								<option th:each="nation,iterStat : ${T(project.board.enums.Nation).values()}" th:unless="${#strings.equals(nation,'ALL')}" th:value="${nation.getKrValue()}" th:text="${nation.getKrValue()}">
+								<option th:each="nation,iterStat : ${T(project.board.enums.Nation).values()}" th:unless="${#strings.equals(nation,'ALL')}" th:value="${nation}" th:text="${nation.getKrValue()}">
 							</select>
 							<small class="form-text text-muted" th:if="${#fields.hasErrors('nation')}" th:errors="*{nation}">Incorrect date</small>
 						</div>
@@ -105,8 +105,8 @@
 				</div>
 				
 				<div class="col-3 text-right mb-5">
-					<button th:if="${article.status} neq 'PERMANENT'" type="button" class="btn btn-outline-dark" id="temp-save"
-						onclick="saveTempArticle()">임시저장</button>
+					<button type="button" class="btn btn-outline-dark" id="temp-save"
+						th:if="${#httpServletRequest.requestURI eq '/article/write'}" onclick="saveTempArticle()">임시저장</button>
 					<button type="button" class="btn btn-outline-dark" id="temp-load"
 						onclick="loadTempArticleList()">불러오기</button>
 				</div>
@@ -120,7 +120,7 @@
 				</div>
 				<div class="col-12 text-right">
 					<button type="submit" id="submit" name="submit"
-						class="btn btn-primary" onclick="checkValid()" th:text="${article.status} neq 'PERMANENT' ? '등록' : '수정' "></button>
+						class="btn btn-primary" onclick="checkValid()" th:text="${#httpServletRequest.requestURI eq '/article/write'} ? '등록' : '수정'"></button>
 				</div>
 			</div>
 		</form>
@@ -215,7 +215,7 @@
 		}
 		
 		function deleteTempArticle(index){
-			articleId = tempArticles[index].id;
+			articleId = tempArticles[index].articleId;
 			$.ajax({
 				url : '/ajax/temp/delete',
 				data : {'articleId':articleId},
@@ -233,8 +233,8 @@
 		
 		function ajaxTempWrite(data){
 			var articleId = $("#id").val();
-			var url = '/ajax/temp/';
-			url += (articleId==="" ? 'write' : 'update');
+			var url = `/ajax/v1/temp-article/`;
+			if(articleId) url += articleId;
 			
 			$("#images").val('');
 			findImages();
@@ -260,8 +260,8 @@
 		function loadTempArticle(index){
 			var article = tempArticles[index];
 			$("#tempArticleModal").modal('toggle');
-			$("#id").val(article.id);
-			$("#categoryId").val(article.categoryId);
+			$("#id").val(article.articleId);
+			$("#category").val(article.category);
 			$("#nation").val(article.nation);
 			$("#title").val(article.title);
 			$("#content").summernote("code", article.content);
@@ -291,21 +291,22 @@
 		
 		function getTempArticleList(){
 			$.ajax({
-				url: "/ajax/temp",
+				url: "/ajax/v1/temp-article",
 				type: "GET",
 				async : false,
 				success : function(articles){
-					tempArticles = articles;
-					$("#articleCount").html(`총 ${articles.length}개`);
+					console.log(articles);
+					tempArticles = articles.data;
+					$("#articleCount").html(`총 ${articles.count}개`);
 					var html = `<div class="container-fluid"><div class="list-group list-group-flush row">`;
-					for(var i=0;i<articles.length;i++){
+					for(var i=0;i<articles.count;i++){
 						html += `
 										<a class="list-group-item list-group-item-action col-12">
 											<div class="list-group-item-action" onclick="loadTempArticle(${i})">
 												<input type="hidden" id="index" value=${i}></span>
-												<span class="item-nation">[${articles[i].nation}]</span>
-												<span class="item-title">${(articles[i].title).length >= 20 ? `${articles[i].title.substr(0,20)} ... ` : `${articles[i].title}`} </span>
-												<span class="item-date">${articles[i].updateDate > new Date(articles[i].registerDate).toLocaleDateString('ko-KR') ? (articles[i].updateDate) : new Date(articles[i].registerDate).toLocaleDateString('ko-KR')}</span>
+												<span class="item-nation">[${articles.data[i].nation}]</span>
+												<span class="item-title">${(articles.data[i].title).length >= 20 ? `${articles.data[i].title.substr(0,20)} ... ` : `${articles.data[i].title}`} </span>
+												<span class="item-date">${articles.data[i].lastModifiedDate > new Date(articles.data[i].createdDate).toLocaleDateString('ko-KR') ? (articles.data[i].updateDate) : new Date(articles.data[i].createdDate).toLocaleDateString('ko-KR')}</span>
 											</div>
 											<span class="delete-button" data-dismiss="modal" onclick="deleteTempArticle(${i})"><i class="far fa-trash-alt"></i></span>
 										</a>
