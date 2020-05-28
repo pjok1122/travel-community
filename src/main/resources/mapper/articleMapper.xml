@@ -3,51 +3,43 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="project.board.repository.ArticleRepository">
-
-	<select id="selectArticleListByMemberId" resultType="articleDto">
-		SELECT a.*, count(c.id) as commentCnt
-		FROM `article` a
-		LEFT JOIN comment c
-		ON a.id = c.article_id
-		WHERE a.member_id = #{id} AND a.status = #{status}
-		GROUP BY a.id
-		ORDER BY a.register_date DESC
-		LIMIT #{offset}, #{numOfRecords}
-	</select>
+<mapper namespace="project.board.repository.ArticleRepositoryCustom">
 	
-	<select id="getArticleCntByMemberId" parameterType="Long" resultType="Integer">
-		SELECT count(*)
+	<select id="count" resultType="int">
+		SELECT count(*) as totalCnt
 		FROM article
-		WHERE member_id = #{id} AND status = "PERMANENT";
+		<where>
+			<if test='category neq "ALL"'>
+			category = #{category}
+			</if>
+			<if test='nation neq "ALL"'>
+			AND nation = #{nation}
+			</if>
+			<if test='search!=null'>
+			AND title like CONCAT('%', #{search}, '%') 
+			</if>
+		</where>
+		
 	</select>
-	
-	<select id="getTempArticleCntByMemberId" parameterType="Long" resultType="Integer">
-		SELECT count(*)
-		FROM article
-		WHERE member_id = #{id} AND status = "TEMP";
-	</select>
-	
-	<select id="selectArticleList" resultType="articleDto">
-		SELECT a.*, (a.hit+a.good*3) as score, count(c.id) as commentCnt
+	<select id="findAll" resultType="articleDto2">
+		SELECT a.* , (a.hit+a.good*3) as score, count(c.id) as commentCount
 		FROM article a
 		LEFT JOIN comment c
 		ON a.id = c.article_id
 		<where>
-			<if test='category!=null and category neq "전체".toString()'>
-				a.category_id = (SELECT id FROM category WHERE title = #{category})
+			<if test='category neq "ALL"'>
+				a.category = #{category}
 			</if>			
-			<if test='nation!=null and (nation neq "전체".toString())'>
+			<if test='nation neq "ALL"'>
 				AND a.nation = #{nation}
 			</if>
-				AND a.status = 'PERMANENT'
 			<if test='search!=null'>
 				AND  a.title like CONCAT('%', #{search}, '%') 
 			</if>
 		</where>
 		GROUP BY a.id
 		<if test='sort eq "NEWEST"'>
-		ORDER BY register_date DESC		
+		ORDER BY created_date DESC		
 		</if>
 		<if test='sort eq "POPULAR"'>
 		ORDER BY score DESC
@@ -55,92 +47,5 @@
 		LIMIT #{offset}, #{numOfRecords}
 	</select>
 	
-	<select id="getArticleCnt" resultType="int">
-		SELECT count(*) as totalCnt
-		FROM article
-		<where>
-			<if test='category neq "전체".toString()'>
-			AND category_id = (SELECT id FROM category WHERE title = #{category})
-			</if>
-			<if test='nation!=null and (nation neq "전체".toString())'>
-			AND nation = #{nation}
-			</if>
-			AND status = "PERMANENT"
-			<if test='search!=null'>
-			AND title like CONCAT('%', #{search}, '%') 
-			</if>
-		</where>
-	</select>
-	
-	<insert id="insertArticle" useGeneratedKeys="true" keyProperty="id">
-		INSERT
-		INTO article(member_id, category_id, title, content, register_date, nation)
-		VALUES(#{memberId}, #{categoryId}, #{title}, #{content}, NOW(), #{nation})
-	</insert>
-	
-	<insert id="insertTempArticle" useGeneratedKeys="true" keyProperty="id">
-		INSERT
-		INTO article(member_id, category_id, title, content, register_date, nation, status)
-		VALUES(#{memberId}, #{categoryId}, #{title}, #{content}, NOW(), #{nation}, "TEMP")
-	</insert>
-	
-	<select id="selectArticleById" resultType="articleDto">
-		SELECT am.*, count(c.id) as commentCnt
-		FROM (
-				SELECT a.*, m.email, m.id as memberId
-				FROM article a
-				INNER JOIN `member` m
-				ON a.member_id = m.id
-				WHERE a.id = #{id}
-			 ) am
-		LEFT JOIN comment c
-		ON am.id = c.article_id
-		GROUP BY am.id
-	</select>
-		
-	<update id="updateArticle" parameterType="article">
-		UPDATE article
-		SET title = #{title},
-			content = #{content},
-			nation = #{nation},
-			category_id = #{categoryId},
-			update_date = NOW()
-		WHERE id = #{id};
-	</update>
-	
-	<delete id="deleteArticleById">
-		DELETE
-		FROM article
-		WHERE id = #{id}
-	</delete>
-	
-	<update id="updateHitById">
-		UPDATE article
-		SET hit = hit+1
-		WHERE id = #{id};
-	</update>
-	
-	<update id="updateGoodUp">
-		UPDATE article
-		SET good = good + 1
-		WHERE id = #{id}
-	</update>
-	
-	<update id="updateGoodDown">
-		UPDATE article
-		SET good = good - 1
-		WHERE id = #{id}
-	</update>
-	
-	<update id="updateTempToPermanent">
-		UPDATE article
-		SET title = #{title},
-			content = #{content},
-			nation = #{nation},
-			register_date = NOW(),
-			update_date = NULL,
-			status = "PERMANENT"
-		WHERE id =#{id}
-	</update>
 	
 </mapper>
