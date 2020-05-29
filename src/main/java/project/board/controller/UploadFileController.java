@@ -5,7 +5,6 @@
 //import javax.servlet.http.HttpServletRequest;
 //
 //import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.context.ApplicationContext;
 //import org.springframework.core.io.Resource;
 //import org.springframework.core.io.ResourceLoader;
 //import org.springframework.http.CacheControl;
@@ -19,7 +18,6 @@
 //
 //import lombok.RequiredArgsConstructor;
 //import project.board.domain.UploadFile;
-//import project.board.repository.PostFileRepositoryJpa;
 //import project.board.service.UploadFileService;
 //
 //@Controller

@@ -11,7 +11,7 @@ import project.board.entity.TempArticle;
 
 public interface TempArticleRepositoryJpa extends JpaRepository<TempArticle, Long>{
 
-	@EntityGraph(attributePaths = {"member", "postFiles"})
+	@EntityGraph(attributePaths = {"member", "uploadFiles"})
 	Optional<TempArticle> findDetailById(Long articleId);
 
 	int countByMember(Member member);

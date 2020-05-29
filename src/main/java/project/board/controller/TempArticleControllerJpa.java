@@ -53,9 +53,6 @@ public class TempArticleControllerJpa {
 	{
 		if(result.hasErrors()) return ResponseEntity.badRequest().build();
 		
-		//이미지 복사
-		articleService.uploadToPost(articleForm.getImages());
-		
 		//게시물 저장
 		Long id = tempArticleService.save(sessionUtils.getMemberId(session), articleForm);
 		
@@ -110,9 +107,7 @@ public class TempArticleControllerJpa {
 			HttpSession session)
 	{
 		if(result.hasErrors()) return ResponseEntity.badRequest().build();
-		
 		Long id = tempArticleService.update(sessionUtils.getMemberId(session), articleForm);
-		
 		return ResponseEntity.ok(id);
 	}
 	
@@ -132,6 +127,7 @@ public class TempArticleControllerJpa {
 		private String title;
 		private Category category;
 		private Nation nation;
+		private String nationKr;
 		private String content;
 		private LocalDateTime createdDate;
 		private LocalDateTime lastModifiedDate;
@@ -141,6 +137,7 @@ public class TempArticleControllerJpa {
 			this.title = article.getTitle();
 			this.content = article.getContent();
 			this.category = article.getCategory();
+			this.nationKr = article.getNation().getKrValue();
 			this.nation = article.getNation();
 			this.createdDate = article.getCreatedDate();
 			this.lastModifiedDate = article.getLastModifiedDate();

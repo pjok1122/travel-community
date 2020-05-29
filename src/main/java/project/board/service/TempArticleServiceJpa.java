@@ -1,23 +1,14 @@
 package project.board.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.Errors;
 
 import lombok.RequiredArgsConstructor;
-import project.board.entity.Article;
 import project.board.entity.Member;
-import project.board.entity.PostFile;
 import project.board.entity.TempArticle;
 import project.board.entity.UploadFile;
 import project.board.entity.dto.ArticleForm;
@@ -35,14 +26,10 @@ public class TempArticleServiceJpa {
 
 	private final TempArticleRepositoryJpa tempArticleRepository;
 	private final MemberRepositoryJpa memberRepository;
-	private final ArticleServiceJpa articleService;
+	private final UploadFileRepositoryJpa uploadFileRepository;
+	private final ImageServiceJpa imageService;
 	private final int TEMP_ARTICLE_MAX_SIZE = 10;
-	
-	@Value("${image.baseUrl}")
-	private String imageBaseUrl;
-	
-	@Value("${image.dir.path.format}")
-	private String dirPathFormat;
+
 	
 	/**
 	 * memberId가 articleId에 해당하는 글의 작성자인지 확인하고, 작성자라면 게시물을 조회한다.
@@ -89,15 +76,14 @@ public class TempArticleServiceJpa {
 		
 		//엔티티 조회
 		Member member = memberRepository.findById(memberId).orElseThrow(()-> new NoExistException("Doesn't exist "+ memberId));
+		List<UploadFile> images = imageService.strToUploadFiles(form.getImages());
 		
 		//엔티티 생성
 		TempArticle article = new TempArticle(member, form.getCategory(), form.getTitle(), form.getContent(), form.getNation());
-		
-		//PostFiles 추가
-		article.addPostFiles(articleService.strToPostFiles(form.getImages()));
-		
+
 		//엔티티 저장
 		tempArticleRepository.save(article);
+		article.addImages(images);
 		
 		return article.getId();
 	}
@@ -119,7 +105,6 @@ public class TempArticleServiceJpa {
 	 * @param memberId
 	 * @param articleId
 	 */
-
 	@Transactional
 	public void remove(Long memberId, Long articleId) {
 		TempArticle myArticle = getMyArticle(memberId, articleId);
@@ -134,15 +119,13 @@ public class TempArticleServiceJpa {
 	 * @param articleForm
 	 * @return articleId
 	 */
+	@Transactional
 	public Long update(Long memberId, @Valid ArticleForm form) {
 		TempArticle oldArticle = getMyArticle(memberId, form.getArticleId());
-		oldArticle.getPostFiles().clear();
-		oldArticle.update(form.getTitle(), form.getContent(), form.getCategory(), form.getNation(), articleService.strToPostFiles(form.getImages()));
-		
+		List<UploadFile> images = imageService.strToUploadFiles(form.getImages());
+		oldArticle.getUploadFiles().clear();
+		oldArticle.update(form.getTitle(), form.getContent(), form.getCategory(), form.getNation(), images);
 		return oldArticle.getId();
 	}
 	
-
-
-
 }

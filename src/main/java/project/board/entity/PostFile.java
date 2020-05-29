@@ -34,13 +34,8 @@ public class PostFile extends BaseTimeEntity{
 	@JoinColumn(name = "article_id")
 	private Article article;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "temp_article_id")
-	private TempArticle tempArticle;
-	
 	public PostFile(UploadFile uf) {
 		this.originFileName = uf.getOriginFileName();
-		this.saveFileName = uf.getSaveFileName();
 		this.dirPath = uf.getDirPath();
 		this.fileName = uf.getFileName();
 		this.contentType = uf.getContentType();

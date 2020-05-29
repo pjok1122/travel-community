@@ -15,7 +15,7 @@
 			<if test='nation neq "ALL"'>
 			AND nation = #{nation}
 			</if>
-			<if test='search neq ""'>
+			<if test='search neq "" and search != null'>
 			AND title like CONCAT('%', #{search}, '%') 
 			</if>
 		</where>
@@ -33,7 +33,7 @@
 			<if test='nation neq "ALL"'>
 				AND a.nation = #{nation}
 			</if>
-			<if test='search neq ""'>
+			<if test='search neq "" and search != null'>
 				AND  a.title like CONCAT('%', #{search}, '%') 
 			</if>
 		</where>

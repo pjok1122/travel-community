@@ -6,7 +6,6 @@
 //
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.stereotype.Service;
 //import org.springframework.transaction.annotation.Transactional;
 //import org.springframework.web.multipart.MultipartFile;
 //
@@ -14,9 +13,7 @@
 //import com.drew.imaging.ImageProcessingException;
 //import com.drew.metadata.Metadata;
 //
-//import lombok.RequiredArgsConstructor;
 //import project.board.domain.UploadFile;
-//import project.board.domain.dto.GpsDecimal;
 //import project.board.repository.UploadFileRepository;
 //import project.board.util.GpsExtractUtils;
 //import project.board.util.UploadFileUtils;

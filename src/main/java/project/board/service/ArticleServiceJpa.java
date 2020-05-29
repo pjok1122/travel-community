@@ -19,6 +19,7 @@ import project.board.domain.dto.PageAndSort;
 import project.board.entity.Article;
 import project.board.entity.Member;
 import project.board.entity.PostFile;
+import project.board.entity.TempArticle;
 import project.board.entity.UploadFile;
 import project.board.entity.dto.ArticleDetail;
 import project.board.entity.dto.ArticleDto2;
@@ -45,8 +46,10 @@ public class ArticleServiceJpa {
 	private final BookmarkRepositoryJpa bookmarkRepository;
 	private final ArticleLikeRepositoryJpa articleLikeRepository;
 	private final UploadFileRepositoryJpa uploadFileRepository;
+	private final ImageServiceJpa imageService;
 	private final PostFileRepositoryJpa postFileRepository;
 	private final UploadFileUtils uploadFileUtils;
+	private final TempArticleServiceJpa tempArticleService;
 	
 	private final int MAIN_ARTICLE_NUM = 5;
 	private final String NEWEST = "NEWEST";
@@ -92,38 +95,34 @@ public class ArticleServiceJpa {
 		Article article = new Article(member, form.getCategory(), form.getTitle(), form.getContent(), form.getNation());
 		
 		//PostFiles 추가
-		article.addPostFiles(strToPostFiles(form.getImages()));
+		article.addPostFiles(imageService.strToPostFiles(form.getImages()));
 		
 		//엔티티 저장
 		articleRepository.save(article);
 		
 		return article.getId();
 	}
-
 	
 	/**
-	 * ArticleForm의 imageNames를 List<PostFile>로 변환해 제공한다.
-	 * @param imageNames
-	 * @return List<PostFile>
+	 * 임시저장 글을 
+	 * @param memberId
+	 * @param article
+	 * @return
 	 */
-	protected List<PostFile> strToPostFiles(String imageNames) {
-		if(imageNames == null) return new ArrayList<PostFile>();
+	@Transactional
+	public Long tempToPost(Long memberId, @Valid ArticleForm article) {
+		//엔티티 조회
+		Member member = memberRepository.findById(memberId).orElseThrow(()-> new NoExistException("Doesn't exist "+ memberId));
+		TempArticle tempArticle = tempArticleService.getMyArticle(memberId, article.getArticleId());
 		
-		List<String> fileNames = Arrays.asList(imageNames.trim().split(" "));
-		
-		// 이미지 이름을 List에 저장한다.
-		fileNames = fileNames.stream().filter(name-> name.length() > imageBaseUrl.length()+dirPathFormat.length())
-						.map(name -> name.substring(imageBaseUrl.length()+dirPathFormat.length()))
-						.collect(Collectors.toList());
-		
-		if(fileNames.isEmpty()) return new ArrayList<PostFile>();
-		
-		//임시저장소에서 불러온다.
-		List<UploadFile> uploadFiles = uploadFileRepository.findByFileNames(fileNames);
-		
-		return uploadFiles.stream().map(uf-> new PostFile(uf))
-			.collect(Collectors.toList());
+		//게시물 저장
+		Long articleId = save(memberId, article);
 
+		//임시저장 글 삭제
+		tempArticleService.remove(memberId, article.getArticleId());
+		
+		
+		return articleId;
 	}
 
 	/**
@@ -175,7 +174,7 @@ public class ArticleServiceJpa {
 	public void update(Long memberId, @Valid ArticleForm article) {
 		Article oldArticle = getMyArticle(memberId, article.getArticleId());
 		oldArticle.getPostFiles().clear();
-		oldArticle.update(article.getTitle(), article.getContent(), article.getCategory(), article.getNation(), strToPostFiles(article.getImages()));
+		oldArticle.update(article.getTitle(), article.getContent(), article.getCategory(), article.getNation(), imageService.strToPostFiles(article.getImages()));
 	}
 	
 	/**
@@ -183,7 +182,7 @@ public class ArticleServiceJpa {
 	 * @param images
 	 */
 	public void uploadToPost(String images) {
-		uploadFileUtils.tempFileCopyAsPostFile(strToPostFiles(images));
+		uploadFileUtils.tempFileCopyAsPostFile(imageService.strToPostFiles(images));
 	}
 	
 
@@ -192,6 +191,7 @@ public class ArticleServiceJpa {
 	 * @param memberId
 	 * @param articleId
 	 */
+	@Transactional
 	public void remove(Long memberId, Long articleId) {
 		Article article = getMyArticle(memberId, articleId);
 		articleRepository.delete(article);
@@ -244,6 +244,8 @@ public class ArticleServiceJpa {
 		}
 		return postFileRepository.selectByArticleIds(articleIds);
 	}
+
+
 
 
 }

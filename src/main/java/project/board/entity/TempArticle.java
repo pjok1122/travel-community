@@ -51,8 +51,8 @@ public class TempArticle extends BaseTimeEntity{
 	@Column(nullable = false)
 	private Nation nation;
 
-	@OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<PostFile> postFiles = new ArrayList<>();
+	@OneToMany(mappedBy = "tempArticle", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<UploadFile> uploadFiles = new ArrayList<>();
 	
 	public TempArticle(Member member, Category category, String title, String content, Nation nation) {
 		super();
@@ -73,23 +73,24 @@ public class TempArticle extends BaseTimeEntity{
 	 * @param nation
 	 * @param postFiles
 	 */
-	public void update(String title, String content, Category category, Nation nation, List<PostFile> postFiles) {
+	public void update(String title, String content, Category category, Nation nation, List<UploadFile> images) {
 		if(title!=null) this.title = title;
 		if(content!=null) this.content = content;
 		if(category!=null) this.category = category;
 		if(nation!=null) this.nation = nation;
-		addPostFiles(postFiles);
+		addImages(images);
 	}
 
 	/**
 	 * 연관관계 편의 메서드
 	 * @param postFile
 	 */
-	public void addPostFile(PostFile postFile) {
-		postFiles.add(postFile);
+	public void addImage(UploadFile image) {
+		image.add(this);
+		this.uploadFiles.add(image);
 	}
-	public void addPostFiles(List<PostFile> postFiles) {
-		postFiles.forEach(pf-> addPostFile(pf));
+	public void addImages(List<UploadFile> images) {
+		images.forEach(o-> addImage(o));
 	}
 	
 	

@@ -93,12 +93,17 @@ public class ArticleControllerJpa {
 			Model model)
 	{
 		if(result.hasErrors()) return WRITE_AND_UPDATE_FORM;
-		
-		//이미지 복사
-		articleService.uploadToPost(article.getImages());
-		
+		Long articleId = null;
 		//게시물 저장
-		Long articleId = articleService.save(sessionUtils.getMemberId(session), article);
+		if(article.getArticleId() != null) {
+			articleId = articleService.tempToPost(sessionUtils.getMemberId(session), article);
+		}
+		else {
+			articleId = articleService.save(sessionUtils.getMemberId(session), article);
+		}
+
+		//이미지 디스크 복사
+		articleService.uploadToPost(article.getImages());
 		
 		return "redirect:/article/" + articleId;
 	}
@@ -120,7 +125,7 @@ public class ArticleControllerJpa {
 		//게시물 수정
 		articleService.update(sessionUtils.getMemberId(session), article);
 		
-		return "redirect:/article" + articleId;
+		return "redirect:/article/" + articleId;
 	}
 	
 	@RequestMapping("/article/delete/{articleId}")
