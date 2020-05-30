@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import lombok.RequiredArgsConstructor;
 import project.board.annotation.AjaxLoginAuth;
 import project.board.annotation.LoginAuth;
-import project.board.domain.dto.Page;
+import project.board.domain.dto.MyPage;
 import project.board.domain.dto.PageAndSort;
 import project.board.entity.Article;
 import project.board.entity.dto.ArticleDetail;
@@ -45,7 +45,7 @@ public class ArticleControllerJpa {
 			Model model)
 	{
 		if(search!=null) search = search.trim();
-		Page<ArticleDto2> page = articleService.find(category, nation, pageAndSort, search);
+		MyPage<ArticleDto2> page = articleService.find(category, nation, pageAndSort, search);
 		model.addAttribute("page", page);
 		
 		return ARTICLE_LIST;

@@ -2,6 +2,9 @@ package project.board.service;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +39,7 @@ public class BookmarkServiceJpa {
 		Member member = memberRepository.findById(memberId).orElseThrow(()-> new NoExistException());
 		Article article = articleRepository.findById(articleId).orElseThrow(()-> new NoExistException());
 		Optional<Bookmark> optBookmark = bookmarkRepository.findByMemberAndArticle(member, article);
-		
+		System.out.println(optBookmark.isPresent());
 		if(optBookmark.isPresent()) {
 			destroy(optBookmark.get());
 			return false;
@@ -55,6 +58,19 @@ public class BookmarkServiceJpa {
 	@Transactional
 	private void destroy(Bookmark bookmark) {
 		bookmarkRepository.delete(bookmark);
+	}
+
+	/**
+	 * 회원의 북마크 목록을 불러온다.
+	 * Bookmark는 Article을 참조하고 있으므로 사용하는 쪽에서 가공해서 사용한다.
+	 * @param memberId
+	 * @param pageNo
+	 * @return Page<Bookmark>
+	 */
+	public Page<Bookmark> getMyBookmarks(Long memberId, int pageNo) {
+		Member member = memberRepository.findById(memberId).orElseThrow(()->new NoExistException());
+		PageRequest pageable = PageRequest.of(pageNo, 10, Direction.DESC, "createdDate");
+		return bookmarkRepository.findByMember(member, pageable);
 	}
 	
 

@@ -10,10 +10,11 @@ import javax.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 import project.board.domain.dto.GpsDecimal;
-import project.board.domain.dto.Page;
+import project.board.domain.dto.MyPage;
 import project.board.domain.dto.PageAndSort;
 import project.board.entity.Article;
 import project.board.entity.Member;
@@ -85,8 +86,6 @@ public class ArticleServiceTest {
 		assertThat(article.getContent()).isEqualTo("content");
 		assertThat(article.getCategory()).isEqualTo(Category.ACCOMODATION);
 		assertThat(article.getNation()).isEqualTo(Nation.KR);
-		
-		
 	}
 	
 	/**
@@ -106,7 +105,7 @@ public class ArticleServiceTest {
 		em.clear();
 		
 		//when
-		Page<ArticleDto2> page = articleService.find(Category.ACCOMODATION, Nation.KR, new PageAndSort(), null);
+		MyPage<ArticleDto2> page = articleService.find(Category.ACCOMODATION, Nation.KR, new PageAndSort(), null);
 		
 		//then
 		assertThat(page.getNumberOfRecords()).isEqualTo(2);
@@ -132,7 +131,7 @@ public class ArticleServiceTest {
 		em.clear();
 	
 		//when
-		Page<ArticleDto2> page = articleService.find(Category.ALL, Nation.ALL, new PageAndSort(), "타이");
+		MyPage<ArticleDto2> page = articleService.find(Category.ALL, Nation.ALL, new PageAndSort(), "타이");
 		
 		//then
 		assertThat(page.getNumberOfRecords()).isEqualTo(3);
@@ -244,6 +243,34 @@ public class ArticleServiceTest {
 		assertThat(postFiles.size()).isEqualTo(0);
 	}
 	
+	
+	//getMyArticles
+	/**
+	 * getMyArticles() Test
+	 * 회원이 작성한 게시물을 페이징하여 조회할 수 있는지 테스트한다.
+	 */
+	@Test
+	public void 회원이_작성한_게시물_조회() {
+		//given
+		Member member = createMember("email@email.com", "password");
+		Member member2 = createMember("email2@email.com", "password");
+		for(int i=0;i<25;i++) {
+			createArticle(member, Category.ACCOMODATION, "title", "content", Nation.KR);
+		}
+		createArticle(member2, Category.ACCOMODATION, "title", "content", Nation.KR);
 
+		//when
+		Page<Article> myArticles = articleService.getMyArticles(member.getId(), 1);
+		
+		//then
+		assertThat(myArticles.getTotalElements()).isEqualTo(25);
+		assertThat(myArticles.getNumberOfElements()).isEqualTo(10);
+		assertThat(myArticles.isLast()).isFalse();
+		assertThat(myArticles.isFirst()).isFalse();
+		assertThat(myArticles.hasPrevious()).isTrue();
+		assertThat(myArticles.hasNext()).isTrue();
+		
+
+	}
 
 }

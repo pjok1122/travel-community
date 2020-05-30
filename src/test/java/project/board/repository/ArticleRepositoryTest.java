@@ -67,7 +67,6 @@ public class ArticleRepositoryTest {
 		//given
 		Member member = memberRepository.save(Member.createMember("email@email.com", "password"));
 		Article article = articleRepository.save(new Article(member, Category.ACCOMODATION, "title", "content", Nation.KR));
-		
 		PostFile postFile = new PostFile();
 		postFile.setGps(new GpsDecimal(1.2, 2.1));
 		PostFile postFile2 = new PostFile();

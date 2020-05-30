@@ -1,26 +1,28 @@
 package project.board.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import project.board.domain.dto.Page;
+import project.board.domain.dto.MyPage;
 import project.board.domain.dto.PageAndSort;
 import project.board.entity.Article;
 import project.board.entity.Member;
 import project.board.entity.PostFile;
 import project.board.entity.TempArticle;
-import project.board.entity.UploadFile;
 import project.board.entity.dto.ArticleDetail;
 import project.board.entity.dto.ArticleDto2;
 import project.board.entity.dto.ArticleForm;
@@ -71,8 +73,8 @@ public class ArticleServiceJpa {
 	 * @param search
 	 * @return Page(조건을 만족하는 게시물 목록)
 	 */
-	public Page<ArticleDto2> find(Category category, Nation nation, PageAndSort ps, String search) {
-		Page<ArticleDto2> page = new Page<ArticleDto2>(ps.getPage());
+	public MyPage<ArticleDto2> find(Category category, Nation nation, PageAndSort ps, String search) {
+		MyPage<ArticleDto2> page = new MyPage<ArticleDto2>(ps.getPage());
 		page.setNumberOfRecordsAndMakePageInfo(
 				articleRepository.count(category.toString(), nation.toString(), search));
 		page.setList(articleRepository.findAll(category.toString(), nation.toString(), search,
@@ -178,6 +180,18 @@ public class ArticleServiceJpa {
 	}
 	
 	/**
+	 * 회원이 작성한 게시물 상위 10개를 조회한다.
+	 * @param memberId 회원 번호
+	 * @param pageNo 페이지 번호
+	 * @return Page<Article>
+	 */
+	public Page<Article> getMyArticles(Long memberId, int pageNo) {
+		Member member = memberRepository.findById(memberId).orElseThrow(()->new NoExistException());
+		PageRequest pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, "createdDate"));
+		return articleRepository.findByMember(member, pageable);
+	}
+	
+	/**
 	 * images에 해당하는 PostFile을 조회한 후, 임시저장소에서 게시물 저장소로 파일을 복사한다.
 	 * @param images
 	 */
@@ -244,6 +258,8 @@ public class ArticleServiceJpa {
 		}
 		return postFileRepository.selectByArticleIds(articleIds);
 	}
+
+
 
 
 

@@ -7,7 +7,7 @@ import project.board.domain.CommonDomain;
 import project.board.entity.BaseTimeEntity;
 
 @Getter
-public class Page<T> {
+public class MyPage<T> {
 	int recordsPerPage;
 	int firstPageNo;
 	int prevPageNo;
@@ -24,7 +24,7 @@ public class Page<T> {
 	
 	
 	
-	public Page(int currentPageNo) {
+	public MyPage(int currentPageNo) {
 		this.currentPageNo = currentPageNo;
 		this.recordsPerPage = 10;
 		this.sizeOfPage = 9;
@@ -33,7 +33,7 @@ public class Page<T> {
 		this.finalPageNo = 1;
 	}
 	
-	public Page(int currentPageNo, int numberOfRecords) {
+	public MyPage(int currentPageNo, int numberOfRecords) {
 		this(currentPageNo);
 		this.numberOfRecords = numberOfRecords;
 		makePageInfo();

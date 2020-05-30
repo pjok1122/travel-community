@@ -13,10 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import project.board.domain.dto.GpsDecimal;
-import project.board.entity.Article;
 import project.board.entity.Member;
 import project.board.entity.PostFile;
 import project.board.entity.TempArticle;
+import project.board.entity.UploadFile;
 import project.board.entity.dto.ArticleForm;
 import project.board.enums.Category;
 import project.board.enums.Nation;
@@ -47,12 +47,12 @@ public class TempArticleServiceTest {
 		return tempArticleRepository.save(new TempArticle(member, category, title, content, nation));
 	}
 	
-	private PostFile createPostFile(TempArticle article, Double latitude, Double longitude) {
-		PostFile postFile = new PostFile();
-		postFile.setGps(new GpsDecimal(latitude, longitude));
-		article.addPostFile(postFile);
+	private UploadFile createPostFile(TempArticle article, Double latitude, Double longitude) {
+		UploadFile image = new UploadFile();
+		image.setGps(new GpsDecimal(latitude, longitude));
+		article.addImage(image);
 		
-		return postFile;
+		return image;
 	}
 	
 	private ArticleForm createArticleForm(Long articleId, Category category, String title, String content, Nation nation) {
@@ -117,10 +117,14 @@ public class TempArticleServiceTest {
 	public void 임시저장글_목록_조회() {
 		//given
 		Member member = createMember("email@email", "password");
+		Member member2 = createMember("email2@email", "password");
+		
 		createArticle(member, Category.ACCOMODATION, "title1", "content1", Nation.JP);
 		createArticle(member, Category.ATTRACTIONS, "title2", "content2", Nation.KR);
 		createArticle(member, Category.FESTIVAL, "title3", "content3", Nation.CN);
 		createArticle(member, Category.ACCOMODATION, "title4", "content4", Nation.MY);
+		createArticle(member2, Category.ACCOMODATION, "title4", "content4", Nation.MY);
+		
 		em.flush();
 		em.clear();		
 		//when
@@ -206,7 +210,7 @@ public class TempArticleServiceTest {
 		assertThat(findArticle.getTitle()).isEqualTo("newTitle");
 		assertThat(findArticle.getContent()).isEqualTo("newContent");
 		assertThat(findArticle.getNation()).isEqualTo(Nation.KR);
-		assertThat(findArticle.getPostFiles().size()).isEqualTo(0);
+		assertThat(findArticle.getUploadFiles().size()).isEqualTo(0);
 	}
 	
 }

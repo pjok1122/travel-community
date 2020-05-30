@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Mypage-TempArticle</title>
+<title>임시저장글</title>
 <th:block th:replace="common/html/head.html"></th:block>
 
 <link rel="stylesheet" type="text/css" href="/css/article/article_list.css" />
@@ -29,11 +29,11 @@
 			</thead>
 			<tr th:each="article,iterStat : ${page.list}">
 				<th scope="row" th:text="${iterStat.count} + ${page.currentPageNo-1}*${page.recordsPerPage}"></th>
-				<td><a class="list-title" th:href="@{/article/write(id=${article.id})}">
+				<td><a class="list-title" th:href="@{/article/write(id=${article.articleId})}">
 					<span class="article-nation" th:utext="|[${article.nation}]|"></span>
 					<span th:utext="|${#strings.abbreviate(article.title,35)}|"></span>
 				</a></td>
-				<td th:text="${#temporals.format(article.registerDate, 'yyyy-MM-dd HH:mm')}"></td>
+				<td th:text="${#temporals.format(article.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
 			</tr>
 		</table>
 		<div class="row">

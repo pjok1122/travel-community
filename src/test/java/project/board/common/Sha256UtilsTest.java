@@ -10,7 +10,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import project.board.util.Sha256Utils;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Sha256Utils.class})
 public class Sha256UtilsTest {
 	

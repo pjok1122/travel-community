@@ -1,6 +1,5 @@
 package project.board.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,8 +22,7 @@ import lombok.RequiredArgsConstructor;
 import project.board.annotation.AjaxLoginAuth;
 import project.board.entity.TempArticle;
 import project.board.entity.dto.ArticleForm;
-import project.board.enums.Category;
-import project.board.enums.Nation;
+import project.board.entity.dto.TempArticleDto;
 import project.board.service.ArticleServiceJpa;
 import project.board.service.TempArticleServiceJpa;
 import project.board.util.MySessionUtils;
@@ -120,29 +118,6 @@ public class TempArticleControllerJpa {
 		private int count;
 	}
 	
-	@AllArgsConstructor
-	@Data
-	static class TempArticleDto{
-		private Long articleId;
-		private String title;
-		private Category category;
-		private Nation nation;
-		private String nationKr;
-		private String content;
-		private LocalDateTime createdDate;
-		private LocalDateTime lastModifiedDate;
-		
-		public TempArticleDto(TempArticle article) {
-			this.articleId = article.getId();
-			this.title = article.getTitle();
-			this.content = article.getContent();
-			this.category = article.getCategory();
-			this.nationKr = article.getNation().getKrValue();
-			this.nation = article.getNation();
-			this.createdDate = article.getCreatedDate();
-			this.lastModifiedDate = article.getLastModifiedDate();
-		}
-	}
 }
 
 

@@ -17,11 +17,11 @@
 			    <h1 class="card-title">회원 정보</h1>
 			  </div>
 			  
-			  <ul class="list-group list-group-flush" th:object="${member}">
+			  <ul class="list-group list-group-flush" th:object="${myinfo}">
 			    <li class="list-group-item" th:text="|이메일 : *{email}|"></li>
-			    <li class="list-group-item" th:text="|가입일자 : ${#temporals.format(member.registerDate, 'yyyy-MM-dd HH:mm')}|"></li>
-			    <li class="list-group-item" th:text="|최근 로그인 : ${#temporals.format(member.loginDate, 'yyyy-MM-dd HH:mm')}|"></li>
-			    <li class="list-group-item" th:text="|좋아요 수 : ${like}|"></li>
+			    <li class="list-group-item" th:text="|가입일자 : ${#temporals.format(myinfo.createdDate, 'yyyy-MM-dd HH:mm')}|"></li>
+			    <li class="list-group-item" th:text="|최근 로그인 : ${#temporals.format(myinfo.loginDate, 'yyyy-MM-dd HH:mm')}|"></li>
+			    <li class="list-group-item" th:text="|좋아요 수 : *{likeCount}|"></li>
 			  </ul>
 			  <div class="card-body">
 			    <a href="/mypage/update" class="card-link">회원 정보 변경</a>
