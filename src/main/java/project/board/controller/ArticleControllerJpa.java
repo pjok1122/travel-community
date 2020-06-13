@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.RequiredArgsConstructor;
-import project.board.annotation.AjaxLoginAuth;
 import project.board.annotation.LoginAuth;
 import project.board.domain.dto.MyPage;
 import project.board.domain.dto.PageAndSort;
@@ -23,6 +22,7 @@ import project.board.entity.dto.ArticleDto2;
 import project.board.entity.dto.ArticleForm;
 import project.board.enums.Category;
 import project.board.enums.Nation;
+import project.board.enums.Sort;
 import project.board.service.ArticleServiceJpa;
 import project.board.util.MySessionUtils;
 
@@ -45,7 +45,12 @@ public class ArticleControllerJpa {
 			Model model)
 	{
 		if(search!=null) search = search.trim();
-		MyPage<ArticleDto2> page = articleService.find(category, nation, pageAndSort, search);
+		MyPage<ArticleDto2> page = null;
+		if(pageAndSort.getSort().equals(Sort.NEWEST)) {
+			page = articleService.findNew(category, nation, pageAndSort.getPage(), search);
+		} else {
+			page = articleService.findPopular(category, nation, pageAndSort.getPage(), search);
+		}
 		model.addAttribute("page", page);
 		
 		return ARTICLE_LIST;

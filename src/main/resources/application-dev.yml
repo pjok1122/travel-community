@@ -36,7 +36,11 @@ spring:
     properties:
       hibernate.format_sql: true
       hibernate.default_batch_fetch_size: 100
-  
+
+  cache:
+    cache-names: popular
+    redis:      time-to-live: 600000 
+    
   devtools:
     restart:
       enabled: true

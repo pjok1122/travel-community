@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,11 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import project.board.domain.dto.MyPage;
-import project.board.domain.dto.PageAndSort;
 import project.board.entity.Article;
 import project.board.entity.Member;
 import project.board.entity.PostFile;
-import project.board.entity.TempArticle;
 import project.board.entity.dto.ArticleDetail;
 import project.board.entity.dto.ArticleDto2;
 import project.board.entity.dto.ArticleForm;
@@ -35,7 +33,6 @@ import project.board.repository.ArticleRepositoryJpa;
 import project.board.repository.BookmarkRepositoryJpa;
 import project.board.repository.MemberRepositoryJpa;
 import project.board.repository.PostFileRepositoryJpa;
-import project.board.repository.UploadFileRepositoryJpa;
 import project.board.util.UploadFileUtils;
 
 @Service
@@ -47,15 +44,12 @@ public class ArticleServiceJpa {
 	private final MemberRepositoryJpa memberRepository;
 	private final BookmarkRepositoryJpa bookmarkRepository;
 	private final ArticleLikeRepositoryJpa articleLikeRepository;
-	private final UploadFileRepositoryJpa uploadFileRepository;
 	private final ImageServiceJpa imageService;
 	private final PostFileRepositoryJpa postFileRepository;
 	private final UploadFileUtils uploadFileUtils;
 	private final TempArticleServiceJpa tempArticleService;
 	
 	private final int MAIN_ARTICLE_NUM = 5;
-	private final String NEWEST = "NEWEST";
-	private final String POPULAR = "POPULAR";
 	
 	@Value("${image.baseUrl}")
 	private String imageBaseUrl;
@@ -64,21 +58,35 @@ public class ArticleServiceJpa {
 	private String dirPathFormat;
 	
 	/**
-	 * Category, Nation, search를 만족하는 게시물을 조회한다.
-	 * pageAndSort에는 요구하는 페이지와 정렬조건이 담겨있다.
-	 * 
+	 * Category, Nation, search, page를 만족하는 게시물을 인기순으로 조회한다.
 	 * @param category
 	 * @param nation
-	 * @param pageAndSort
+	 * @param pageNo
 	 * @param search
-	 * @return Page(조건을 만족하는 게시물 목록)
+	 * @return MyPage<ArticleDto2>
 	 */
-	public MyPage<ArticleDto2> find(Category category, Nation nation, PageAndSort ps, String search) {
-		MyPage<ArticleDto2> page = new MyPage<ArticleDto2>(ps.getPage());
+	@Cacheable(cacheNames = "popular", sync = true)
+	public MyPage<ArticleDto2> findPopular(Category category, Nation nation, int pageNo, String search) {
+		MyPage<ArticleDto2> page = new MyPage<ArticleDto2>(pageNo);
 		page.setNumberOfRecordsAndMakePageInfo(
 				articleRepository.count(category.toString(), nation.toString(), search));
-		page.setList(articleRepository.findAll(category.toString(), nation.toString(), search,
-				ps.getSort().toString(), page.getOffset(), page.getRecordsPerPage()));
+		page.setList(articleRepository.findPopularAll(category.toString(), nation.toString(), search, page.getOffset(), page.getRecordsPerPage()));
+		return page;
+	}
+	
+	/**
+	 * Category, Nation, search, page를 만족하는 게시물을 최신순으로 조회한다.
+	 * @param category
+	 * @param nation
+	 * @param pageNo
+	 * @param search
+	 * @return MyPage<ArticleDto2>
+	 */
+	public MyPage<ArticleDto2> findNew(Category category, Nation nation, int pageNo, String search) {
+		MyPage<ArticleDto2> page = new MyPage<ArticleDto2>(pageNo);
+		page.setNumberOfRecordsAndMakePageInfo(
+				articleRepository.count(category.toString(), nation.toString(), search));
+		page.setList(articleRepository.findNewAll(category.toString(), nation.toString(), search, page.getOffset(), page.getRecordsPerPage()));
 		return page;
 	}
 	
@@ -106,23 +114,18 @@ public class ArticleServiceJpa {
 	}
 	
 	/**
-	 * 임시저장 글을 
+	 * TempArticle을 Article로 변경한다.
 	 * @param memberId
 	 * @param article
 	 * @return
 	 */
 	@Transactional
 	public Long tempToPost(Long memberId, @Valid ArticleForm article) {
-		//엔티티 조회
-		Member member = memberRepository.findById(memberId).orElseThrow(()-> new NoExistException("Doesn't exist "+ memberId));
-		TempArticle tempArticle = tempArticleService.getMyArticle(memberId, article.getArticleId());
-		
 		//게시물 저장
 		Long articleId = save(memberId, article);
 
 		//임시저장 글 삭제
 		tempArticleService.remove(memberId, article.getArticleId());
-		
 		
 		return articleId;
 	}
@@ -214,8 +217,8 @@ public class ArticleServiceJpa {
 	
 	public Map<String, Object> getMainArticle() {
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<ArticleDto2> newest = articleRepository.findAll("ALL", "ALL", null, NEWEST, 0, MAIN_ARTICLE_NUM);
-		List<ArticleDto2> populars = articleRepository.findAll("ALL", "ALL", null, NEWEST, 0, MAIN_ARTICLE_NUM);
+		List<ArticleDto2> newest = articleRepository.findNewAll("ALL", "ALL", null, 0, MAIN_ARTICLE_NUM);
+		List<ArticleDto2> populars = articleRepository.findPopularAll("ALL", "ALL", null, 0, MAIN_ARTICLE_NUM);
 		
 		//이미지 가져오기
 		List<PostFile> newImages = getImages(newest.stream().map(a -> a.getId()).collect(Collectors.toList()));

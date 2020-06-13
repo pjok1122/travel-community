@@ -105,7 +105,7 @@ public class ArticleServiceTest {
 		em.clear();
 		
 		//when
-		MyPage<ArticleDto2> page = articleService.find(Category.ACCOMODATION, Nation.KR, new PageAndSort(), null);
+		MyPage<ArticleDto2> page = articleService.findPopular(Category.ACCOMODATION, Nation.KR, 1, null);
 		
 		//then
 		assertThat(page.getNumberOfRecords()).isEqualTo(2);
@@ -131,7 +131,7 @@ public class ArticleServiceTest {
 		em.clear();
 	
 		//when
-		MyPage<ArticleDto2> page = articleService.find(Category.ALL, Nation.ALL, new PageAndSort(), "타이");
+		MyPage<ArticleDto2> page = articleService.findPopular(Category.ALL, Nation.ALL, 1, "타이");
 		
 		//then
 		assertThat(page.getNumberOfRecords()).isEqualTo(3);

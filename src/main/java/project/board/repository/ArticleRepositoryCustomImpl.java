@@ -16,8 +16,14 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	}
 
 	@Override
-	public List<ArticleDto2> findAll(String category, String nation, String search, String sort, int offset,
+	public List<ArticleDto2> findPopularAll(String category, String nation, String search, int offset,
 			int numOfRecords) {
-		return articleRepositoryCustom.findAll(category, nation, search, sort, offset, numOfRecords);
+		return articleRepositoryCustom.findPopularAll(category, nation, search, offset, numOfRecords);
+	}
+	
+	@Override
+	public List<ArticleDto2> findNewAll(String category, String nation, String search, int offset,
+			int numOfRecords) {
+		return articleRepositoryCustom.findNewAll(category, nation, search, offset, numOfRecords);
 	}
 }

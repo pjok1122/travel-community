@@ -21,7 +21,7 @@
 		</where>
 		
 	</select>
-	<select id="findAll" resultType="articleDto2">
+	<select id="findPopularAll" resultType="articleDto2">
 		SELECT a.* , (a.hit+a.good*3) as score, count(c.id) as commentCount
 		FROM article a
 		LEFT JOIN comment c
@@ -38,14 +38,29 @@
 			</if>
 		</where>
 		GROUP BY a.id
-		<if test='sort eq "NEWEST"'>
 		ORDER BY created_date DESC		
-		</if>
-		<if test='sort eq "POPULAR"'>
-		ORDER BY score DESC
-		</if>
 		LIMIT #{offset}, #{numOfRecords}
 	</select>
 	
+		<select id="findNewAll" resultType="articleDto2">
+		SELECT a.* , count(c.id) as commentCount
+		FROM article a
+		LEFT JOIN comment c
+		ON a.id = c.article_id
+		<where>
+			<if test='category neq "ALL"'>
+				a.category = #{category}
+			</if>			
+			<if test='nation neq "ALL"'>
+				AND a.nation = #{nation}
+			</if>
+			<if test='search neq "" and search != null'>
+				AND  a.title like CONCAT('%', #{search}, '%') 
+			</if>
+		</where>
+		GROUP BY a.id
+		ORDER BY created_date DESC		
+		LIMIT #{offset}, #{numOfRecords}
+	</select>
 	
 </mapper>

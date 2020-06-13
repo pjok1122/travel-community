@@ -3,12 +3,13 @@
 		<div class="col">
 			<nav aria-label="Search result page">
 				<ul class="pagination justify-content-center">
-					<li th:class="${page.startPageNo == 1} ? 'page-item disabled' : 'page-item'"><a class="page-link" th:href="|?page=${page.startPageNo - page.sizeOfPage}|"
+					<li th:class="${page.startPageNo == 1} ? 'page-item disabled' : 'page-item'"><a class="page-link" th:href="'javascript:pageRequest('+${page.startPageNo - page.sizeOfPage}+')'"
 						aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
 					</a></li>
 					<li th:class="${page.currentPageNo} == ${num} ? 'page-item active' : 'page-item' " th:each="num : ${#numbers.sequence({page.startPageNo},{page.endPageNo})}">
-					<a class="page-link" th:href="|?page=${num}|" th:text="${num}"></a></li>
-					<li th:class="${page.endPageNo} == ${page.finalPageNo} ? 'page-item disabled' : 'page-item'"><a class="page-link" th:href="|?page=${page.startPageNo + page.sizeOfPage}|"
+
+					<a class="page-link"  th:href="'javascript:pageRequest('+${num}+')'" th:text="${num}"></a></li>
+					<li th:class="${page.endPageNo} == ${page.finalPageNo} ? 'page-item disabled' : 'page-item'"><a class="page-link" th:href="'javascript:pageRequest('+${page.startPageNo + page.sizeOfPage}+')'"
 						aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 					</a></li>
 				</ul>
@@ -16,3 +17,13 @@
 		</div>
 	</div>
 </div>
+
+<script>
+function pageRequest(pageNo){
+	search = location.search;
+	var params = new URLSearchParams(search);
+	params.set('page', pageNo);
+	queryStr = params.toString();
+	window.location.href = `?${queryStr}`;
+}
+</script>

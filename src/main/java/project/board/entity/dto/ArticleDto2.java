@@ -1,6 +1,7 @@
 package project.board.entity.dto;
 
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +17,9 @@ import project.board.enums.Nation;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleDto2{
+public class ArticleDto2 implements Serializable{
+	private static final long serialVersionUID = 6205652743171660591L;
+
 	private Long id;
 	private String title;
 	private String content;

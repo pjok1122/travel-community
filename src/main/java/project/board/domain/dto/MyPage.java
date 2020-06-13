@@ -1,13 +1,15 @@
 package project.board.domain.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.Getter;
-import project.board.domain.CommonDomain;
-import project.board.entity.BaseTimeEntity;
 
 @Getter
-public class MyPage<T> {
+public class MyPage<T> implements Serializable {
+	
+	private static final long serialVersionUID = -1043189692762400106L;
+
 	int recordsPerPage;
 	int firstPageNo;
 	int prevPageNo;
