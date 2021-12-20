@@ -5,16 +5,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import lombok.RequiredArgsConstructor;
 import project.board.service.ArticleService;
 
 @Controller
+@RequiredArgsConstructor
 public class MainController {
+	private final ArticleService articleService;
 	
-	@Autowired
-	ArticleService articleService;
-	
-	@GetMapping("/")
-	public String getMainPage(Model model) {
+	@GetMapping()
+	public String main(Model model) {
 		model.addAllAttributes(articleService.getMainArticle());
 		return "index";
 	}

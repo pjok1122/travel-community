@@ -5,7 +5,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -21,10 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import project.board.common.StringToMyInfoConverter;
-import project.board.domain.Comment;
 import project.board.domain.Member;
 import project.board.domain.dto.MemberDto;
 import project.board.service.ArticleService;
@@ -33,7 +30,7 @@ import project.board.service.CommentService;
 import project.board.service.MemberService;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = {MemberController.class, StringToMyInfoConverter.class})
+@WebMvcTest(controllers = { MemberController.class, StringToMyInfoConverter.class})
 public class MemberControllerTest {
 	
 	@Autowired
