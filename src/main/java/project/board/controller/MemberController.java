@@ -1,12 +1,9 @@
 package project.board.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import org.apache.catalina.manager.util.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,21 +14,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 import project.board.annotation.LoginAuth;
-import project.board.common.MemberRegisterValidator;
 import project.board.common.MemberUpdateValidator;
-import project.board.domain.Article;
-import project.board.domain.Comment;
-import project.board.domain.Member;
 import project.board.domain.dto.MemberDto;
 import project.board.enums.MyInfo;
 import project.board.service.ArticleService;
 import project.board.service.BookmarkService;
 import project.board.service.CommentService;
 import project.board.service.MemberService;
-import project.board.util.MySessionUtils;
+import project.board.util.SessionManager;
 
 @Controller
 @RequestMapping("/mypage")
@@ -52,7 +44,7 @@ public class MemberController {
 	CommentService commentService;
 	
 	@Autowired
-	MySessionUtils sessionUtils;
+    SessionManager sessionUtils;
 	
 	@Autowired
 	MemberUpdateValidator memberValidator;

@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import project.board.annotation.AjaxLoginAuth;
-import project.board.annotation.LoginAuth;
 import project.board.service.ReportService;
-import project.board.util.MySessionUtils;
+import project.board.util.SessionManager;
 
 @Controller
 public class ReportController {
@@ -21,7 +20,7 @@ public class ReportController {
 	ReportService reportService;
 	
 	@Autowired
-	MySessionUtils sUtils;
+    SessionManager sUtils;
 	
 	@PostMapping("/ajax/report/{target}")
 	@AjaxLoginAuth

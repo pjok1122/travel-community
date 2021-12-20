@@ -5,7 +5,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MySessionUtils {
+public class SessionManager {
 	public Long getMemberId(HttpSession session) {
 		return (Long) session.getAttribute("memberId");
 	}
