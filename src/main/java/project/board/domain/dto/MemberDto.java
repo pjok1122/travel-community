@@ -6,8 +6,6 @@ import javax.validation.constraints.Pattern;
 
 import org.apache.ibatis.type.Alias;
 
-import com.sun.istack.internal.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
