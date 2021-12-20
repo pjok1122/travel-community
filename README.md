@@ -6,6 +6,9 @@
 
 [![동영상](https://img.youtube.com/vi/D_vpl5GnkeE/0.jpg)](https://youtu.be/D_vpl5GnkeE)
 
+## 실행
+`docker run -p 3306:3306 --name mysql_boot -e MYSQL_ROOT_PASSWORD=1 -e MYSQL_DATABASE=springdb -e MYSQL_USER=yjhn0715 -e MYSQL_PASSWORD=1234 -d mysql`
+
 ## 기술스택
 
 - `Spring boot` Version 2.2.4
