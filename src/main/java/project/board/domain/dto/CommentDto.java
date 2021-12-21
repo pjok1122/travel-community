@@ -9,8 +9,7 @@ import project.board.domain.Comment;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CommentDto extends Comment
-{
+public class CommentDto extends Comment {
 	private String writer;
 	private Boolean isGood;
 	

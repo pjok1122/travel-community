@@ -14,3 +14,7 @@ spring:
   resources:
     cache:
       period: 0
+
+  datasource:
+    schema: classpath:data.sql
+#    initialization-mode: always
