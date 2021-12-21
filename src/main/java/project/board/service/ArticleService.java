@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import project.board.domain.Article;
 import project.board.domain.Bookmark;
@@ -319,6 +320,7 @@ public class ArticleService {
 		return postFileRepository.selectByArticleIds(articleIds);
 	}
 
+	@NonNull
 	public Article loadTempArticleById(Long memberId, Long articleId) {
 		try {
 			ArticleDto article = articleRepository.selectArticleById(articleId);

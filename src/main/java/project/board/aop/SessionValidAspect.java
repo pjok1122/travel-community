@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component;
 
 import project.board.domain.dto.ArticleDto;
 import project.board.service.ArticleService;
-import project.board.util.MySessionUtils;
+import project.board.util.SessionManager;
 
 @Component
 @Aspect
 public class SessionValidAspect {
 	
 	@Autowired
-	MySessionUtils sessionUtils;
+	SessionManager sessionUtils;
 	
 	@Autowired
 	ArticleService articleService;
