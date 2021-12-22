@@ -47,16 +47,6 @@ class MemberRepositoryTest {
 	}
 
 	@Test
-	void updateLoginDate() {
-		Member member = savedMember;
-
-		memberRepository.updateLoginDate(member.getId());
-		Member result = memberRepository.findById(member.getId());
-
-		assertThat(result.getLoginDate()).isAfter(member.getLoginDate());
-	}
-
-	@Test
 	void sumGoodCount() {
 		Integer result = memberRepository.sumGoodCount(savedMember.getId());
 
