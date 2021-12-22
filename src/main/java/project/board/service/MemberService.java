@@ -2,88 +2,61 @@ package project.board.service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
-import project.board.domain.Article;
-import project.board.domain.Comment;
-import project.board.domain.CommonDomain;
+import lombok.RequiredArgsConstructor;
 import project.board.domain.Member;
 import project.board.domain.dto.MemberDto;
 import project.board.domain.dto.Page;
 import project.board.enums.MyInfo;
+import project.board.jpa.MemberRepositoryJpa;
 import project.board.repository.MemberRepository;
 import project.board.util.Sha256Utils;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
+	private final MemberRepository memberRepository;
+	private final MemberRepositoryJpa memberRepositoryJpa;
+	private final ArticleService articleService;
+	private final BookmarkService bookmarkService;
+	private final CommentService commentService;
+	private final Sha256Utils sha256Utils;
 
-	@Autowired
-	MemberRepository memberRepository;
-	
-	@Autowired
-	ArticleService articleService;
-	
-	@Autowired
-	BookmarkService bookmarkService;
-	
-	@Autowired
-	CommentService commentService;
-	
-	@Autowired
-	Sha256Utils sha256Utils;
-	
-	public Member login(MemberDto memberDto) {
-		System.out.println(memberDto.getEmail());
-		Member savedMember = memberRepository.findByEmail(memberDto.getEmail());
-		if (savedMember == null)
-			return null;
-		if (passwordCompare(memberDto, savedMember)) {
-			memberRepository.updateLoginDate(savedMember.getId());
-			return savedMember;
+	@Transactional
+	public project.board.entity.Member login(String email, String password) {
+		project.board.entity.Member member = memberRepositoryJpa.findByEmail(email).orElse(null);
+		if (member != null && passwordCompare(password, member)) {
+			member.login();
 		}
-		
-		return null;
-	}
-	
-	public Boolean passwordCompare(MemberDto memberDto, Member savedMember) {
-		String salt = savedMember.getSalt();
-		String pwd = memberDto.getPassword();
-		String hashPwd = sha256Utils.sha256(pwd, salt);
-		
-		if (hashPwd.equals(savedMember.getPassword())){
-			return true;
-		}
-		
-		return false;
-	}
-
-	public Member save(MemberDto memberDto) {
-		String salt = UUID.randomUUID().toString();
-		
-		String hashPassword = sha256Utils.sha256(memberDto.getPassword(), salt);
-		Member member = Member.builder().email(memberDto.getEmail())
-						.password(hashPassword)
-						.salt(salt).build();
-		
-		memberRepository.insert(member);
 		
 		return member;
 	}
+	
+	public Boolean passwordCompare(String password, project.board.entity.Member savedMember) {
+		String hashPassword = sha256Utils.sha256(password, savedMember.getSalt());
+		return StringUtils.equals(hashPassword, savedMember.getPassword());
+	}
 
-	public boolean existMember(MemberDto memberDto) {
-		Member member = memberRepository.findByEmail(memberDto.getEmail());
-		if (member==null) {
-			return false;
-		} else {
-			return true;
-		}
+	public project.board.entity.Member save(String email, String password) {
+		String salt = UUID.randomUUID().toString();
+
+		String hashPassword = sha256Utils.sha256(password, salt);
+		project.board.entity.Member member = project.board.entity.Member.builder()
+																		.email(email)
+																		.password(hashPassword)
+																		.salt(salt)
+																		.loginDate(LocalDateTime.now())
+																		.build();
+		
+		return memberRepositoryJpa.save(member);
 	}
 
 	public boolean equalPassword(MemberDto memberDto) {
@@ -133,8 +106,8 @@ public class MemberService {
 	
 	private Map<String, Object> myArticle(Long memberId, Page paging){
 		Map<String, Object> map = new HashMap<String, Object>();
-		paging.setNumberOfRecordsAndMakePageInfo(articleService.getArticleCntByMemberId(memberId));
-		paging.setList(articleService.getArticleByMemberId(memberId, paging));
+		paging.setNumberOfRecordsAndMakePageInfo(articleService.countArticle(memberId, "PERMANENT").intValue());
+//		paging.setList(articleService.getArticleByMemberId(memberId, "PERMANENT", paging).getContent());
 		map.put("page", paging);
 		
 		return map;
@@ -142,7 +115,7 @@ public class MemberService {
 	
 	public Map<String, Object> myTempArticle(Long memberId, Page paging){
 		Map<String, Object> map = new HashMap<String, Object>();
-		paging.setNumberOfRecordsAndMakePageInfo(articleService.getTempArticleCntByMemberId(memberId));
+		paging.setNumberOfRecordsAndMakePageInfo(articleService.countArticle(memberId, "TEMP").intValue());
 		paging.setList(articleService.getTempArticleByMemberId(memberId, paging));
 		map.put("page", paging);
 		
