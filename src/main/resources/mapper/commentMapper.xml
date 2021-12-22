@@ -127,20 +127,5 @@
 		SET good = good - 1
 		WHERE id= #{id}
 	</update>
-	
-	<delete id="deleteCommentIfNoChild">
-		DELETE 
-		FROM comment
-		WHERE id = (
-		SELECT `result` 
-		FROM 
-			(
-			SELECT if(count(c1.parent_comment_id)>0,0,#{id}) as `result` 
-			FROM comment c1
-			WHERE c1.parent_comment_id = #{id}
-			) c2
-		)
-	</delete>
-	
 
 </mapper>

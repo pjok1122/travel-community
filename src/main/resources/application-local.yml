@@ -18,3 +18,7 @@ spring:
   datasource:
     schema: classpath:data.sql
 #    initialization-mode: always
+    url: jdbc:mysql://localhost:3306/springdb?serverTimezone=Asia/Seoul
+#    driverClassName: org.h2.Driver
+    username: yjhn0715
+    password: 1234

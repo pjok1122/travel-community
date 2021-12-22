@@ -22,5 +22,4 @@ public interface CommentRepository {
 	void updateCommentContentById(@Param("id") Long id);
 	void updateGoodUp(Long id);
 	void updateGoodDown(Long id);
-	void deleteCommentIfNoChild(Long id);
 }
