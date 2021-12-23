@@ -1,29 +1,30 @@
 package project.board.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 import org.hibernate.validator.constraints.Length;
+
 import project.board.domain.dto.GpsDecimal;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
+
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Getter
+@Setter
 @ToString
 @Entity
 @NoArgsConstructor
-public class UploadFile {
+public class UploadFile extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-    private LocalDateTime registerDate;
-    private LocalDateTime updateDate;
 
     @Column(nullable = false)
     private String originFileName;
@@ -69,30 +70,20 @@ public class UploadFile {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) { return true; }
+        if (!super.equals(obj)) { return false; }
+        if (getClass() != obj.getClass()) { return false; }
         UploadFile other = (UploadFile) obj;
         if (articleId == null) {
-            if (other.articleId != null)
-                return false;
-        } else if (!articleId.equals(other.articleId))
-            return false;
+            if (other.articleId != null) { return false; }
+        } else if (!articleId.equals(other.articleId)) { return false; }
         if (dirPath == null) {
-            if (other.dirPath != null)
-                return false;
-        } else if (!dirPath.equals(other.dirPath))
-            return false;
+            if (other.dirPath != null) { return false; }
+        } else if (!dirPath.equals(other.dirPath)) { return false; }
         if (fileName == null) {
-            if (other.fileName != null)
-                return false;
-        } else if (!fileName.equals(other.fileName))
-            return false;
+            if (other.fileName != null) { return false; }
+        } else if (!fileName.equals(other.fileName)) { return false; }
         return true;
     }
-
 
 }

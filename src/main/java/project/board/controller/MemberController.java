@@ -60,7 +60,7 @@ public class MemberController {
             return BASE_VIEW_NAME + "auth";
         }
 
-        if (memberService.login(memberDto) == null) {
+        if (memberService.login(memberDto.getEmail(), memberDto.getPassword()) == null) {
             result.rejectValue("rePassword", "dismatch your info", "비밀번호가 일치하지 않습니다.");
             return BASE_VIEW_NAME + "auth";
         }

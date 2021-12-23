@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +23,16 @@ import project.board.domain.UploadFile;
 import project.board.domain.dto.ArticleDto;
 import project.board.domain.dto.Page;
 import project.board.domain.dto.PageAndSort;
+import project.board.entity.Member;
 import project.board.enums.Category;
 import project.board.enums.Nation;
+import project.board.jpa.ArticleRepositoryJpa;
+import project.board.jpa.MemberRepositoryJpa;
 import project.board.repository.ArticleLikeRepository;
 import project.board.repository.ArticleRepository;
 import project.board.repository.BookmarkRepository;
 import project.board.repository.CategoryRepository;
+import project.board.repository.MemberRepository;
 import project.board.repository.PostFileRepository;
 import project.board.repository.UploadFileRepository;
 import project.board.util.ScriptEscapeUtils;
@@ -38,12 +44,15 @@ import project.board.util.UploadFileUtils;
 public class ArticleService {
 
 	private final ArticleRepository articleRepository;
+	private final ArticleRepositoryJpa articleRepositoryJpa;
 	private final ArticleLikeRepository articleLikeRepository;
 	private final CategoryRepository categoryRepository;
 	private final BookmarkRepository bookmarkRepository;
 	private final UploadFileRepository uploadFileRepository;
 	private final PostFileRepository postFileRepository;
 	private final ScriptEscapeUtils scriptEscaper;
+	private final MemberRepository memberRepository;
+	private final MemberRepositoryJpa memberRepositoryJpa;
 
 	private final int TEMP_ARTICLE_MAX_SIZE = 10;
 	private final int MAIN_ARTICLE_NUM = 5;
@@ -75,18 +84,11 @@ public class ArticleService {
 				"TEMP");
 	}
 
-	public int getArticleCntByMemberId(Long memberId) {
-		Integer totalCnt = articleRepository.getArticleCntByMemberId(memberId);
-		if (totalCnt == null)
-			totalCnt = 0;
-		return totalCnt;
-	}
-
-	public int getTempArticleCntByMemberId(Long memberId) {
-		Integer totalCnt = articleRepository.getTempArticleCntByMemberId(memberId);
-		if (totalCnt == null)
-			totalCnt = 0;
-		return totalCnt;
+	public Long countArticle(Long memberId, String status) {
+		//TODO : 예외 핸들링 필요.
+		Member member = memberRepositoryJpa.findById(memberId)
+										   .orElseThrow(() -> new IllegalArgumentException());
+		return articleRepositoryJpa.countAllByMemberAndStatus(member, status);
 	}
 
 	public Map<String, Object> getArticleList(Category category, Nation nation, PageAndSort ps, String search) {
@@ -149,7 +151,7 @@ public class ArticleService {
 	}
 
 	public Boolean checkTempArticleWritable(Long memberId) {
-		if (getTempArticleCntByMemberId(memberId) < TEMP_ARTICLE_MAX_SIZE) {
+		if (countArticle(memberId, "TEMP") < TEMP_ARTICLE_MAX_SIZE) {
 			return true;
 		} else {
 			return false;
@@ -237,8 +239,10 @@ public class ArticleService {
 		}
 	}
 
-	public int getLikeCount(Long articleId) {
-		return articleRepository.selectArticleById(articleId).getGood();
+	public int getLikeCount(Long id) {
+		return articleRepositoryJpa.findById(id)
+								   .orElseThrow(() -> new IllegalArgumentException())
+								   .getGood();
 	}
 
 	public int checkBookmarkStatus(Long memberId, Long articleId) {

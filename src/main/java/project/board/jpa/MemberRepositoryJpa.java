@@ -1,19 +1,23 @@
-package project.board.repository.jpa;
+package project.board.jpa;
 
-import org.apache.ibatis.annotations.Mapper;
-import project.board.domain.Member;
+import java.util.Optional;
 
-public interface MemberRepositoryJpa  {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-	Member findByEmail(String email);
-	Member findById(Long id);
+import project.board.entity.Member;
 
-	void updatePassword(Member savedMember);
-	void updateLoginDate(Long id);
+public interface MemberRepositoryJpa extends JpaRepository<Member, Long> {
+
+//	Member findByEmail(String email);
+	 Optional<Member> findById(Long id);
+	Optional<Member> findByEmail(String email);
+
+//	void updatePassword(Member savedMember);
+//	void updateLoginDate(Long id);
 	
-	Long insert(Member member);
+//	Long insert(Member member);
 	
-	void delete(Long id);
-	Integer sumGoodCount(Long id);
+//	void delete(Long id);
+//	Integer sumGoodCount(Long id);
 
 }

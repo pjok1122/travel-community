@@ -13,15 +13,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Entity
-public class Report {
+public class Report extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-    @Column(nullable = false)
-    private LocalDateTime registerDate;
-    private LocalDateTime updateDate;
 
     private String target;
 
