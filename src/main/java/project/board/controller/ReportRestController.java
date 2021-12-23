@@ -22,8 +22,8 @@ public class ReportRestController {
     private final ReportService reportService;
     private final SessionManager sessionManager;
 
-    @PostMapping("/ajax/report/{target}")
-    @AjaxLoginAuth
+//    @PostMapping("/ajax/report/{target}")
+//    @AjaxLoginAuth
     public ResponseEntity<?> report(@PathVariable("target") String target,
 									@RequestParam("targetId") Long targetId,
 									@RequestParam("checkInfo") Long checkInfo,
