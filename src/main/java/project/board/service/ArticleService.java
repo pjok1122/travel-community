@@ -74,12 +74,9 @@ public class ArticleService {
 	@Value("${image.dir.path.format}")
 	private String dirPathFormat;
 
-	// TODO : delete package path
-	public org.springframework.data.domain.Page<project.board.entity.Article> getArticleByMemberId(Long memberId, String status, Page paging) {
-		Member member = memberRepositoryJpa.findById(memberId)
-										   .orElseThrow(() -> new IllegalArgumentException());
-		Pageable pageable = PageRequest.of(paging.getCurrentPageNo() - 1, paging.getRecordsPerPage());
-		return articleRepositoryJpa.findByMemberAndStatus(member, status, pageable);
+	public List<ArticleDto> getArticleByMemberId(Long id, Page paging) {
+		return articleRepository.selectArticleListByMemberId(id, paging.getOffset(), paging.getRecordsPerPage(),
+				"PERMANENT");
 	}
 
 	public List<ArticleDto> getTempArticleByMemberId(Long id, Page paging) {

@@ -15,14 +15,10 @@ import java.time.LocalDateTime;
 @ToString
 @Entity
 @NoArgsConstructor
-public class PostFile {
+public class PostFile extends AuditEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-    private LocalDateTime registerDate;
-    private LocalDateTime updateDate;
 
     @Column(nullable = false)
     private String originFileName;

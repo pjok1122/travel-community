@@ -23,10 +23,10 @@ public abstract class AuditEntity {
     public static final String UPDATE_DATE = "update_date";
 
     @CreatedDate
-    @Column(updatable = false, nullable = false)
+    @Column(updatable = false)
     protected LocalDateTime registerDate;
 
     @LastModifiedDate
-    @Column(nullable = false)
+    @Column
     protected LocalDateTime updateDate;
 }

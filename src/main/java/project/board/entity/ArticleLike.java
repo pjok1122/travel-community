@@ -7,11 +7,10 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-public class ArticleLike {
+public class ArticleLike extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDateTime registerDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ARTICLE_ID")

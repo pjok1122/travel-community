@@ -107,7 +107,7 @@ public class MemberService {
 	private Map<String, Object> myArticle(Long memberId, Page paging){
 		Map<String, Object> map = new HashMap<String, Object>();
 		paging.setNumberOfRecordsAndMakePageInfo(articleService.countArticle(memberId, "PERMANENT").intValue());
-//		paging.setList(articleService.getArticleByMemberId(memberId, "PERMANENT", paging).getContent());
+		paging.setList(articleService.getArticleByMemberId(memberId, paging));
 		map.put("page", paging);
 		
 		return map;
