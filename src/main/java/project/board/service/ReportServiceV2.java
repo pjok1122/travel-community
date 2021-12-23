@@ -22,20 +22,20 @@ public class ReportServiceV2 {
     private static final String SUCCESS_OF_REPORT = "신고가 접수되었습니다.";
 
     @Transactional
-    public String insert(ReportTargetType target, ReportRestControllerV2.ReportRequest request, Long memberId) {
+    public String insert(ReportTargetType target, Long targetId, Long checkInfo, String content, Long memberId) {
 
         Member member = memberRepositoryJpa.findById(memberId)
                 .orElseThrow(() -> new NullPointerException());
 
-        if (alreadyReported(target, request.getTargetId(), member)) {
+        if (alreadyReported(target, targetId, member)) {
             return REPORTED_ARTICLE;
         }
 
         Report report = Report.builder()
                 .target(target)
-                .targetId(request.getTargetId())
-                .content(request.getContent())
-                .infoId(request.getCheckInfo())
+                .targetId(targetId)
+                .content(content)
+                .infoId(checkInfo)
                 .member(member)
                 .build();
 

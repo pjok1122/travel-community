@@ -285,7 +285,8 @@ footer{
 			$.ajax({
 				url : '/ajax/report/COMMENT',
 				type : 'POST',
-				data : sendData,
+				contentType : "application/json; charset=utf-8",
+				data : JSON.stringify(sendData),
 				success : function(data){
 					alert(data);
 				}
@@ -303,7 +304,8 @@ footer{
 			$.ajax({
 				url : '/ajax/report/ARTICLE',
 				type : 'POST',
-				data : sendData,
+				contentType : "application/json; charset=utf-8",
+				data : JSON.stringify(sendData),
 				success : function(data){
 					alert(data);
 				}
