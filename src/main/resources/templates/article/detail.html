@@ -279,11 +279,11 @@ footer{
 			var sendData = {'targetId':commentId, 'checkInfo':checkInfo};
 			if(checkInfo == 4){
 				reportContent = $("#rdo-text-area2").val();
-				sendData['reportContent'] = reportContent;
+				sendData['content'] = reportContent;
 				$("#rdo-text-area2").val('');
 			}
 			$.ajax({
-				url : '/ajax/report/comment',
+				url : '/ajax/report/COMMENT',
 				type : 'POST',
 				data : sendData,
 				success : function(data){
@@ -297,11 +297,11 @@ footer{
 			var sendData = {'targetId':articleId, 'checkInfo':checkInfo};
 			if(checkInfo == 4){
 				reportContent = $("#rdo-text-area").val();
-				sendData['reportContent'] = reportContent;
+				sendData['content'] = reportContent;
 				$("#rdo-text-area").val('');
 			}
 			$.ajax({
-				url : '/ajax/report/article',
+				url : '/ajax/report/ARTICLE',
 				type : 'POST',
 				data : sendData,
 				success : function(data){
