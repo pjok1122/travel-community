@@ -33,17 +33,17 @@ public class MemberController {
     private final SessionManager sessionManager;
     private final MemberUpdateValidator memberValidator;
 
-    @GetMapping("/{info}")
-    @LoginAuth
-    public String mypage(@PathVariable("info") MyInfo info,
-                         @RequestParam(required = false, value = "page", defaultValue = "1") int page,
-                         HttpSession session,
-                         Model model) {
-        Long memberId = sessionManager.getMemberId(session);
-        model.addAllAttributes(memberService.getMypage(info, memberId, page));
-
-        return BASE_VIEW_NAME + info.toString().toLowerCase();
-    }
+//    @GetMapping("/{info}")
+//    @LoginAuth
+//    public String mypage(@PathVariable("info") MyInfo info,
+//                         @RequestParam(required = false, value = "page", defaultValue = "1") int page,
+//                         HttpSession session,
+//                         Model model) {
+//        Long memberId = sessionManager.getMemberId(session);
+//        model.addAllAttributes(memberService.getMypage(info, memberId, page));
+//
+//        return BASE_VIEW_NAME + info.toString().toLowerCase();
+//    }
 
     @GetMapping("/auth")
     @LoginAuth
