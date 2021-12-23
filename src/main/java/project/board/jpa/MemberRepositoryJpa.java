@@ -3,21 +3,25 @@ package project.board.jpa;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import project.board.entity.Member;
 
 public interface MemberRepositoryJpa extends JpaRepository<Member, Long> {
 
-//	Member findByEmail(String email);
-	 Optional<Member> findById(Long id);
+	Optional<Member> findById(Long id);
 	Optional<Member> findByEmail(String email);
 
-//	void updatePassword(Member savedMember);
-//	void updateLoginDate(Long id);
-	
-//	Long insert(Member member);
-	
-//	void delete(Long id);
-//	Integer sumGoodCount(Long id);
+	@Query(value = "SELECT sum(good) "
+				   + "FROM("
+				   + "SELECT good \n"
+				   + "FROM article a \n"
+				   + "WHERE a.member_id = :id \n"
+				   + "UNION ALL \n"
+				   + "SELECT good \n"
+				   + "FROM comment c \n"
+				   + "WHERE c.member_id = :id \n"
+				   + ") b", nativeQuery = true)
+	Long countGoodById(Long id);
 
 }

@@ -1,12 +1,22 @@
 package project.board.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotBlank;
+
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -36,7 +46,7 @@ public class Article extends AuditEntity {
 
     @NotBlank
     @Column(nullable = false)
-    private String nation;
+    private String nation;      //TODO : change enum after refactoring articleService
 
     @Column(columnDefinition = "VARCHAR(20) NOT NULL DEFAULT 'PERMANENT'")
     private String status = "PERMANENT";
