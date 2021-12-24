@@ -43,6 +43,7 @@ public class Member extends AuditEntity {
     @Column(columnDefinition = "VARCHAR(32) NOT NULL DEFAULT 'USER'")
     private String role = "USER";
 
+    // === Cascade 삭제를 위한 매핑 정보 ===
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Article> articles = new ArrayList<>();
 
@@ -51,6 +52,9 @@ public class Member extends AuditEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Bookmark> bookmarks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<Report> reports = new ArrayList<>();
 
     public static Member create(String email, String salt, String password) {
         return Member.builder()
