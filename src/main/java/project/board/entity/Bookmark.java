@@ -1,7 +1,9 @@
 package project.board.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,6 +16,7 @@ import javax.persistence.ManyToOne;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
+@NoArgsConstructor
 public class Bookmark extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +29,10 @@ public class Bookmark extends AuditEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
+
+    @Builder
+    public Bookmark(Article article, Member member) {
+        this.article = article;
+        this.member = member;
+    }
 }

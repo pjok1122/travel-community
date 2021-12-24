@@ -26,13 +26,15 @@ public class BookmarkService {
 		if(totalCnt==null) totalCnt = 0;
 		return totalCnt;
 	}
-	
+
+	@Deprecated
 	public Boolean checkBookmarkStatus(Long memberId, Long articleId) {
 		Bookmark bookmark = bookmarkRepository.selectBookmarkByMemberIdAndArticleId(memberId, articleId);
 		if(bookmark == null) return false;
 		else return true;
 	}
 
+	@Deprecated
 	public int modifyBookmarkStatus(Long memberId, Long articleId) {
 		Boolean bookmarkStatus = checkBookmarkStatus(memberId, articleId);
 		if(bookmarkStatus) {
