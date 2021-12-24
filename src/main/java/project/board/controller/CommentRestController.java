@@ -17,7 +17,9 @@ import lombok.RequiredArgsConstructor;
 import project.board.annotation.AjaxLoginAuth;
 import project.board.domain.dto.CommentDto;
 import project.board.service.CommentService;
+import project.board.service.CommentServiceV2;
 import project.board.util.CommonUtils;
+import project.board.util.SessionManager;
 
 @RestController
 @RequestMapping("/comment")
@@ -25,16 +27,18 @@ import project.board.util.CommonUtils;
 public class CommentRestController {
 
     private final CommentService commentService;
+    private final CommentServiceV2 commentServiceV2;
     private final CommonUtils commonUtils; //fixme: change SessionManager with error handling.
+    private final SessionManager sessionManager;
 
     @PostMapping
     @AjaxLoginAuth
     public ResponseEntity<?> create(@RequestParam Long articleId,
                                     @RequestParam String content,
                                     @RequestParam Long parentCommentId,
-                                    HttpSession session) throws Exception {
-        commentService.create(articleId, commonUtils.memberIdConvertThrow(session), parentCommentId,
-                              StringUtils.escapeJavaScript(content));
+                                    HttpSession session) {
+        commentServiceV2.create(articleId, sessionManager.getMemberId(session), parentCommentId,
+                StringUtils.escapeJavaScript(content));
 
         return ResponseEntity.ok().build();
     }
@@ -49,7 +53,7 @@ public class CommentRestController {
     @PostMapping("/delete/{commentId}")
     @AjaxLoginAuth
     public ResponseEntity<?> delete(@PathVariable Long commentId, HttpSession session) {
-        commentService.delete(commentId, commonUtils.memberIdConvert(session));
+        commentServiceV2.delete(commentId, sessionManager.getMemberId(session));
 
         return ResponseEntity.ok().build();
     }
@@ -57,7 +61,7 @@ public class CommentRestController {
     @PostMapping("/like")
     @AjaxLoginAuth
     public ResponseEntity<?> like(@RequestParam("commentId") Long commentId, HttpSession session) {
-        int likeCount = commentService.like(commonUtils.memberIdConvert(session), commentId);
+        int likeCount = commentServiceV2.like(sessionManager.getMemberId(session), commentId);
         return ResponseEntity.ok().body(likeCount);
     }
 }

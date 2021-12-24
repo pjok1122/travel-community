@@ -14,6 +14,7 @@ public class CommonUtils {
         return null;
     }
 
+    @Deprecated
     public Long memberIdConvertThrow(HttpSession session) throws Exception {
         Long id = memberIdConvert(session);
 
