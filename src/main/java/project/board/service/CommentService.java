@@ -20,7 +20,8 @@ public class CommentService {
 	
 	@Autowired
 	private CommentLikeRepository commentLikeRepository;
-	
+
+	@Deprecated
 	public List<Comment> getCommentByMemberId(Long memberId, Page paging) {
 		return commentRepository.selectByMemberId(memberId, paging.getOffset(), paging.getRecordsPerPage());
 	}
@@ -46,7 +47,8 @@ public class CommentService {
 		List<CommentDto> list = commentRepository.selectCommentByArticleId(memberId, articleId);
 		return list;
 	}
-	
+
+	@Deprecated
 	public void create(Long articleId, Long memberId, Long parentCommentId, String content)
 	{
 		if(content.length() > 300)
@@ -58,6 +60,7 @@ public class CommentService {
 	}
 	
 	@Transactional
+	@Deprecated
 	public void delete(Long commentId, Long memberId)
 	{
 		CommentDto comment = getById(commentId, memberId);
@@ -89,6 +92,7 @@ public class CommentService {
 	}
 
 	@Transactional
+	@Deprecated
 	public int like(Long memberId, Long commentId)
 	{
 		Boolean isAlreayLike = selectCommentLikeByMemberIdAndCommentId(memberId, commentId);
@@ -106,39 +110,48 @@ public class CommentService {
 		
 		return selectCommentGoodById(commentId);
 	}
-	
+
+	@Deprecated
 	public void deleteCommentById(Long id)
 	{
 		commentRepository.deleteCommentById(id);
 	}
-	
+
+	@Deprecated
 	public void updateCommentContentById(Long id)
 	{
 		commentRepository.updateCommentContentById(id);
 	}
-	
+
+	@Deprecated
 	public boolean selectCommentLikeByMemberIdAndCommentId(Long memberId, Long commentId)
 	{
 		return commentLikeRepository.selectCommentLikeByMemberIdAndCommentId(memberId, commentId);
 	}
-	
+
+	@Deprecated
 	public void deleteCommentLikeByMemberIdAndCommentId(Long memberId, Long commentId)
 	{
 		commentLikeRepository.deleteCommentLikeByMemberIdAndCommentId(memberId, commentId);
 	}
-	
+
+	@Deprecated
 	public void insertCommentLikeByMemberIdAndCommentId(Long memberId, Long commentId)
 	{
 		commentLikeRepository.insertCommentLikeByMemberIdAndCommentId(memberId, commentId);
 	}
-	
+
+	@Deprecated
 	public void GoodDown(Long commentId) {
 		commentRepository.updateGoodDown(commentId);
 	}
-	
+
+	@Deprecated
 	public void GoodUp(Long commentId) {
 		commentRepository.updateGoodUp(commentId);
 	}
+
+	@Deprecated
 	public int selectCommentGoodById(Long commentId) {
 		return commentRepository.selectCommentById(commentId).getGood();
 	}

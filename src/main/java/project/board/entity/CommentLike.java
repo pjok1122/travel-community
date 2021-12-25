@@ -1,17 +1,14 @@
 package project.board.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import lombok.Data;
+import javax.persistence.*;
 
-@Data
+@Getter
 @Entity
+@NoArgsConstructor
 public class CommentLike extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +21,10 @@ public class CommentLike extends AuditEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
+
+    @Builder
+    public CommentLike(Comment comment, Member member) {
+        this.comment = comment;
+        this.member = member;
+    }
 }
