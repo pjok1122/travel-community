@@ -32,6 +32,7 @@ public class CommentServiceV2 {
     private final ArticleRepositoryJpa articleRepository;
     private final MemberRepositoryJpa memberRepository;
     private final CommentLikeRepositoryJpa commentLikeRepository;
+    private final int COMMENT_CONTENT_MAX_LENGTH = 300;
 
     public Page<Comment> getCommentsByMember(Member member, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -46,7 +47,7 @@ public class CommentServiceV2 {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new NullPointerException());
 
-        content = cutLength(content);
+        content = limitMaxLength(content);
 
         Comment comment = Comment.builder()
                 .article(article)
@@ -86,7 +87,7 @@ public class CommentServiceV2 {
             comment.getParent().getChildren().remove(comment);
             commentRepository.delete(comment);
 
-            ifCanParentAlsoDelete(comment);
+            deleteParentIfSoftDeleted(comment);
         } else {
             List<Comment> children = comment.getChildren();
             if (children.isEmpty()) {
@@ -106,24 +107,24 @@ public class CommentServiceV2 {
 
         List<Comment> comments = commentRepository.findByArticleAndParentIsNull(optionalArticle.get());
 
-        Map<Long, Boolean> likeYnByCommentId = likeYnByCommentId(memberId, comments);
+        Map<Long, Boolean> likeYnByCommentId = convertLikeYnMapBy(memberId, comments);
 
         List<CommentResponse> response = new ArrayList<>();
         for (Comment parent : comments) {
             Boolean parentLikeYn = likeYnByCommentId.getOrDefault(parent.getId(), false);
-            CommentResponse res = new CommentResponse(parent, parentLikeYn);
+            CommentResponse parentCommentResponse = new CommentResponse(parent, parentLikeYn);
 
             for (Comment child : parent.getChildren()) {
                 Boolean childLikeYn = likeYnByCommentId.getOrDefault(child.getId(), false);
-                CommentResponse reply = new CommentResponse(child, childLikeYn);
-                res.getReplies().add(reply);
+                CommentResponse childCommentResponse = new CommentResponse(child, childLikeYn);
+                parentCommentResponse.getReplies().add(childCommentResponse);
             }
-            response.add(res);
+            response.add(parentCommentResponse);
         }
         return response;
     }
 
-    private Map<Long, Boolean> likeYnByCommentId(Long memberId, List<Comment> comments) {
+    private Map<Long, Boolean> convertLikeYnMapBy(Long memberId, List<Comment> comments) {
         if (memberId == null) {
             return new HashMap<>();
         }
@@ -145,7 +146,7 @@ public class CommentServiceV2 {
         return likeYnByCommentId;
     }
 
-    private void ifCanParentAlsoDelete(Comment comment) {
+    private void deleteParentIfSoftDeleted(Comment comment) {
         commentRepository.findById(comment.getParent().getId()).ifPresent(parent -> {
 
             if (parent.parentAlreadyDeleted() && CollectionUtils.isEmpty(parent.getChildren())) {
@@ -167,9 +168,9 @@ public class CommentServiceV2 {
         }
     }
 
-    private String cutLength(String content) {
-        if (StringUtils.hasText(content) && content.length() > 300) {
-            return content.substring(0, 300);
+    private String limitMaxLength(String content) {
+        if (StringUtils.hasText(content) && content.length() > COMMENT_CONTENT_MAX_LENGTH) {
+            return content.substring(0, COMMENT_CONTENT_MAX_LENGTH);
         }
         return content;
     }
