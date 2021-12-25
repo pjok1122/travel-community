@@ -65,7 +65,7 @@ public class MyPageController {
         Long goodCount = memberRepository.countGoodById(memberId);
 
         model.addAttribute("member", member);
-        model.addAttribute("like", goodCount);
+        model.addAttribute("like", goodCount != null ? goodCount : 0L);
 
         return MY_PAGE_MEMBER;
     }
