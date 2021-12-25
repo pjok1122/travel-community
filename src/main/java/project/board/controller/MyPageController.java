@@ -157,8 +157,8 @@ public class MyPageController {
 
         Member member = memberRepository.findById(sessionManager.getMemberId(session))
                                         .orElseThrow(() -> new IllegalArgumentException());
-        if (!memberService.passwordCompare(request.getPassword(), member)) {
-            result.rejectValue("rePassword", "dismatch your info", "비밀번호가 일치하지 않습니다.");
+        if (!member.verifyPassword(request.getPassword())) {
+            result.rejectValue("rePassword", "mismatch your info", "비밀번호가 일치하지 않습니다.");
             return IDENTITY_AUTHORIZATION;
         }
 
@@ -281,7 +281,7 @@ public class MyPageController {
 
         public void verifyPassword(Errors errors) {
             if (!StringUtils.equals(password, rePassword)) {
-                errors.rejectValue("rePassword", "dismatch your info", "비밀번호가 일치하지 않습니다.");
+                errors.rejectValue("rePassword", "mismatch your info", "비밀번호가 일치하지 않습니다.");
             }
         }
     }

@@ -19,13 +19,13 @@ import lombok.RequiredArgsConstructor;
 import project.board.annotation.LoginAuth;
 import project.board.controller.validator.MemberRegisterValidator;
 import project.board.entity.Member;
-import project.board.service.MemberService;
+import project.board.service.MemberServiceV2;
 import project.board.util.SessionManager;
 
 @Controller
 @RequiredArgsConstructor
 public class LoginController {
-    private final MemberService memberService;
+    private final MemberServiceV2 memberService;
     private final SessionManager sessionManager;
     private final MemberRegisterValidator memberValidator;
 
