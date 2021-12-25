@@ -29,7 +29,7 @@ public class SessionValidAspect {
 	public String loginAuth(ProceedingJoinPoint pjp) throws Throwable {
 		HttpSession session = parseSession(pjp);
 		
-		if(!sessionUtils.isLogined(session)) {
+		if(!sessionUtils.isLoggedIn(session)) {
 			return "redirect:/login";
 		}
 		return (String) pjp.proceed();
@@ -40,7 +40,7 @@ public class SessionValidAspect {
 	public Object AjaxLoginAuth(ProceedingJoinPoint pjp) throws Throwable {
 		HttpSession session = parseSession(pjp);
 		
-		if(!sessionUtils.isLogined(session)) {
+		if(!sessionUtils.isLoggedIn(session)) {
 			return ResponseEntity.status(302).body("/login");
 		}
 		
