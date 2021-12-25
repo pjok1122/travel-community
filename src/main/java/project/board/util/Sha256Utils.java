@@ -5,10 +5,9 @@ import org.springframework.stereotype.Component;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-@Component
 public class Sha256Utils {
 	
-    public String sha256(String msg){
+    public static String hash(String msg){
         MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-256");
@@ -20,7 +19,7 @@ public class Sha256Utils {
 		return null;
     }
     
-    public String sha256(String msg, String salt){
+    public static String hash(String msg, String salt){
         MessageDigest md;
 		try {
 			msg = salt + msg;

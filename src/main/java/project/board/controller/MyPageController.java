@@ -2,18 +2,30 @@ package project.board.controller;
 
 import java.time.LocalDateTime;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import project.board.annotation.LoginAuth;
+import project.board.annotation.validation.PasswordPattern;
 import project.board.domain.dto.CustomPage;
 import project.board.entity.Article;
 import project.board.entity.Comment;
@@ -22,6 +34,7 @@ import project.board.jpa.MemberRepositoryJpa;
 import project.board.service.ArticleServiceV2;
 import project.board.service.BookmarkServiceV2;
 import project.board.service.CommentServiceV2;
+import project.board.service.MemberServiceV2;
 import project.board.util.SessionManager;
 
 @RequiredArgsConstructor
@@ -34,10 +47,13 @@ public class MyPageController {
     private static final String MY_PAGE_TEMP_ARTICLE = "member/mypage/temp_article";
     private static final String MY_PAGE_BOOKMARK = "member/mypage/bookmark";
     private static final String MY_PAGE_COMMENT = "member/mypage/comment";
+    private static final String IDENTITY_AUTHORIZATION = "member/mypage/auth";
+    private static final String MY_PAGE_UPDATE_INFO = "member/mypage/update";
 
     private final ArticleServiceV2 articleService;
     private final BookmarkServiceV2 bookmarkService;
     private final CommentServiceV2 commentService;
+    private final MemberServiceV2 memberService;
     private final MemberRepositoryJpa memberRepository;
     private final SessionManager sessionManager;
 
@@ -49,7 +65,7 @@ public class MyPageController {
         Long goodCount = memberRepository.countGoodById(memberId);
 
         model.addAttribute("member", member);
-        model.addAttribute("like", goodCount);
+        model.addAttribute("like", goodCount != null ? goodCount : 0L);
 
         return MY_PAGE_MEMBER;
     }
@@ -125,9 +141,84 @@ public class MyPageController {
         return MY_PAGE_COMMENT;
     }
 
+    @GetMapping("/auth")
+    @LoginAuth
+    public String authForm(HttpSession session, Model model) {
+        model.addAttribute("identity", new IdentityVerificationRequest(sessionManager.getMemberEmail(session)));
+        return IDENTITY_AUTHORIZATION;
+    }
+
+    @PostMapping("/auth")
+    @LoginAuth
+    public String verifyIdentity(@ModelAttribute("identity") @Valid IdentityVerificationRequest request,
+                                 BindingResult result, HttpSession session) {
+        if (result.hasErrors()) {
+            return IDENTITY_AUTHORIZATION;
+        }
+
+        Member member = memberRepository.findById(sessionManager.getMemberId(session))
+                                        .orElseThrow(() -> new IllegalArgumentException());
+        if (!member.verifyPassword(request.getPassword())) {
+            result.rejectValue("rePassword", "mismatch your info", "비밀번호가 일치하지 않습니다.");
+            return IDENTITY_AUTHORIZATION;
+        }
+
+        sessionManager.setVerified(session, true);
+        String prevPage = sessionManager.popPreviousPage(session);
+        return "redirect:" + prevPage;
+    }
+
+    @GetMapping("/update")
+    @LoginAuth
+    public String update(HttpServletRequest request, HttpSession session, Model model) {
+        sessionManager.setPreviousPage(session, request.getRequestURI());
+
+        MyInfoUpdateRequest updateRequest = new MyInfoUpdateRequest();
+        updateRequest.setEmail(sessionManager.getMemberEmail(session));
+        model.addAttribute("updateForm", updateRequest);
+
+        if (!sessionManager.isVerified(session)) {
+            return "redirect:/mypage/auth";
+        }
+
+        return MY_PAGE_UPDATE_INFO;
+    }
+
+    @PostMapping("/update")
+    @LoginAuth
+    public String update(@ModelAttribute("updateForm") @Valid MyInfoUpdateRequest request,
+                         BindingResult errors, HttpSession session) {
+        if (!sessionManager.isVerified(session)) {
+            return IDENTITY_AUTHORIZATION;
+        }
+
+        request.verifyPassword(errors);
+        if (errors.hasErrors()) {
+            return MY_PAGE_UPDATE_INFO;
+        }
+
+        memberService.update(request.getEmail(), request.getPassword());
+        sessionManager.setVerified(session, false);
+        return "redirect:/mypage/member";
+    }
+
+    @RequestMapping("/delete")
+    @LoginAuth
+    public String delete(HttpServletRequest request, HttpSession session, Model model) {
+        if (!sessionManager.isVerified(session)) {
+            sessionManager.setPreviousPage(session, request.getRequestURI());
+            model.addAttribute("identity",
+                               new IdentityVerificationRequest(sessionManager.getMemberEmail(session)));
+            return IDENTITY_AUTHORIZATION;
+        }
+
+        memberService.delete(sessionManager.getMemberId(session));
+        session.invalidate();
+        return "redirect:/";
+    }
 
     @Data
-    public static class MyArticleListResponse {
+    static class MyArticleListResponse {
         private Long id;
         private String title;
         private String nation;
@@ -149,7 +240,7 @@ public class MyPageController {
     }
 
     @Data
-    public static class MyCommentListResponse {
+    static class MyCommentListResponse {
         private Long id;
         private String content;
         private int good;
@@ -164,6 +255,34 @@ public class MyPageController {
             response.registerDate = comment.getRegisterDate();
             response.articleId = comment.getArticle().getId();
             return response;
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    static class IdentityVerificationRequest {
+        @Email
+        private String email;
+        private String password;
+
+        IdentityVerificationRequest(String email) {
+            this.email = email;
+        }
+    }
+
+    @Data
+    static class MyInfoUpdateRequest {
+        @Email
+        private String email;
+        @NotBlank
+        @PasswordPattern
+        private String password;
+        private String rePassword;
+
+        public void verifyPassword(Errors errors) {
+            if (!StringUtils.equals(password, rePassword)) {
+                errors.rejectValue("rePassword", "mismatch your info", "비밀번호가 일치하지 않습니다.");
+            }
         }
     }
 }

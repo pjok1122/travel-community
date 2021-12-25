@@ -21,7 +21,7 @@ public class Sha256UtilsTest {
 	public void hashTest() {
 		String msg = "password";
 		String salt = "salt";
-		String hashMsg = sha256Utils.sha256(msg, salt);
+		String hashMsg = sha256Utils.hash(msg, salt);
 		assertThat(hashMsg).isEqualTo("13601bda4ea78e55a07b98866d2be6be0744e3866f13c00c811cab608a28f322");
 	}
 }

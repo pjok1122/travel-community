@@ -17,15 +17,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import project.board.annotation.LoginAuth;
+import project.board.annotation.validation.PasswordPattern;
 import project.board.controller.validator.MemberRegisterValidator;
 import project.board.entity.Member;
-import project.board.service.MemberService;
+import project.board.service.MemberServiceV2;
 import project.board.util.SessionManager;
 
 @Controller
 @RequiredArgsConstructor
 public class LoginController {
-    private final MemberService memberService;
+    private final MemberServiceV2 memberService;
     private final SessionManager sessionManager;
     private final MemberRegisterValidator memberValidator;
 
@@ -97,8 +98,7 @@ public class LoginController {
         private String email;
 
         @NotBlank
-        @Pattern(regexp="(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{12,20}",
-                message = "비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 12자 ~ 20자의 비밀번호여야 합니다.")
+        @PasswordPattern
         private String password;
         private String rePassword;
     }

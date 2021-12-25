@@ -21,7 +21,7 @@
 	<div class="container">
 		<div class="row mt-5 justify-content-center">
 			<div class="col-8">
-				<form th:action="@{/mypage/update}" th:object="${memberDto}"  method="post">
+				<form th:action="@{/mypage/update}" th:object="${updateForm}"  method="post">
 					<div class="form-group">
 						<label for="email">이메일 </label>
 						<input type="email" class="form-control" th:field="*{email}" aria-describedby="emailHelp" readonly>
