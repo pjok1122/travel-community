@@ -1,10 +1,8 @@
 package project.board.controller;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,22 +10,21 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import project.board.annotation.LoginAuth;
 import project.board.annotation.validation.PasswordPattern;
+import project.board.common.SessionContext;
 import project.board.controller.validator.MemberRegisterValidator;
 import project.board.entity.Member;
 import project.board.service.MemberServiceV2;
-import project.board.util.SessionManager;
 
 @Controller
 @RequiredArgsConstructor
 public class LoginController {
     private final MemberServiceV2 memberService;
-    private final SessionManager sessionManager;
     private final MemberRegisterValidator memberValidator;
 
     @GetMapping("/register")
@@ -37,21 +34,23 @@ public class LoginController {
     }
 
     @PostMapping("/register")
-    public String register(HttpSession session, @ModelAttribute("memberForm") @Valid MemberRegisterForm memberForm,
+    public String register(@RequestAttribute SessionContext session,
+                           @ModelAttribute("memberForm") @Valid MemberRegisterForm memberForm,
                            BindingResult result) {
         memberValidator.validate(memberForm, result);
         if (result.hasErrors()) {
             return "member/register";
         }
         Member member = memberService.save(memberForm.getEmail(), memberForm.getPassword());
-        session.setAttribute("memberId", member.getId());
-        session.setAttribute("email", member.getEmail());
+
+        session.setId(member.getId());
+        session.setEmail(member.getEmail());
         return "redirect:/";
     }
 
     @GetMapping("/login")
-    public String loginForm(HttpSession session, Model model) {
-        if (sessionManager.getMemberId(session) == null) {
+    public String loginForm(@RequestAttribute SessionContext session, Model model) {
+        if (!session.isLoggedIn()) {
             model.addAttribute("loginForm", new LoginForm());
             return "member/login";
         }
@@ -59,7 +58,8 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(HttpSession session, @ModelAttribute("loginForm") @Valid LoginForm loginForm,
+    public String login(@RequestAttribute SessionContext session,
+                        @ModelAttribute("loginForm") @Valid LoginForm loginForm,
                         BindingResult result) {
         if (result.hasErrors()) {
             return "member/login";
@@ -71,12 +71,11 @@ public class LoginController {
             return "member/login";
         }
 
-        session.setAttribute("memberId", member.getId());
-        session.setAttribute("email", member.getEmail());
+        session.setId(member.getId());
+        session.setEmail(member.getEmail());
 
-        String prevPage = (String) session.getAttribute("prevPage");
+        String prevPage = session.popPreviousPage();
         if (prevPage != null) {
-            session.removeAttribute("prevPage");
             return "redirect:" + prevPage;
         }
 
@@ -84,8 +83,7 @@ public class LoginController {
     }
 
     @RequestMapping("/logout")
-    @LoginAuth
-    public String logout(HttpSession session) {
+    public String logout(@RequestAttribute SessionContext session) {
         session.invalidate();
         return "redirect:/";
     }

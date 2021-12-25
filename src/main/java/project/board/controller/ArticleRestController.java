@@ -17,6 +17,7 @@ import org.thymeleaf.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 import project.board.annotation.AjaxLoginAuth;
+import project.board.annotation.Authorization;
 import project.board.domain.Article;
 import project.board.domain.dto.ArticleDto;
 import project.board.domain.dto.Page;
@@ -31,7 +32,7 @@ public class ArticleRestController {
     private final SessionManager sessionManager;
 
     @PostMapping("/article/like")
-    @AjaxLoginAuth
+    @Authorization
     public ResponseEntity<?> like(@RequestParam("articleId") Long articleId, HttpSession session,
                                   HttpServletRequest request) {
         int likeStatus = articleService.modifyLikeStatus(sessionManager.getMemberId(session), articleId);
@@ -44,7 +45,7 @@ public class ArticleRestController {
     }
 
     @PostMapping("/ajax/temp/write")
-    @AjaxLoginAuth
+    @Authorization
     public ResponseEntity<?> writeTempArticle(@ModelAttribute @Valid Article article,
                                               BindingResult result,
                                               HttpSession session) {
@@ -59,7 +60,7 @@ public class ArticleRestController {
     }
 
     @PostMapping("/ajax/temp/update")
-    @AjaxLoginAuth
+    @Authorization
     public ResponseEntity<?> updateTempArticle(@RequestParam("articleId") Long articleId,
                                                @RequestParam(value = "images", required = false) String images,
                                                @ModelAttribute @Valid Article article,
@@ -81,7 +82,7 @@ public class ArticleRestController {
     }
 
     @GetMapping("/ajax/temp")
-    @AjaxLoginAuth
+    @Authorization
     public ResponseEntity<?> getTempArticleList(HttpSession session) {
         Long memberId = sessionManager.getMemberId(session);
 
@@ -90,7 +91,7 @@ public class ArticleRestController {
     }
 
     @PostMapping("/ajax/temp/delete")
-    @AjaxLoginAuth
+    @Authorization
     public ResponseEntity<?> deleteTempArticle(HttpSession session, @RequestParam("articleId") Long articleId) {
         ArticleDto article = articleService.getUpdateForm(sessionManager.getMemberId(session), articleId);
 

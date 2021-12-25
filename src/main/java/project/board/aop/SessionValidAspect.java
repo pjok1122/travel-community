@@ -25,17 +25,6 @@ public class SessionValidAspect {
 	ArticleService articleService;
 	
 	@Order(1)
-	@Around("@annotation(project.board.annotation.LoginAuth)")
-	public String loginAuth(ProceedingJoinPoint pjp) throws Throwable {
-		HttpSession session = parseSession(pjp);
-		
-		if(!sessionUtils.isLoggedIn(session)) {
-			return "redirect:/login";
-		}
-		return (String) pjp.proceed();
-	}
-	
-	@Order(1)
 	@Around("@annotation(project.board.annotation.AjaxLoginAuth)")
 	public Object AjaxLoginAuth(ProceedingJoinPoint pjp) throws Throwable {
 		HttpSession session = parseSession(pjp);
