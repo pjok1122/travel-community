@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import org.thymeleaf.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import project.board.annotation.AjaxLoginAuth;
 import project.board.domain.dto.CommentDto;
+import project.board.jpa.dto.CommentResponse;
 import project.board.service.CommentService;
 import project.board.service.CommentServiceV2;
 import project.board.util.CommonUtils;
@@ -26,9 +28,7 @@ import project.board.util.SessionManager;
 @RequiredArgsConstructor
 public class CommentRestController {
 
-    private final CommentService commentService;
     private final CommentServiceV2 commentServiceV2;
-    private final CommonUtils commonUtils; //fixme: change SessionManager with error handling.
     private final SessionManager sessionManager;
 
     @PostMapping
@@ -38,16 +38,16 @@ public class CommentRestController {
                                     @RequestParam Long parentCommentId,
                                     HttpSession session) {
         commentServiceV2.create(articleId, sessionManager.getMemberId(session), parentCommentId,
-                StringUtils.escapeJavaScript(content));
+                StringEscapeUtils.escapeHtml4(content));
 
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
     public ResponseEntity<?> comments(@RequestParam Long articleId, HttpSession session) {
-        List<CommentDto> comments = commentService.getByArticleId(commonUtils.memberIdConvert(session),
-                                                                  articleId);
-        return ResponseEntity.ok().body(comments);
+        List<CommentResponse> result = commentServiceV2.getByArticleId(sessionManager.getMemberId(session),
+                articleId);
+        return ResponseEntity.ok().body(result);
     }
 
     @PostMapping("/delete/{commentId}")

@@ -1,17 +1,11 @@
 package project.board.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Getter
 @Entity
 public class Category extends AuditEntity {
 

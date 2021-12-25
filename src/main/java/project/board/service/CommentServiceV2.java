@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import project.board.domain.dto.CommentDto;
 import project.board.entity.Article;
 import project.board.entity.Comment;
 import project.board.entity.CommentLike;
@@ -17,15 +17,17 @@ import project.board.jpa.ArticleRepositoryJpa;
 import project.board.jpa.CommentLikeRepositoryJpa;
 import project.board.jpa.CommentRepositoryJpa;
 import project.board.jpa.MemberRepositoryJpa;
+import project.board.jpa.dto.CommentResponse;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CommentServiceV2 {
+
     private final CommentRepositoryJpa commentRepository;
     private final ArticleRepositoryJpa articleRepository;
     private final MemberRepositoryJpa memberRepository;
@@ -49,7 +51,8 @@ public class CommentServiceV2 {
         Comment comment = Comment.builder()
                 .article(article)
                 .member(member)
-                .parentCommentId(parentCommentId)
+                .parent(parentCommentId == null ? null : commentRepository.findById(parentCommentId)
+                        .orElseThrow(() -> new NullPointerException()))
                 .content(content)
                 .build();
 
@@ -78,24 +81,77 @@ public class CommentServiceV2 {
         Comment comment = commentRepository.findByMemberAndId(member, commentId)
                 .orElseThrow(() -> new NullPointerException());
 
-        if(comment.isChild()) {
+        if (comment.isChild()) {
+            //fixme: comment 지울 때, 부모에서도 자식 삭제 필수
+            comment.getParent().getChildren().remove(comment);
             commentRepository.delete(comment);
+
             ifCanParentAlsoDelete(comment);
         } else {
-            List<Comment> children = commentRepository.findByParentCommentId(comment.getId());
-            if(children.isEmpty()) {
+            List<Comment> children = comment.getChildren();
+            if (children.isEmpty()) {
                 commentRepository.delete(comment);
             } else {
-                comment.setUpdateDate(LocalDateTime.now());
+                comment.parentDelete();
             }
         }
     }
 
-    private void ifCanParentAlsoDelete(Comment comment) {
-        Optional<Comment> parent = commentRepository.findById(comment.getParentCommentId());
-        if (parent.isPresent() && parent.get().parentAlreadyDeleted()) {
-            commentRepository.delete(parent.get());
+    @Transactional
+    public List<CommentResponse> getByArticleId(Long memberId, Long articleId) {
+        Optional<Article> optionalArticle = articleRepository.findById(articleId);
+        if (!optionalArticle.isPresent()) {
+            return Collections.emptyList();
         }
+
+        List<Comment> comments = commentRepository.findByArticleAndParentIsNull(optionalArticle.get());
+
+        Map<Long, Boolean> likeYnByCommentId = likeYnByCommentId(memberId, comments);
+
+        List<CommentResponse> response = new ArrayList<>();
+        for (Comment parent : comments) {
+            Boolean parentLikeYn = likeYnByCommentId.getOrDefault(parent.getId(), false);
+            CommentResponse res = new CommentResponse(parent, parentLikeYn);
+
+            for (Comment child : parent.getChildren()) {
+                Boolean childLikeYn = likeYnByCommentId.getOrDefault(child.getId(), false);
+                CommentResponse reply = new CommentResponse(child, childLikeYn);
+                res.getReplies().add(reply);
+            }
+            response.add(res);
+        }
+        return response;
+    }
+
+    private Map<Long, Boolean> likeYnByCommentId(Long memberId, List<Comment> comments) {
+        if (memberId == null) {
+            return new HashMap<>();
+        }
+
+        List<Comment> flatComment = Stream.concat(comments.stream(),
+                comments.stream().flatMap(comment -> comment.getChildren().stream())).collect(Collectors.toList());
+
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Map<Long, Boolean> likeYnByCommentId = new HashMap<>();
+        if (optionalMember.isPresent()) {
+            likeYnByCommentId = commentLikeRepository.findByMemberAndCommentIn(optionalMember.get(), flatComment)
+                    .stream()
+                    .collect(Collectors.toMap(
+                            i1 -> i1.getComment().getId(),
+                            i2 -> true
+                    ));
+        }
+
+        return likeYnByCommentId;
+    }
+
+    private void ifCanParentAlsoDelete(Comment comment) {
+        commentRepository.findById(comment.getParent().getId()).ifPresent(parent -> {
+
+            if (parent.parentAlreadyDeleted() && CollectionUtils.isEmpty(parent.getChildren())) {
+                commentRepository.delete(parent);
+            }
+        });
     }
 
     private void likeToggle(Optional<CommentLike> commentLike, Member member, Comment comment) {
