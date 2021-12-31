@@ -15,12 +15,8 @@ import project.board.util.SessionManager;
 @RequiredArgsConstructor
 public class LoginRestController {
 
-    @GetMapping("/ajax/login-check")
-    public ResponseEntity<?> isLogin(@RequestAttribute SessionContext session) {
-        if (!session.isLoggedIn()) {
-            return ResponseEntity.status(302).body("/login");
-        } else {
-            return ResponseEntity.ok().body(session.getEmail());
-        }
+    @GetMapping("/ajax/session-email")
+    public String isLogin(@RequestAttribute SessionContext session) {
+        return session.getEmail();
     }
 }

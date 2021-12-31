@@ -1,6 +1,6 @@
 function getCommentModalForm(obj, commentId){
 	$.ajax({
-		url : '/ajax/login-check',
+		url : '/ajax/session-email',
 		type : 'GET',
 		success: function(data){
 			var writer = $(obj).parents('.media-body').children('h6.mt-0').children('.comment-writer').html();
@@ -9,13 +9,6 @@ function getCommentModalForm(obj, commentId){
 			$('#commentReportContent').html(`내용 : ${content.length <= 100 ? `${content.length}` : `${content.substr(0,100)} ...`}`);
 			$('#commentReportId').val(commentId);
 			$('#commentReportModal').modal('show');
-			
-		},
-		error: function(response, status, error){
-			if(response.status == 401){
-				alert("로그인이 필요한 작업입니다.");
-				window.location.href=response.responseJSON.message;
-			}
 		}
 	});
 }
@@ -113,20 +106,17 @@ $(document).ready(function(){
 	
 	function getSessionEmail()
 	{
-		var email;
+		let email;
 		
 		$.ajax({
-			url : '/ajax/login-check',
+			url : '/ajax/session-email',
 			type : 'GET',
 			async: false,
 			success: function(data){
 				email = data;
 			},
 			error: function(response, status, error){
-				if(response.status == 401){
-					alert("로그인이 필요한 작업입니다.");
-					window.location.href=response.responseJSON.message;
-				}
+				email = null;
 			}
 		});
 		

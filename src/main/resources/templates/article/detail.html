@@ -238,16 +238,10 @@ footer{
 		});
 		$("#icon-article-report").on("click", function(){
 			$.ajax({
-				url : '/ajax/login-check',
+				url : '/ajax/session-email',
 				type : 'GET',
 				success: function(data){
 					$('#articleReportModal').modal('show');				
-				},
-				error: function(response, status, error){
-					if(response.status == 401){
-						alert("로그인이 필요한 작업입니다.");
-						window.location.href=response.responseJSON.message;
-					}
 				}
 			});
 		});
