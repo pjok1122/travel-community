@@ -52,7 +52,7 @@
 
 - redirect			: `/`
 
-### GET /ajax/login_check : 비동기적으로 로그인 유무를 확인한다.
+### GET /ajax/session-email : 비동기적으로 로그인 유무를 확인한다.
 
 - method 			: `processLoginCheck()`
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.thymeleaf.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
-import project.board.annotation.LoginAuth;
+import project.board.annotation.Authorization;
 import project.board.annotation.isArticleOwner;
 import project.board.domain.Article;
 import project.board.domain.dto.ArticleDto;
@@ -50,7 +50,7 @@ public class ArticleController {
     }
 
     @GetMapping("/article/write")
-    @LoginAuth
+    @Authorization
     public String creationForm(@RequestParam(value = "id", required = false) Long articleId,
                                HttpSession session, Model model) {
         Article article = articleService.loadTempArticleById(sessionManager.getMemberId(session), articleId);
@@ -59,7 +59,7 @@ public class ArticleController {
     }
 
     @PostMapping("/article/write")
-    @LoginAuth
+    @Authorization
     public String create(@RequestParam(value = "images", required = false) String images,
                          @ModelAttribute @Valid Article article,
                          BindingResult result,
@@ -86,7 +86,7 @@ public class ArticleController {
     }
 
     @GetMapping("/article/update/{articleId}")
-    @LoginAuth
+    @Authorization
     public String updateForm(@PathVariable Long articleId, HttpSession session, Model model) {
         ArticleDto article = articleService.getUpdateForm(sessionManager.getMemberId(session), articleId);
         if (article == null) { return "redirect:/"; }
@@ -95,7 +95,7 @@ public class ArticleController {
     }
 
     @PostMapping("/article/update/{articleId}")
-    @LoginAuth
+    @Authorization
     @isArticleOwner
     public String update(@PathVariable Long articleId,
                          @RequestParam(value = "images", required = false) String images,
@@ -110,7 +110,7 @@ public class ArticleController {
     }
 
     @RequestMapping("/article/delete/{articleId}")
-    @LoginAuth
+    @Authorization
     @isArticleOwner
     public String delete(@PathVariable("articleId") Long articleId, HttpSession session) {
         articleService.removeArticleById(articleId);

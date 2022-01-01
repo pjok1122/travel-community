@@ -197,9 +197,10 @@ footer{
 						$("#like").prop("src", "/img/imgs/like1.png");
 					}
 				},
-				complete : function(response){
-					if(response.status == 302){
-						window.location.href=response.responseText;
+				error: function(response, status, error){
+					if(response.status == 401){
+						alert("로그인이 필요한 작업입니다.");
+						window.location.href=response.responseJSON.message;
 					}
 				}
 			});
@@ -209,7 +210,6 @@ footer{
 				type : 'GET',
 				data : {'articleId' : articleId},
 				success : function(count){
-					console.log(count);
 					$(".likeCount").html(count);
 				}
 			})
@@ -228,25 +228,20 @@ footer{
 						$("#bookmark").prop("src", "/img/imgs/bookmark1.png");
 					}
 				},
-				complete : function(response){
-					if(response.status == 302){
-						window.location.href=response.responseText;
+				error: function(response, status, error){
+					if(response.status == 401){
+						alert("로그인이 필요한 작업입니다.");
+						window.location.href=response.responseJSON.message;
 					}
 				}
 			})
 		});
 		$("#icon-article-report").on("click", function(){
 			$.ajax({
-				url : '/ajax/login_check',
+				url : '/ajax/session-email',
 				type : 'GET',
 				success: function(data){
 					$('#articleReportModal').modal('show');				
-				},
-				complete : function(response){
-					if(response.status == 302){
-						alert("로그인이 필요한 작업입니다.");
-						window.location.href=response.responseText;
-					}
 				}
 			});
 		});

@@ -1,6 +1,6 @@
 function getCommentModalForm(obj, commentId){
 	$.ajax({
-		url : '/ajax/login_check',
+		url : '/ajax/session-email',
 		type : 'GET',
 		success: function(data){
 			var writer = $(obj).parents('.media-body').children('h6.mt-0').children('.comment-writer').html();
@@ -9,13 +9,6 @@ function getCommentModalForm(obj, commentId){
 			$('#commentReportContent').html(`내용 : ${content.length <= 100 ? `${content.length}` : `${content.substr(0,100)} ...`}`);
 			$('#commentReportId').val(commentId);
 			$('#commentReportModal').modal('show');
-			
-		},
-		complete : function(response){
-			if(response.status == 302){
-				alert("로그인이 필요한 작업입니다.");
-				window.location.href=response.responseText;
-			}
 		}
 	});
 }
@@ -44,13 +37,11 @@ $(document).ready(function(){
 
 		if(current.innerText == '삭제')
 		{
-//			console.log(current.innerText);
 			commentDelete(commentId);
 		}	
 		else if(current.innerText == '등록')
 		{
 			var content = parent.parentElement.getElementsByTagName("textarea")[0].value;
-//			console.log(content);
 			if(content.length <= 0){
 				alert("내용을 입력해주세요.");
 			}
@@ -60,7 +51,6 @@ $(document).ready(function(){
 		}	
 		else if(parent.getAttribute("name") == 'comment-like')
 		{
-			//console.log(parent.parentElement.getAttribute("name"));
 			commentLikeInsert(parent.parentElement.getAttribute("name"));
 		}
 		else if(current.innerText == '댓글달기')
@@ -116,20 +106,17 @@ $(document).ready(function(){
 	
 	function getSessionEmail()
 	{
-		var email;
+		let email;
 		
 		$.ajax({
-			url : '/ajax/login_check',
+			url : '/ajax/session-email',
 			type : 'GET',
 			async: false,
 			success: function(data){
 				email = data;
 			},
-			complete : function(response){
-				if(response.status == 302){
-//					alert("로그인이 필요한 작업입니다.");
-//					window.location.href=response.responseText;
-				}
+			error: function(response, status, error){
+				email = null;
 			}
 		});
 		
@@ -149,11 +136,11 @@ $(document).ready(function(){
 //	        	getCommentGood();
 	        	$(`[name=comment-like-count${commentId}]`).html(likeCount);
 	        	likeImageToggle($(`[name=comment-like-img${commentId}]`));
-	        }, 
-	        complete : function(response){
-				if(response.status == 302){
+	        },
+			error: function(response, status, error){
+				if(response.status == 401){
 					alert("로그인이 필요한 작업입니다.");
-					window.location.href=response.responseText;
+					window.location.href=response.responseJSON.message;
 				}
 			}
 		});
@@ -179,30 +166,29 @@ $(document).ready(function(){
 	        success : function(data){
 	        	getCommentList(articleId);
 	        	document.getElementById('commentContent').value = ''
-	        }, 
-	        complete : function(response){
-				if(response.status == 302){
-					alert("로그인이 필요한 작업입니다.");
-					window.location.href=response.responseText;
-				}
-			}
+	        },
+					error: function(response, status, error){
+						if(response.status == 401){
+							alert("로그인이 필요한 작업입니다.");
+							window.location.href=response.responseJSON.message;
+						}
+					}
 		});
 	}
 	
 	function commentDelete(commentId){
-		console.log(commentId)
 	    $.ajax({
 	        url : '/comment/delete/'+commentId,
 	        type : 'post',
 	        success : function(data){
 	        	getCommentList(articleId);
-	        }, 
-	        complete : function(response){
-				if(response.status == 302){
-					alert("로그인이 필요한 작업입니다.");
-					window.location.href=response.responseText;
-				}
-			}
+	        },
+					error: function(response, status, error){
+						if(response.status == 401){
+							alert("로그인이 필요한 작업입니다.");
+							window.location.href=response.responseJSON.message;
+						}
+					}
 	    });
 	}
 	
@@ -216,7 +202,6 @@ $(document).ready(function(){
 	        	'articleId': articleId
 	        },
 	        success : function(data){
-//	        	console.log(data);
 	        	var count = data.length;
 	            var html = "";
 	            

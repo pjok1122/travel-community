@@ -16,6 +16,7 @@ import org.thymeleaf.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 import project.board.annotation.AjaxLoginAuth;
+import project.board.annotation.Authorization;
 import project.board.domain.dto.CommentDto;
 import project.board.jpa.dto.CommentResponse;
 import project.board.service.CommentService;
@@ -32,7 +33,7 @@ public class CommentRestController {
     private final SessionManager sessionManager;
 
     @PostMapping
-    @AjaxLoginAuth
+    @Authorization
     public ResponseEntity<?> create(@RequestParam Long articleId,
                                     @RequestParam String content,
                                     @RequestParam Long parentCommentId,
@@ -51,7 +52,7 @@ public class CommentRestController {
     }
 
     @PostMapping("/delete/{commentId}")
-    @AjaxLoginAuth
+    @Authorization
     public ResponseEntity<?> delete(@PathVariable Long commentId, HttpSession session) {
         commentServiceV2.delete(commentId, sessionManager.getMemberId(session));
 
@@ -59,7 +60,7 @@ public class CommentRestController {
     }
 
     @PostMapping("/like")
-    @AjaxLoginAuth
+    @Authorization
     public ResponseEntity<?> like(@RequestParam("commentId") Long commentId, HttpSession session) {
         int likeCount = commentServiceV2.like(sessionManager.getMemberId(session), commentId);
         return ResponseEntity.ok().body(likeCount);
