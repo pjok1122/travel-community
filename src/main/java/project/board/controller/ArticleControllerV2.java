@@ -81,11 +81,9 @@ public class ArticleControllerV2 {
 
     @PostMapping("/article/write")
     @Authorization
-    public String create(@ModelAttribute @Valid ArticleCreationRequest article,
-                         BindingResult errors,
-                         @RequestAttribute SessionContext session, Model model) {
+    public String create(@RequestAttribute SessionContext session,
+                         @ModelAttribute @Valid ArticleCreationRequest article, BindingResult errors) {
         if (errors.hasErrors()) {
-            model.addAttribute("article", article);
             return WRITE_AND_UPDATE_FORM;
         }
 

@@ -43,15 +43,6 @@ public class ArticleServiceV2 {
     @Value("${image.storage.uri}")
     private String storageUri;
 
-    @Value("${image.temp-storage.path}")
-    private String tempStoragePath;
-
-    @Value("${image.storage.path}")
-    private String storagePath;
-
-    @Value("${image.storage.date-path-format}")
-    private String datePathFormat;
-
     public Page<Article> getArticlesByMember(Member member, ArticleStatus status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, AuditEntity.REGISTER_DATE));
         return articleRepository.findByMemberAndStatus(member, status, pageable);
