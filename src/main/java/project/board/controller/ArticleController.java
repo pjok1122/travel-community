@@ -36,30 +36,18 @@ public class ArticleController {
 
     private static final String WRITE_AND_UPDATE_FORM = "article/write_and_update";
 
-    @GetMapping("/{category}/{nation}")
-    public String articles(@PathVariable("category") Category category,
-                           @PathVariable("nation") Nation nation,
-                           @ModelAttribute("pageAndSort") PageAndSort pageAndSort,
-                           @ModelAttribute("search") String search, Model model) {
-        if (!StringUtils.isEmptyOrWhitespace(search)) {
-            search = search.trim();
-        }
 
-        model.addAllAttributes(articleService.getArticleList(category, nation, pageAndSort, search));
-        return "article/list";
-    }
+//    @GetMapping("/article/write")
+//    @Authorization
+//    public String creationForm(@RequestParam(value = "id", required = false) Long articleId,
+//                               HttpSession session, Model model) {
+//        Article article = articleService.loadTempArticleById(sessionManager.getMemberId(session), articleId);
+//        model.addAttribute("article", article);
+//        return WRITE_AND_UPDATE_FORM;
+//    }
 
-    @GetMapping("/article/write")
-    @Authorization
-    public String creationForm(@RequestParam(value = "id", required = false) Long articleId,
-                               HttpSession session, Model model) {
-        Article article = articleService.loadTempArticleById(sessionManager.getMemberId(session), articleId);
-        model.addAttribute("article", article);
-        return WRITE_AND_UPDATE_FORM;
-    }
-
-    @PostMapping("/article/write")
-    @Authorization
+//    @PostMapping("/article/write")
+//    @Authorization
     public String create(@RequestParam(value = "images", required = false) String images,
                          @ModelAttribute @Valid Article article,
                          BindingResult result,

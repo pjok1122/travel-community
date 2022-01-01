@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import project.board.domain.UploadFile;
+import project.board.entity.UploadFile;
 import project.board.service.UploadFileService;
 
 @Controller

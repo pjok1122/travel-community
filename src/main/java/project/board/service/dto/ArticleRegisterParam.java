@@ -1,7 +1,10 @@
 package project.board.service.dto;
 
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Data;
+import project.board.enums.ArticleStatus;
 import project.board.enums.Category;
 import project.board.enums.Nation;
 
@@ -14,5 +17,6 @@ public class ArticleRegisterParam {
     private Nation nation;
     private String title;
     private String content;
-    private String images;
+    private List<String> images;
+    private ArticleStatus status;
 }

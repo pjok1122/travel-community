@@ -111,7 +111,7 @@ footer{
                      		</div>
                     	</div>
 					</div>
-					<span th:if="${article.nation}==한국">
+					<span th:if="${article.nation}==KR">
 						<th:block th:replace="common/html/domestic_map.html"></th:block>
 					</span>
 					<div class="card-body" th:utext="${article.content}"></div>

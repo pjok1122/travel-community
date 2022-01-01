@@ -7,7 +7,7 @@ public enum Category {
 	ALL("전체"),
 	ATTRACTIONS("관광지"),
 	RESTAURANT("맛집"),
-	ACCOMODATION("숙박"),
+	ACCOMMODATION("숙박"),
 	FESTIVAL("축제");
 	
 	private String krValue;
