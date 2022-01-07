@@ -132,13 +132,13 @@ footer{
 			<div class="col">
 				<span class="float-right">
 					<button class="icon" id="icon-like">
-						<img th:if="${article.isLiked}" id="like" th:name="${liked}" src="/img/imgs/like2.png">
-						<img th:unless="${article.isLiked}" id="like" th:name="${liked}" th:src="@{/img/imgs/like1.png}">
+						<img th:if="${article.liked}" id="like" src="img/imgs/like2.png">
+						<img th:unless="${article.liked}" id="like" th:src="@{/img/imgs/like1.png}">
 					</button>
 					<span th:text="${article.good}" class="likeCount">좋아요 숫자</span>
 					<button class="icon" id="icon-bookmark">
-						<img th:if="${article.isBookmarked}" id="bookmark" th:name="${article.isBookmarked}" src="/img/imgs/bookmark2.png">
-						<img th:unless="${article.isBookmarked}" id="bookmark" th:name="${article.isBookmarked}" th:src="@{/img/imgs/bookmark1.png}">
+						<img th:if="${article.bookmarked}" id="bookmark" th:name="${article.bookmarked}" src="/img/imgs/bookmark2.png">
+						<img th:unless="${article.bookmarked}" id="bookmark" th:name="${article.bookmarked}" th:src="@{/img/imgs/bookmark1.png}">
 					</button>
 					<button class="icon" id="icon-article-report">
 						<img class="report" src="/img/imgs/report.png">
@@ -179,11 +179,12 @@ footer{
 	$(document).ready(function(){
 		/* <![CDATA[ */
 		var articleId = [[${article.id}]]
-		var liked = [[${article.isLiked}]]
+		// var liked = [[${article.isLiked}]]
 		/* ]] */
 		var likeIcon = $("#icon-like");
 		
 		$("#icon-like").on("click", function(){
+			console.log("??");
 				$.ajax({
 				url : '/article/like',
 				type : 'POST',
