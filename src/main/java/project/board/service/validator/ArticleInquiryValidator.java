@@ -20,4 +20,10 @@ public class ArticleInquiryValidator {
             throw new IllegalArgumentException();
         }
     }
+
+    public void checkNotTempArticle(@NonNull Article article) {
+        if (article.isTempArticle()) {
+            throw new IllegalArgumentException();
+        }
+    }
 }

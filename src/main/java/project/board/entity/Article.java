@@ -55,7 +55,7 @@ public class Article extends AuditEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Nation nation;      //TODO : change enum after refactoring articleService
+    private Nation nation;
 
     @Column(columnDefinition = "VARCHAR(20) NOT NULL DEFAULT 'PERMANENT'", nullable = false)
     @Enumerated(EnumType.STRING)

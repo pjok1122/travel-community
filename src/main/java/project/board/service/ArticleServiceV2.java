@@ -80,6 +80,15 @@ public class ArticleServiceV2 {
     }
 
     @Transactional
+    public Article findDetailById(Long articleId) {
+        Article article = articleRepository.findDetailById(articleId).orElseThrow(
+                () -> new IllegalArgumentException());
+
+        inquiryValidator.checkNotTempArticle(article);
+        return article;
+    }
+
+    @Transactional
     public Long save(ArticleRegisterParam param) {
         Member member = memberRepository.findById(param.getMemberId())
                                         .orElseThrow(() -> new IllegalArgumentException());

@@ -33,17 +33,17 @@ public class ArticleController {
     private static final String WRITE_AND_UPDATE_FORM = "article/write_and_update";
 
 
-    @GetMapping("/article/{articleId}")
-    public String detail(@PathVariable Long articleId, HttpSession session, Model model) {
-        Map<String, Object> articleMap = articleService.getArticleDetailById(
-                sessionManager.getMemberId(session), articleId);
-        if (articleMap == null) {
-            return "redirect:/";
-        }
-        model.addAllAttributes(articleMap);
-        session.setAttribute("prevPage", "/article/" + articleId);
-        return "article/detail";
-    }
+//    @GetMapping("/article/{articleId}")
+//    public String detail(@PathVariable Long articleId, HttpSession session, Model model) {
+//        Map<String, Object> articleMap = articleService.getArticleDetailById(
+//                sessionManager.getMemberId(session), articleId);
+//        if (articleMap == null) {
+//            return "redirect:/";
+//        }
+//        model.addAllAttributes(articleMap);
+//        session.setAttribute("prevPage", "/article/" + articleId);
+//        return "article/detail";
+//    }
 
     @GetMapping("/article/update/{articleId}")
     @Authorization

@@ -32,6 +32,8 @@ import project.board.entity.Member;
 import project.board.enums.ArticleStatus;
 import project.board.enums.Category;
 import project.board.enums.Nation;
+import project.board.jpa.ArticleLikeRepositoryJpa;
+import project.board.jpa.BookmarkRepositoryJpa;
 import project.board.jpa.MemberRepositoryJpa;
 import project.board.service.ArticleServiceV2;
 import project.board.service.dto.ArticleRegisterParam;
@@ -41,6 +43,8 @@ import project.board.service.dto.ArticleRegisterParam;
 public class ArticleControllerV2 {
     private final ArticleServiceV2 articleService;
     private final MemberRepositoryJpa memberRepository;
+    private final BookmarkRepositoryJpa bookmarkRepository;
+    private final ArticleLikeRepositoryJpa articleLikeRepository;
 
     private static final String WRITE_AND_UPDATE_FORM = "article/write_and_update";
 
@@ -99,6 +103,24 @@ public class ArticleControllerV2 {
         return "redirect:/article/" + articleId;
     }
 
+    @GetMapping("/article/{articleId}")
+    public String detail(@PathVariable Long articleId,
+                         @RequestAttribute SessionContext session, Model model) {
+        Article article = articleService.findDetailById(articleId);
+        ArticleDetailResponse response = ArticleDetailResponse.of(article);
+
+        if (session.getId() != null) {
+            Member member = memberRepository.findById(session.getId()).orElse(null);
+            if (member != null) {
+                response.setBookmarked(bookmarkRepository.existsByMemberAndArticle(member, article));
+                response.setLiked(articleLikeRepository.existsByMemberAndArticle(member, article));
+            }
+        }
+        session.setPreviousPage("/article/" + articleId);
+        model.addAttribute("article", response);
+        return "article/detail";
+    }
+
 
     @Data
     static class ArticleListResponse {
@@ -144,6 +166,40 @@ public class ArticleControllerV2 {
             return tempArticle;
         }
     }
+
+    @Data
+    static class ArticleDetailResponse {
+        private Long id;
+        private String email;
+        private Nation nation;
+        private String title;
+        private String content;
+        private LocalDateTime registerDate;
+        private LocalDateTime updateDate;
+        private int hit;
+        private long commentCnt;
+        private int good;
+        private Long memberId;
+        private boolean isLiked;
+        private boolean isBookmarked;
+
+        static ArticleDetailResponse of(Article article) {
+            ArticleDetailResponse response = new ArticleDetailResponse();
+            response.id = article.getId();
+            response.email = article.getMember().getEmail();
+            response.nation = article.getNation();
+            response.title = article.getTitle();
+            response.content = article.getContent();
+            response.registerDate = article.getRegisterDate();
+            response.updateDate = article.getUpdateDate();
+            response.hit = article.getHit();
+            response.commentCnt = article.getCommentCount();
+            response.good = article.getGood();
+            response.memberId = article.getMember().getId();
+            return response;
+        }
+    }
+
     @Data
     static class ArticleCreationRequest {
         private Long id;
