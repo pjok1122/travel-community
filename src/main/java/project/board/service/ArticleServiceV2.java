@@ -37,6 +37,8 @@ public class ArticleServiceV2 {
     private final UploadFileUtils uploadFileUtils;
 
     private final ArticleInquiryValidator inquiryValidator;
+
+    private final String SRC_PREFIX = "src=\"";
     @Value("${image.temp-storage.uri}")
     private String tempStorageUri;
 
@@ -85,7 +87,7 @@ public class ArticleServiceV2 {
         List<PostFile> postFiles = uploadFileService.createPostFileByFileNameIn(param.getImages());
 
         Article article = Article.create(param.getTitle(),
-                                         param.getContent().replaceAll("src=\"" + tempStorageUri, "src=\"" + storageUri),
+                                         param.getContent().replaceAll(SRC_PREFIX + tempStorageUri, SRC_PREFIX + storageUri),
                                          param.getCategory(), param.getNation(), ArticleStatus.PERMANENT, member, postFiles);
 
         articleRepository.save(article);
@@ -107,7 +109,7 @@ public class ArticleServiceV2 {
         List<PostFile> postFiles = uploadFileService.createPostFileByFileNameIn(param.getImages());
 
         article.update(param.getTitle(),
-                       param.getContent().replaceAll("src=\"" + tempStorageUri, "src=\"" + storageUri),
+                       param.getContent().replaceAll(SRC_PREFIX + tempStorageUri, SRC_PREFIX + storageUri),
                        param.getCategory(), param.getNation(), ArticleStatus.PERMANENT, postFiles);
 
         return article.getId();

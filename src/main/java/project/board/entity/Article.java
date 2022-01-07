@@ -61,10 +61,6 @@ public class Article extends AuditEntity {
     @Enumerated(EnumType.STRING)
     private ArticleStatus status = ArticleStatus.PERMANENT;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "CATEGORY_ID")
-//    private Category category;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Category category;
