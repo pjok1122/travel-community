@@ -30,6 +30,8 @@ import project.board.domain.dto.CustomPage;
 import project.board.entity.Article;
 import project.board.entity.Comment;
 import project.board.entity.Member;
+import project.board.enums.ArticleStatus;
+import project.board.enums.Nation;
 import project.board.jpa.MemberRepositoryJpa;
 import project.board.service.ArticleServiceV2;
 import project.board.service.BookmarkServiceV2;
@@ -75,8 +77,9 @@ public class MyPageController {
         Long memberId = session.getId();
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException());
 
-        Page<MyArticleListResponse> articles = articleService.getArticles(member, "PERMANENT", page - 1, size)
-                                                             .map(MyArticleListResponse::of);
+        Page<MyArticleListResponse> articles =
+                articleService.getArticlesByMember(member, ArticleStatus.PERMANENT, page - 1, size)
+                              .map(MyArticleListResponse::of);
 
         CustomPage<MyArticleListResponse> result = new CustomPage<>(page, (int) articles.getTotalElements(),
                                                                     articles.getContent());
@@ -93,8 +96,9 @@ public class MyPageController {
         Long memberId = session.getId();
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException());
 
-        Page<MyArticleListResponse> articles = articleService.getArticles(member, "TEMP", page - 1, size)
-                                                             .map(MyArticleListResponse::of);
+        Page<MyArticleListResponse> articles =
+                articleService.getArticlesByMember(member, ArticleStatus.TEMP, page - 1, size)
+                              .map(MyArticleListResponse::of);
 
         CustomPage<MyArticleListResponse> result = new CustomPage<>(page, (int) articles.getTotalElements(),
                                                                     articles.getContent());
@@ -212,7 +216,7 @@ public class MyPageController {
     static class MyArticleListResponse {
         private Long id;
         private String title;
-        private String nation;
+        private Nation nation;
         private long hit = 0;
         private long commentCnt = 0;
         private LocalDateTime registerDate;
@@ -222,8 +226,8 @@ public class MyPageController {
             response.id = article.getId();
             response.title = article.getTitle();
             response.hit = article.getHit();
-            response.nation = article.getNation();  //TODO : change enum
-            response.commentCnt = 0;        //TODO : article에 commentCount 필드 추가
+            response.nation = article.getNation();
+            response.commentCnt = article.getCommentCount();
             response.registerDate = article.getRegisterDate();
 
             return response;

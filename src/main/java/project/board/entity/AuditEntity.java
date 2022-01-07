@@ -19,8 +19,8 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AuditEntity {
 
-    public static final String REGISTER_DATE = "register_date";
-    public static final String UPDATE_DATE = "update_date";
+    public static final String REGISTER_DATE = "registerDate";
+    public static final String UPDATE_DATE = "updateDate";
 
     @CreatedDate
     @Column(updatable = false)

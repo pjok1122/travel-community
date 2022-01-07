@@ -85,7 +85,7 @@
 								<label class="input-group-text" for="nation">국가</label>
 							</div>
 							<select class="custom-select" th:field="*{nation}">
-								<option th:each="nation,iterStat : ${T(project.board.enums.Nation).values()}" th:unless="${#strings.equals(nation,'ALL')}" th:value="${nation.getKrValue()}" th:text="${nation.getKrValue()}">
+								<option th:each="nation,iterStat : ${T(project.board.enums.Nation).values()}" th:unless="${#strings.equals(nation,'ALL')}" th:value="${nation}" th:text="${nation.getKrValue()}">
 							</select>
 							<small class="form-text text-muted" th:if="${#fields.hasErrors('nation')}" th:errors="*{nation}">Incorrect date</small>
 						</div>
@@ -105,7 +105,7 @@
 				</div>
 				
 				<div class="col-3 text-right mb-5">
-					<button th:if="${article.status} neq 'PERMANENT'" type="button" class="btn btn-outline-dark" id="temp-save"
+					<button th:if="${status} neq 'PERMANENT'" type="button" class="btn btn-outline-dark" id="temp-save"
 						onclick="saveTempArticle()">임시저장</button>
 					<button type="button" class="btn btn-outline-dark" id="temp-load"
 						onclick="loadTempArticleList()">불러오기</button>
@@ -120,7 +120,7 @@
 				</div>
 				<div class="col-12 text-right">
 					<button type="submit" id="submit" name="submit"
-						class="btn btn-primary" onclick="checkValid()" th:text="${article.status} neq 'PERMANENT' ? '등록' : '수정' "></button>
+						class="btn btn-primary" onclick="checkValid()" th:text="${status} neq 'PERMANENT' ? '등록' : '수정' "></button>
 				</div>
 			</div>
 		</form>
@@ -278,10 +278,17 @@
 				else{
 					content = content.slice(pos+5);
 					end_pos = content.search("\"");
-					$("#images").val($("#images").val() +' ' + content.slice(0, end_pos));
+					let imageVal = $("#images").val();
+					if (imageVal) {
+						$("#images").val(imageVal + "," + content.slice(0, end_pos))
+					}
+					else {
+						$("#images").val(content.slice(0, end_pos));
+					}
 					content = content.slice(end_pos);
 				}
 			}
+			console.log($("#images").val());
 		}
 		
 		function loadTempArticleList(){

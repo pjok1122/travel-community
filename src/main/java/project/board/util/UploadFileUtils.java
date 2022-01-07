@@ -17,15 +17,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.slf4j.Slf4j;
 import project.board.domain.UploadFile;
+import project.board.entity.PostFile;
 import project.board.enums.ImageMediaType;
 
 
 @Component
 @Slf4j
 public class UploadFileUtils {
-	
-	@Value("{image.save.path}")
-	private String imageSavePath; 
+
+	@Value("${image.temp-storage.path}")
+	private String tempStoragePath;
+
+	@Value("${image.storage.path}")
+	private String storagePath;
 	
 	/**
 	 * 파일명의 확장자를 토대로 이미지 파일인지 확인하는 메서드
@@ -109,7 +113,22 @@ public class UploadFileUtils {
 				e.printStackTrace();
 			}
 		});
-		
+	}
+
+	public void tempFileCopyAsPostFile(List<PostFile> postFiles) {
+		postFiles.forEach(pf->{
+			File postDir =new File(storagePath + pf.getDirPath());
+			if(!postDir.exists()) {
+				postDir.mkdirs();
+			}
+			File in = new File(tempStoragePath + pf.getDirPath() + pf.getFileName());
+			File out = new File(postDir, pf.getFileName());
+			try {
+				FileCopyUtils.copy(in, out);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	private static String makeSavePath(String rootLocation) {

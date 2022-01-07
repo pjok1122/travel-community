@@ -14,16 +14,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.thymeleaf.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 import project.board.annotation.Authorization;
 import project.board.annotation.isArticleOwner;
 import project.board.domain.Article;
 import project.board.domain.dto.ArticleDto;
-import project.board.domain.dto.PageAndSort;
-import project.board.enums.Category;
-import project.board.enums.Nation;
 import project.board.service.ArticleService;
 import project.board.util.SessionManager;
 
@@ -36,42 +32,6 @@ public class ArticleController {
 
     private static final String WRITE_AND_UPDATE_FORM = "article/write_and_update";
 
-    @GetMapping("/{category}/{nation}")
-    public String articles(@PathVariable("category") Category category,
-                           @PathVariable("nation") Nation nation,
-                           @ModelAttribute("pageAndSort") PageAndSort pageAndSort,
-                           @ModelAttribute("search") String search, Model model) {
-        if (!StringUtils.isEmptyOrWhitespace(search)) {
-            search = search.trim();
-        }
-
-        model.addAllAttributes(articleService.getArticleList(category, nation, pageAndSort, search));
-        return "article/list";
-    }
-
-    @GetMapping("/article/write")
-    @Authorization
-    public String creationForm(@RequestParam(value = "id", required = false) Long articleId,
-                               HttpSession session, Model model) {
-        Article article = articleService.loadTempArticleById(sessionManager.getMemberId(session), articleId);
-        model.addAttribute("article", article);
-        return WRITE_AND_UPDATE_FORM;
-    }
-
-    @PostMapping("/article/write")
-    @Authorization
-    public String create(@RequestParam(value = "images", required = false) String images,
-                         @ModelAttribute @Valid Article article,
-                         BindingResult result,
-                         HttpSession session,
-                         Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("article", article);
-            return WRITE_AND_UPDATE_FORM;
-        }
-        Long articleId = articleService.createArticle(article, images, sessionManager.getMemberId(session));
-        return "redirect:/article/" + articleId;
-    }
 
     @GetMapping("/article/{articleId}")
     public String detail(@PathVariable Long articleId, HttpSession session, Model model) {

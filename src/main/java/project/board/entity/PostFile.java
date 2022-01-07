@@ -1,21 +1,27 @@
 package project.board.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.validator.constraints.Length;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.validator.constraints.Length;
-import project.board.domain.dto.GpsDecimal;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-
-@Getter @Setter
+@Getter
+@Setter
 @ToString
 @Entity
 @NoArgsConstructor
-public class PostFile extends AuditEntity{
+public class PostFile extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,4 +46,15 @@ public class PostFile extends AuditEntity{
     @JoinColumn(name = "ARTICLE_ID")
     private Article article;
 
+    public static PostFile create(UploadFile uf) {
+        PostFile postFile = new PostFile();
+        postFile.originFileName = uf.getOriginFileName();
+        postFile.dirPath = uf.getDirPath();
+        postFile.fileName = uf.getFileName();
+        postFile.contentType = uf.getContentType();
+        postFile.size = uf.getSize();
+        postFile.latitude = uf.getLatitude();
+        postFile.longitude = uf.getLongitude();
+        return postFile;
+    }
 }

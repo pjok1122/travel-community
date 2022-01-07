@@ -74,11 +74,6 @@ public class ArticleService {
 	@Value("${image.dir.path.format}")
 	private String dirPathFormat;
 
-	public List<ArticleDto> getArticleByMemberId(Long id, Page paging) {
-		return articleRepository.selectArticleListByMemberId(id, paging.getOffset(), paging.getRecordsPerPage(),
-				"PERMANENT");
-	}
-
 	public List<ArticleDto> getTempArticleByMemberId(Long id, Page paging) {
 		return articleRepository.selectArticleListByMemberId(id, paging.getOffset(), paging.getRecordsPerPage(),
 				"TEMP");
@@ -89,36 +84,6 @@ public class ArticleService {
 		Member member = memberRepositoryJpa.findById(memberId)
 										   .orElseThrow(() -> new IllegalArgumentException());
 		return articleRepositoryJpa.countAllByMemberAndStatus(member, status);
-	}
-
-	public Map<String, Object> getArticleList(Category category, Nation nation, PageAndSort ps, String search) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		Page paging = new Page(ps.getPage());
-		paging.setNumberOfRecordsAndMakePageInfo(
-				articleRepository.getArticleCnt(category.getKrValue(), nation.getKrValue(), search));
-		paging.setList(articleRepository.selectArticleList(category.getKrValue(), nation.getKrValue(), search,
-				ps.getSort().toString(), paging.getOffset(), paging.getRecordsPerPage()));
-		map.put("page", paging);
-		return map;
-	}
-
-	@Transactional
-	public Long createArticle(Article article, String imageNames, Long memberId) {
-		Long categoryId = categoryRepository.selectIdByTitle(article.getCategory().getKrValue());
-		article.setMemberId(memberId);
-		article.setTitle((scriptEscaper.scriptEscape(article.getTitle())));
-		article.setCategoryId(categoryId);
-
-		article.setContent(article.getContent().replaceAll("src=\""+imageBaseUrl, "src=\""+imagePostUrl));
-		if (article.getId() != null) {
-			articleRepository.updateTempToPermanent(article);
-		} else {
-			articleRepository.insertArticle(article);
-		}
-
-		insertPostImages(imageNames, article.getId());
-
-		return article.getId();
 	}
 
 	@Transactional
@@ -322,19 +287,5 @@ public class ArticleService {
 			return new ArrayList<UploadFile>();
 		}
 		return postFileRepository.selectByArticleIds(articleIds);
-	}
-
-	@NonNull
-	public Article loadTempArticleById(Long memberId, Long articleId) {
-		try {
-			ArticleDto article = articleRepository.selectArticleById(articleId);
-			if (checkArticleOwner(memberId, article) && checkStatusTemp(article)) {
-				return article;
-			} else {
-				return new Article();
-			}
-		} catch (Exception e) {
-			return new Article();
-		}
 	}
 }

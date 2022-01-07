@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 
 import project.board.domain.Article;
 import project.board.domain.dto.ArticleDto;
-import project.board.enums.Sort;
 
 @Mapper
 public interface ArticleRepository {

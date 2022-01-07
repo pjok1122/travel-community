@@ -1,6 +1,6 @@
 package project.board.enums;
 
-public enum Sort {
+public enum ArticleSortType {
 	NEWEST, POPULAR;
 	
 }
