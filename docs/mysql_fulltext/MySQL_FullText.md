@@ -112,11 +112,11 @@
   SELECT * FROM article where match(title, content) against ('쓸쓸');
   SELECT * FROM article where content like '%쓸쓸%' or title like '%쓸쓸%';
   ```
-![fulltext-result1](./images/mysql/fulltext-test1.png)
+![fulltext-result1](/images/mysql/fulltext-test1.png)
 - 검색 결과를 보면 fulltext 검색이 0.125, like 검색이 0.049로 더 느리다..?
 
-![explain-fulltext-result1](./images/mysql/explain-fulltext-test1.png)
-![explain-like-result1](./images/mysql/explain-like-test1.png)
+![explain-fulltext-result1](/images/mysql/explain-fulltext-test1.png)
+![explain-like-result1](/images/mysql/explain-like-test1.png)
 - explain으로 각각 보면 fulltext 인덱스를 잘 타고있고, like 검색은 full-scan임을 확인했다. 
  
 
@@ -126,7 +126,7 @@
   SELECT *, NOW() FROM article where match(title, content) against ('쓸쓸');
   SELECT *, NOW() FROM article where content like '%쓸쓸%' or title like '%쓸쓸%';
   ```
-![fulltext-result2](./images/mysql/fulltext-test2.png)
+![fulltext-result2](/images/mysql/fulltext-test2.png)
 - 결과를 보니 `1차와 별반 다르지않음.`
 - count(*)로 갯수를 보니 둘 다 `18697`로 동일하게 나온다.
 - 생각해보니 30000개 중에 검색 결과가 18697개라면 전체의 `60%`가 넘는다.. 이런 경우 full-scan이 더 빠를 수 있다.
@@ -137,7 +137,7 @@
   SELECT id, NOW() FROM article where match(title, content) against ('하랴?');
   SELECT id, NOW() FROM article where content like '%하랴?%' or title like '%하랴?%';
   ```
-![fulltext-result3](./images/mysql/fulltext-test3.png)
+![fulltext-result3](/images/mysql/fulltext-test3.png)
 - 비교적 검색결과가 적은 키워드로 하니, fulltext가 like 검색보다 3배 더 빠르다. 데이터가 많을 수록 이 차이는 클거라 예상된다.  
 - count(*)의 갯수는 8207개로 27%정도 되지만 like검색보다 fulltext가 더 빠른걸 볼 수 있다. 
 - `검색 결과가 전체 개수에 가까울수록 fulltext보다 full-scan이 더 빠르니 조심하자`  
