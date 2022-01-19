@@ -1,22 +1,16 @@
 package project.board.jpa;
 
-import java.util.List;
-
-import javax.persistence.EntityManager;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.stereotype.Repository;
-
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.stereotype.Repository;
 import project.board.entity.Article;
 import project.board.entity.QArticle;
 import project.board.enums.ArticleStatus;
@@ -75,12 +69,14 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
         if (nation != null && nation != Nation.ALL) {
             return article.nation.eq(nation);
         }
+
         return null;
     }
 
     private BooleanExpression containsTitle(String searchText) {
         if (StringUtils.isNotBlank(searchText)) {
-            article.title.contains(searchText);
+            NumberTemplate<Double> template = Expressions.numberTemplate(Double.class, "function('match',{0},{1},{2})", article.title, article.content, searchText);
+            return template.gt(0);
         }
         return null;
     }
