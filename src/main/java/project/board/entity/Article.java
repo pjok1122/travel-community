@@ -79,7 +79,7 @@ public class Article extends AuditEntity {
     private List<PostFile> postFiles = new ArrayList<>();
 
     public static Article create(String title, String content, Category category, Nation nation, ArticleStatus status,
-                       Member member, List<PostFile> postFiles) {
+                                 Member member, List<PostFile> postFiles) {
         Article article = new Article();
         article.title = StringEscapeUtils.escapeHtml4(title);
         article.content = content;
@@ -88,6 +88,19 @@ public class Article extends AuditEntity {
         article.status = status;
         article.member = member;
         article.addPostFiles(postFiles);
+
+        return article;
+    }
+
+    public static Article create(String title, String content, Category category, Nation nation, ArticleStatus status,
+                                 Member member) {
+        Article article = new Article();
+        article.title = StringEscapeUtils.escapeHtml4(title);
+        article.content = content;
+        article.category = category;
+        article.nation = nation;
+        article.status = status;
+        article.member = member;
 
         return article;
     }
@@ -113,7 +126,7 @@ public class Article extends AuditEntity {
     }
 
     public void addPostFiles(List<PostFile> postFiles) {
-        postFiles.forEach(pf-> addPostFile(pf));
+        postFiles.forEach(pf -> addPostFile(pf));
     }
 }
 
